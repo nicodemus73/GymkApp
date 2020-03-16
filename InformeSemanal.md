@@ -1,4 +1,4 @@
-#Informe Semanal
+# Informe Semanal
 ## Semana 1
 Entre todos hemos empezado a discutir las funcionalidades que debería tener la aplicación y la distinción entre las tres capas principales.
 Samuel: He hecho unos dibujos conceptuales de lo que podria ser la GUI de la aplicación.
