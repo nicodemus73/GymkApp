@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const app = express();
 
 // connecting to db
-mongoose.connect('mongodb://localhost/crud-mongo')
+mongoose.connect('mongodb://localhost/crud-mongo') //nom de la bbdd
     .then(db => console.log('DB connected!'))//promesa
     .catch(err => console.log(err));
 
@@ -19,7 +19,7 @@ app.use('/map', require('./routes/map'));
 app.use('/game', require('./routes/game'));
 
 //settings
-//app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3001);
 
 // Middlewares. They execute when accessing the route.
 /*
@@ -29,13 +29,13 @@ app.use('/user', () => {
 });
 */
 
-app.use(express.urlencoded({extended: false})) //entender json, el false es porque
-//solo sera texto y no ocupa mucho --> cambiar
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // stating the server
-//app.listen(app.get('port'), () => {
-//console.log(`Server on port ${app.get('port')}`);
-//});
-app.listen(3001, () => {
-    console.log('Server running at port: 3001');
+app.listen(app.get('port'), () => {
+console.log(`Server on port ${app.get('port')}`);
 });
+/*app.listen(3001, () => {
+    console.log('Server running at port: 3001');
+});*/
