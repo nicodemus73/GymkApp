@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const app = express();
 
 // connecting to db
-mongoose.connect('mongodb://localhost/crud-mongo') //nom de la bbdd
+mongoose.set('useUnifiedTopology', true);
+mongoose.connect('mongodb://localhost/crud-mongo',  { useNewUrlParser: true }) //nom de la bbdd
     .then(db => console.log('DB connected!'))//promesa
     .catch(err => console.log(err));
 
