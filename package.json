@@ -2,10 +2,10 @@
   "name": "gymkapp",
   "version": "1.0.0",
   "description": "Aplicación de gestión de Gincanas",
-  "main": "index.js",
+  "main": "server/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/app.js",
+    "start": "nodemon server/app.js",
     "dev": "nodemon server/app.js"
   },
   "repository": {
