@@ -9,7 +9,7 @@ mongoose.connect('mongodb://localhost/crud-mongo')
     .catch(err => console.log(err));
 
 //importando rutas
-const indexRoutes = require('./server/routes/index');
+const indexRoutes = require('./routes/index');
 
 //settings
 //app.set('port', process.env.PORT || 3000);
