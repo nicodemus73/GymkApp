@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const Task = require('../../bbdd/Task'); //per poder utilitzar la bbdd
+
 router.get('/', (req, res) => {
     res.send("This is the user route");
 });
@@ -13,11 +15,21 @@ router.get('/adeu', (req, res) => {
     res.send("adeu");
 });
 
-/*router.get('/add_user', async(req, res) => {
-    console.log(new Task(req.body)); //crea el objeto a almacenar
-    const task = new Task(req.body);
-    await task.save();
-    res.send(new Task(req.body));
-});*/
+router.post('/add_user', async(req, res) => { //guardar es un exemple, a millorar
+
+    const task = new Task({
+        title: req.body.title,
+        author: req.body.author,
+        description: req.body.description
+    });
+    try {
+        const savedUser = await task.save();
+        console.log(task);
+        console.log(req.body.title);
+        res.json(savedUser);
+    } catch(err) {
+        res.json({ message: err});
+    }
+});
 
 module.exports = router;
