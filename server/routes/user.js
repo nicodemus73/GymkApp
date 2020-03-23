@@ -15,7 +15,7 @@ router.get('/adeu', (req, res) => {
     res.send("adeu");
 });
 
-router.post('/add_user', async(req, res) => { //guardar es un exemple, a millorar
+router.post('/add', async(req, res) => { //guardar es un exemple, a millorar
 
     const task = new Task({
         title: req.body.title,
