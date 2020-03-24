@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const Task = require('../../bbdd/Task'); //per poder utilitzar la bbdd
+const Task = require('../bbdd/Task'); //per poder utilitzar la bbdd
 
 router.get('/', (req, res) => {
     res.send("This is the user route");
