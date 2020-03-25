@@ -12,3 +12,6 @@ const TaskSchema = new Schema({
 });
 
 module.exports = mongoose.model('task', TaskSchema); //toma el schema y lo guarda en una coleccion de mongodb
+
+
+
