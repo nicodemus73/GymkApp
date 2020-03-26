@@ -74,7 +74,7 @@ router.post('/login', async(req, res) => {
 
     //crear y asignar token al usuario
     const token = jwt.sign({_id: username._id}, "dfsdkhnsdmvnkdjvn"/* per a que no hi hagin fallo de seguretat aixo hauria d'estar en un .env i intal·lar el paquet */);
-    res.header('auth_token', token).send(token);
+    res.header('Authorization', token).send(token);
     //res.send('Logged in!');
 
 });
@@ -95,5 +95,21 @@ router.post('/add', async(req, res) => { //guardar es un exemple, a millorar
         res.json({ message: err});
     }
 });
+
+//delete by _id (usuaris de moment)
+
+router.post('/delete/:id', async function(req, res) {
+
+    Usuario.findByIdAndDelete(req.params.id)
+    .exec()
+    .then(doc => {
+        //console.log(doc);
+        if (!doc) {return res.status(404).send('Document not found').end();}
+        return res.send('File deleted').end();
+    })
+    .catch (error =>
+        res.json({ message: error}));
+
+ });
 
 module.exports = router;

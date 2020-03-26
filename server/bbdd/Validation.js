@@ -3,7 +3,6 @@
 const Joi = require("@hapi/joi");
 
 
-
 //Register Validation 
 
 const registerValidation = (data) => {
