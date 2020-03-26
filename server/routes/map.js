@@ -5,10 +5,18 @@ const Map = require('../bbdd/MapSchema');
 router.get('/', (req, res) => { //get all maps summary info
     
     try{
-        Map.find(function (err, maps) {
-            if (err) return console.error(err);
-            res.json(maps);
-        })
+        if (req.body._id){ // ID received: send one map
+            console.log("I received an ID");
+        }
+        else{ // Send all maps
+            Map.find({"owner": "guillem"},{ // mirar més acuradament per retornar tots els mapes
+                "_id": 1,         // mirar més acuradament per retornar certs camps
+                "name": 1},
+                function (err, maps) {
+                if (err) return console.error(err);
+                res.json(maps);
+            })
+        }
     } catch(err) {
         res.json({ "error": err.message});
     }
