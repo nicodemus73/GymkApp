@@ -16,6 +16,7 @@ app.use(express.json());
 // Routes
 app.use('/', require('./routes/home'));
 app.use('/user', require('./routes/user'));
+app.use('/point', require('./routes/point'));
 app.use('/map', require('./routes/map'));
 app.use('/game', require('./routes/game'));
 

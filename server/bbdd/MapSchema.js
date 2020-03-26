@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const idValidator = require('mongoose-id-validator');
 const Schema = mongoose.Schema;
 
 const MapSchema = new Schema({
@@ -12,4 +13,7 @@ const MapSchema = new Schema({
     points: [{ type: Schema.Types.ObjectId, ref: 'point' }],
 });
 
+MapSchema.plugin(idValidator, {
+    allowDuplicates: true
+});
 module.exports = mongoose.model('map', MapSchema);
