@@ -14,3 +14,5 @@ const PointSchema = new Schema({
 });
 
 module.exports = mongoose.model('point', PointSchema);
+
+// posar camp resposta

@@ -14,6 +14,7 @@ router.get('/', (req, res) => { //get all maps summary info
                 .exec(function (err, map) {
                     if (err) return console.error(err);
                     res.json({
+                        "_id": map._id,
                         "name": map.name,
                         "metadata": map.metadata,
                         "start": map.points[0].coord
