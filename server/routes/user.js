@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+
 const Usuario = require('../bbdd/Usuario');
 const {registerValidation, loginValidation} = require('../bbdd/Validation');
 
@@ -47,6 +48,7 @@ router.post('/register', async(req, res) => {
         res.status(400).send(err);
     }
 });
+
 
 router.post('/login', async(req, res) => {
 
