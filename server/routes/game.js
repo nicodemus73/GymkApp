@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    res.send("This is the game route");
+    //console.log(Date.now.toString);
 });
 
 module.exports = router;
