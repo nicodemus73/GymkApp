@@ -15,7 +15,7 @@ const userSchema = new Schema({
         max: 1024,
         required: true 
     },
-    firstname: { 
+    /*firstname: { 
         type: String, 
         min: 2,
         max: 255,
@@ -26,11 +26,22 @@ const userSchema = new Schema({
         min: 2,
         max: 255,
         required: true 
-    },
+    },*/
+    /*games: [{
+        type: Schema.Types.ObjectId,
+        ref: 'nombd_gynkanes'
+    }],*/
+    /*friends: [{
+         type: Schema.Types.ObjectId, 
+         ref: 'Friends'
+        }],*/
+
     createdDate: { 
         type: Date, 
         default: Date.now  //es pot modificar
     }
+
+
 });
 
 module.exports = mongoose.model('Usuario', userSchema); //toma el schema y lo guarda en una coleccion de mongodb

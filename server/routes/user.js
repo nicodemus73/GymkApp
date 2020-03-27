@@ -3,22 +3,12 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const Task = require('../bbdd/Task'); //per poder utilitzar la bbdd
 const Usuario = require('../bbdd/Usuario');
 const {registerValidation, loginValidation} = require('../bbdd/Validation');
 
 router.get('/', (req, res) => {
     res.send("This is the user route");
 });
-
-router.get('/hola', (req, res) => {
-    res.send("hello");
-});
-
-router.get('/adeu', (req, res) => {
-    res.send("adeu");
-});
-
 
 
 router.post('/register', async(req, res) => {
@@ -33,7 +23,7 @@ router.post('/register', async(req, res) => {
     const usernameExist = await Usuario.findOne({username: req.body.username});
     if (usernameExist) return res.status(400).send("Username already exists");
 
-    //hashear la password
+    //hashear la password 
 
     const salt = await bcrypt.genSalt();
     const hashpsswd = await bcrypt.hash(req.body.password, salt);
@@ -43,8 +33,8 @@ router.post('/register', async(req, res) => {
     const usern = new Usuario ({
         username: req.body.username,
         password: hashpsswd,//req.body.password,
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
+        //firstname: req.body.firstname,
+        //lastname: req.body.lastname,
     });
     try {
         const savedUser = await usern.save(10);
@@ -73,33 +63,17 @@ router.post('/login', async(req, res) => {
     if(!validPasswd) return res.status(400).send('Invalid Password');
 
     //crear y asignar token al usuario
-    const token = jwt.sign({_id: username._id}, "dfsdkhnsdmvnkdjvn"/* per a que no hi hagin fallo de seguretat aixo hauria d'estar en un .env i intal·lar el paquet */);
+    const token = jwt.sign({_id: username._id}, "dfsdkhnsdmvnkdjvn"/* per a que no hi hagin fallo de seguretat aixo hauria d'estar en un .env i intal·lar el paquet, expiresIn: */);
     res.header('Authorization', token).send(token);
     //res.send('Logged in!');
 
 });
 
 
-router.post('/add', async(req, res) => { //guardar es un exemple, a millorar
-    const task = new Task({
-        title: req.body.title,
-        author: req.body.author,
-        description: req.body.description
-    });
-    try {
-        const savedUser = await task.save();
-        console.log(task);
-       // console.log(req.body.title);
-        res.json(savedUser);
-    } catch(err) {
-        res.json({ message: err});
-    }
-});
-
-//delete by _id (usuaris de moment)
+//delete by _id (usuaris de moment) No s'hauria de borrar, donar de baixa
 
 router.post('/delete/:id', async function(req, res) {
-
+Usuario.
     Usuario.findByIdAndDelete(req.params.id)
     .exec()
     .then(doc => {
