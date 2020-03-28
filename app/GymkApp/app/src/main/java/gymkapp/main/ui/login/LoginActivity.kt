@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_login.*
 
 import gymkapp.main.R
 
@@ -25,11 +26,6 @@ class LoginActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
 
     setContentView(R.layout.activity_login)
-
-    val username = findViewById<EditText>(R.id.username)
-    val password = findViewById<EditText>(R.id.password)
-    val login = findViewById<Button>(R.id.login)
-    val loading = findViewById<ProgressBar>(R.id.loading)
 
     loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
       .get(LoginViewModel::class.java)

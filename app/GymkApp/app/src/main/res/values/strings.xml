@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">GymkApp</string>
     <string name="title_activity_maps">Map</string>
-    <string name="botonAMapa">Ver Mapa</string>
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -12,4 +11,9 @@
     <string name="login_failed">"Login failed"</string>
     <string name="buttonToLogin">Log In</string>
     <string name="prompt_username">Username</string>
+    <string name="buttonToMap">Map</string>
+    <string name="LogoDescription">This is the application logo</string>
+    <string name="AppTitle">GymkApp</string>
+    <string name="RegisterLink"><u>Register Now!</u></string>
+    <string name="RegisterText">Not a member yet?</string>
 </resources>
