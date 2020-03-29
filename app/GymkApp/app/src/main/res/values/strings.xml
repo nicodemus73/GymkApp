@@ -14,6 +14,7 @@
     <string name="buttonToMap">Map</string>
     <string name="LogoDescription">This is the application logo</string>
     <string name="AppTitle">GymkApp</string>
-    <string name="RegisterLink"><u>Register Now!</u></string>
+    <string name="RegisterLink">Register</string>
     <string name="RegisterText">Not a member yet?</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
 </resources>

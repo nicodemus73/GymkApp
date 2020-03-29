@@ -25,23 +25,35 @@
 
     <Button
         android:id="@+id/botonLogin"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="258dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="92dp"
-        android:background="@drawable/round_button"
-        android:fontFamily="@font/roboto_medium"
+        android:layout_marginTop="64dp"
+        android:backgroundTint="@color/white_50"
         android:onClick="onClickLoginButton"
         android:text="@string/buttonToLogin"
-        android:textAllCaps="false"
-        android:textColor="@color/round_button_color"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/colorBackground"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/logoApp" />
+
+    <Button
+        android:id="@+id/RegisterLink"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="114dp"
+        android:layout_height="52dp"
+        android:onClick="onClickRegisterLink"
+        android:text="@string/RegisterLink"
+        android:textAllCaps="false"
+        android:textColor="@color/white_50"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textRegister"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.141"
+        app:layout_constraintStart_toEndOf="@+id/textRegister"
+        app:strokeColor="@color/white_50"
+        app:strokeWidth="1dp" />
 
     <TextView
         android:id="@+id/textRegister"
@@ -57,39 +69,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/botonLogin"
-        app:layout_constraintVertical_bias="0.057" />
-
-    <TextView
-        android:id="@+id/textRegisterLink"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/roboto"
-        android:onClick="onClickRegisterLink"
-        android:text="@string/RegisterLink"
-        android:textColor="@color/red"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textRegister"
-        app:layout_constraintTop_toBottomOf="@+id/botonLogin"
-        app:layout_constraintVertical_bias="0.057" />
+        app:layout_constraintVertical_bias="0.186" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/logoApp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="48dp"
         android:layout_marginEnd="16dp"
+        android:contentDescription="@string/LogoDescription"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleText"
         app:srcCompat="@drawable/start_icon" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
