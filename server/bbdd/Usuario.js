@@ -27,10 +27,10 @@ const userSchema = new Schema({
         max: 255,
         required: true 
     },*/
-    /*games: [{
+    games: [{
         type: Schema.Types.ObjectId,
-        ref: 'nombd_gynkanes'
-    }],*/
+        ref: 'map'
+    }],
     /*friends: [{
          type: Schema.Types.ObjectId, 
          ref: 'Friends'

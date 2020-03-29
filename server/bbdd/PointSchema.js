@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const PointSchema = new Schema({
-    name:           { type: String,  required: true, unique: true, maxlength: 15 },
+    name:           { type: String,  required: true, unique: true, maxlength: 30 },
     owner:          { type: String,  required: true, maxlength: 15 }, 
     type:           { type: String,  required: true, maxlength: 4 },
     description:    { type: String,  required: true, maxlength: 150 },
