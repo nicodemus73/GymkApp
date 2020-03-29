@@ -29,7 +29,8 @@ router.get('/', (req, res) => { //get all maps summary info
                 function (err, maps) {
                     if (err) return console.error(err);
                     res.json(maps);
-                })
+                }
+            )
         }
     } catch (err) {
         res.json({ "error": err.message });

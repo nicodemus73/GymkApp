@@ -6,6 +6,7 @@ const PointSchema = new Schema({
     owner:          { type: String,  required: true, maxlength: 15 }, 
     type:           { type: String,  required: true, maxlength: 4 },
     description:    { type: String,  required: true, maxlength: 150 },
+  //  answers:         [{ type: String,  required: true, maxlength: 15 }],
     public:         { type: Boolean, default:  true },
     coord: {
         lat:  { type: mongoose.Decimal128,  required: true },
@@ -14,5 +15,3 @@ const PointSchema = new Schema({
 });
 
 module.exports = mongoose.model('point', PointSchema);
-
-// posar camp resposta
