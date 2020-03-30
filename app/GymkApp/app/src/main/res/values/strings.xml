@@ -17,4 +17,5 @@
     <string name="RegisterLink">Register</string>
     <string name="RegisterText">Not a member yet?</string>
     <string name="prompt_confirm_password">Confirm Password</string>
+    <string name="LogoFlagDescription">This is the flag icon</string>
 </resources>

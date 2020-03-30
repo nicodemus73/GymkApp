@@ -27,13 +27,8 @@ class StartActivity : AppCompatActivity() {
       if(isChecked) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
       else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
-  }
 
-  fun onClickLoginButton(view: View){
-    startActivity(Intent(this,LoginActivity::class.java))
-  }
-
-  fun onClickRegisterLink(view: View){
-    startActivity(Intent(this,RegisterActivity::class.java))
+    loginButton.setOnClickListener{ startActivity(Intent(this,LoginActivity::class.java)) }
+    registerButton.setOnClickListener { startActivity(Intent(this,RegisterActivity::class.java)) }
   }
 }
