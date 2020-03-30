@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
 import gymkapp.main.ui.login.LoginActivity
 import kotlinx.android.synthetic.main.activity_start.*
 
@@ -21,6 +22,11 @@ class StartActivity : AppCompatActivity() {
       .or(View.SYSTEM_UI_FLAG_FULLSCREEN)
       .or(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
       */
+    nightModeSwitch.setOnCheckedChangeListener{
+        _,isChecked ->
+      if(isChecked) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+      else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+    }
   }
 
   fun onClickLoginButton(view: View){

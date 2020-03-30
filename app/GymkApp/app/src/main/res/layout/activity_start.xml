@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
     tools:context=".StartActivity">
 
     <TextView
@@ -16,8 +15,7 @@
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/roboto_black"
         android:text="@string/AppTitle"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-        android:textColor="@color/white"
+        android:textAppearance="@style/TextAppearance.MyTheme.Body1"
         android:textSize="70sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,14 +23,13 @@
 
     <Button
         android:id="@+id/botonLogin"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        style="@style/Widget.MaterialComponents.Button"
         android:layout_width="258dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
-        android:backgroundTint="@color/white_50"
         android:onClick="onClickLoginButton"
         android:text="@string/buttonToLogin"
-        android:textColor="@color/colorBackground"
+        android:textAllCaps="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,20 +37,17 @@
 
     <Button
         android:id="@+id/RegisterLink"
-        style="@style/Widget.MaterialComponents.Button"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="114dp"
         android:layout_height="52dp"
         android:onClick="onClickRegisterLink"
         android:text="@string/RegisterLink"
         android:textAllCaps="false"
-        android:textColor="@color/white_50"
         android:textSize="18sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/textRegister"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.141"
-        app:layout_constraintStart_toEndOf="@+id/textRegister"
-        app:strokeColor="@color/white_50"
-        app:strokeWidth="1dp" />
+        app:layout_constraintStart_toEndOf="@+id/textRegister" />
 
     <TextView
         android:id="@+id/textRegister"
@@ -64,7 +58,7 @@
         android:layout_marginBottom="16dp"
         android:fontFamily="@font/roboto"
         android:text="@string/RegisterText"
-        android:textColor="@color/white"
+        android:textAppearance="@style/TextAppearance.MyTheme.Body1"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -83,6 +77,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleText"
         app:srcCompat="@drawable/start_icon" />
+
+    <Switch
+        android:id="@+id/nightModeSwitch"
+        android:layout_width="47dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="172dp"
+        android:switchTextAppearance="@style/TextAppearance.MyTheme.Body1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
