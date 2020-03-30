@@ -4,14 +4,41 @@ const Game = require('../bbdd/GameSchema');
 const Map = require('../bbdd/MapSchema');
 const Point = require('../bbdd/PointSchema');
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
 
     try {
 
-        // get status of last game played by user (in specific map)
-        // get all games played by user
-        // get stats of specific game
+        if (req.body.all) { // get all games stats of specific map/user
+            if (req.body.all.user) { // from user
+                Game.find({user: req.body.all.user}, function (err, games) {
+                    if (err) return console.error(err);
+                    res.json(games);
+                });
+            }
+            else if (req.body.all.map) { // from map
+                Game.find({map: req.body.all.map}, function (err, games) {
+                    if (err) return console.error(err);
+                    res.json(games);
+                });
+            }
+        }
+        else { // get one game stats
+            if (req.body._id) { // specific game
+                Game.findById(req.body._id, function (err, game) {
+                    if (err) return console.error(err);
+                    res.json(game);
+                });
+            }
+            else if (req.body.user && req.body.map) { // last played by user in map
 
+            }
+            else if (req.body.user) { // last played by user
+                console.log(process.env.MAX);
+            }
+            else if (req.body.map) { // last played in map
+
+            }
+        }
     } catch (err) {
         res.json({ "error": err.message });
     }
@@ -20,29 +47,46 @@ router.get('/', (req, res) => {
 router.post('/', async (req, res) => {
 
     try {
+        if (!(req.body.location.lat && req.body.location.long)) throw new Error('No location sent');
         if (req.body.game) { // ID received: update a game: validate current point (and end game).
-            const game = await Game.findByIdAndUpdate(req.body.game);
+            
+            const game = await Game.findById(req.body.game);
             if (game == null) throw new Error('Game does not exist');
             if (game.status != 'inProgress') throw new Error('Game is not in progress');
-            if (/*punt vàlid*/ true){
-                const map = await Map.findById(game.map); // we suppose maps are well maintained
+
+            const currentPoint = await Point.findById(game.progress[game.progress.length -1].point);
+            
+            if (distance(req.body.location.lat, req.body.location.long,
+                currentPoint.coord.lat, currentPoint.coord.long) < process.env.ONFOOT_CHECK_DIST) { // point completed
+                
                 const date = new Date();
+                game.progress[game.progress.length - 1].completedDate = date;
+                const map = await Map.findById(game.map); // we suppose maps and points are well maintained
 
-                // no funciona encara.
-                // mirar millor findByIdAndUpdate()
-                console.log(date);
-                game.progress[game.progress.length -1].completedDate = date;
-
-                if (map.points.length -1 == game.progress.length){ // this is the last point
+                if (map.points.length == game.progress.length) { // this is the last point validation
                     console.log('Last Point');
+                    game.status = 'completed';
+                    game.endDate = date;
+                    res.json({
+                        "status": game.status,
+                        "time": parseTime(new Date(game.endDate - game.startDate))
+                    })
                 }
-                else{ // this is not the last point
+                else { // this is not the last point validation: send next.
                     console.log('Not Last Point');
+                    const point = await Point.findById(map.points[game.progress.length]);
+                    game.progress.push({ point: point._id });
+                    res.json({
+                        "description": point.description,
+                        "coord": point.coord
+                    });
                 }
             }
-            else{
-                res.json({ "error": "Point is not completed"});
+            else {
+                res.json({ "error": "Point is not completed yet" });
+                game.progress[game.progress.length - 1].tries++;
             }
+            await game.save();
         }
         else { // No ID received: start new game.
             const map = await Map.findById(req.body.map); // so we can dereference point 0
@@ -57,12 +101,11 @@ router.post('/', async (req, res) => {
                 },
                 progress: {
                     point: map.points[0], // point 0 dereferenced
-                    tries: 1,
                 }
             });
             const savedGame = await game.save();
             if (savedGame.error) res.json(savedGame);
-            else{
+            else {
                 const point = await Point.findById(map.points[0]); // we suppose points are well maintained
                 res.json({
                     "description": point.description,
@@ -73,7 +116,43 @@ router.post('/', async (req, res) => {
     } catch (err) {
         res.json({ "error": err.message });
     }
-
 });
 
 module.exports = router;
+
+function parseTime(milliseconds) {
+    //Get hours from milliseconds
+    var hours = milliseconds / (1000 * 60 * 60);
+    var absoluteHours = Math.floor(hours);
+    var h = absoluteHours > 9 ? absoluteHours : '0' + absoluteHours;
+
+    //Get remainder from hours and convert to minutes
+    var minutes = (hours - absoluteHours) * 60;
+    var absoluteMinutes = Math.floor(minutes);
+    var m = absoluteMinutes > 9 ? absoluteMinutes : '0' + absoluteMinutes;
+
+    //Get remainder from minutes and convert to seconds
+    var seconds = (minutes - absoluteMinutes) * 60;
+    var absoluteSeconds = Math.floor(seconds);
+    var s = absoluteSeconds > 9 ? absoluteSeconds : '0' + absoluteSeconds;
+
+    return h + 'h' + m + 'm' + s + 's';
+}
+
+function distance(lat1, lon1, lat2, lon2) {
+    var R = 6371; // km
+    var dLat = toRad(lat2 - lat1);
+    var dLon = toRad(lon2 - lon1);
+    var lat1 = toRad(lat1);
+    var lat2 = toRad(lat2);
+
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+    return d * 1000;
+}
+
+function toRad(Value) {
+    return Value * Math.PI / 180;
+}

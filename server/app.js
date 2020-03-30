@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
+const dotenv = require('dotenv').config('.env');
 
 // DB connection
 mongoose.set('useUnifiedTopology', true);

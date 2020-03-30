@@ -14,7 +14,7 @@ const GameSchema = new Schema({
     status:     { type: String, required: true, default: 'inProgress', enum: ['inProgress', 'completed', 'abandoned']},
     progress: [{
         point:         { type: Schema.Types.ObjectId, ref: 'point', required: true},
-        tries:         { type: Number, min: 1, required: true},
+        tries:         { type: Number, min: 1, required: true, default: 1},
         completedDate: { type: Date},
     }],
     endDate:    { type: Date},
