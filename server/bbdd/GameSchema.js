@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const GameSchema = new Schema({
 
-    user:       { type: String, required: true, maxlength: 15 },
+    user:       { type: String, required: true},
     map:        { type: Schema.Types.ObjectId, ref: 'map', required: true },
     startDate:  { type: Date,   required: true, default: Date.now},
     startCoord: {
@@ -20,7 +20,9 @@ const GameSchema = new Schema({
     endDate:    { type: Date},
     stats: {
         punctuation: { type: Number, min: 1, max: 5},
-        comment:     { type: String, maxlength: 150 }
+        comment:     { type: String, 
+                    minlength: process.env.GAME_COMMENT_MIN_LENGTH, 
+                    maxlength: process.env.GAME_COMMENT_MAX_LENGTH }
     }
 });
 

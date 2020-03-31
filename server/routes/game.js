@@ -11,29 +11,29 @@ router.get('/', async (req, res) => {
         if (req.body.all) { // get all games stats of specific map/user
             if (req.body.all.user) { // from user
                 Game.find({user: req.body.all.user}, function (err, games) {
-                    if (err) return console.error(err);
-                    res.json(games);
+                    if (err) res.json({ "error": err.message });
+                    else res.json(games);
                 });
             }
             else if (req.body.all.map) { // from map
                 Game.find({map: req.body.all.map}, function (err, games) {
-                    if (err) return console.error(err);
-                    res.json(games);
+                    if (err) res.json({ "error": err.message });
+                    else res.json(games);
                 });
             }
         }
         else { // get one game stats
             if (req.body._id) { // specific game
                 Game.findById(req.body._id, function (err, game) {
-                    if (err) return console.error(err);
-                    res.json(game);
+                    if (err) res.json({ "error": err.message });
+                    else res.json(game);
                 });
             }
             else if (req.body.user && req.body.map) { // last played by user in map
 
             }
             else if (req.body.user) { // last played by user
-                console.log(process.env.MAX);
+               
             }
             else if (req.body.map) { // last played in map
 
@@ -96,8 +96,8 @@ router.post('/', async (req, res) => {
                 user: req.body.user,
                 map: req.body.map,
                 startCoord: {
-                    lat: req.body.startCoord.lat,
-                    long: req.body.startCoord.long,
+                    lat: req.body.location.lat,
+                    long: req.body.location.long,
                 },
                 progress: {
                     point: map.points[0], // point 0 dereferenced
@@ -108,6 +108,7 @@ router.post('/', async (req, res) => {
             else {
                 const point = await Point.findById(map.points[0]); // we suppose points are well maintained
                 res.json({
+                    "_id": savedGame._id,
                     "description": point.description,
                     "coord": point.coord
                 });
