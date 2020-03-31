@@ -178,4 +178,3 @@ function distance(lat1, lon1, lat2, lon2) {
 function toRad(Value) {
     return Value * Math.PI / 180;
 }
-
