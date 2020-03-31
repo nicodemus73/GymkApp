@@ -14,12 +14,12 @@ const registerValidation = (data) => {
         password: Joi.string()
             .min(3)
             .required(),
-        firstname: Joi.string()
+        /*firstname: Joi.string()
             .min(2)
             .required(),
         lastname: Joi.string()
             .min(2)
-            .required(),
+            .required(),*/
     });
     return schema.validate(data);
 }
