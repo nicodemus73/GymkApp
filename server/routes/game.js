@@ -17,12 +17,11 @@ router.post('/add_game', verifyToken, async (req, res) => {
         const myquery  = {_id: req.usernameId._id};
         const newvalues = {'games': {_id: req.body._id, name: req.body.name, owner: req.body.owner, metadata: { author: req.body.metadata.author, description: req.body.metadata.description}, points: req.body.points}};
         const resultat = await Usuario.updateOne(req.usernameId_id, {$addToSet: newvalues}, function(err, res) {
-            if (err) throw err;
-            console.log("1 document updated");
+            if (err) res.json( err.message);
+            //console.log("1 document updated");
             
         });
-
-        res.json(resultat);
+        res.json(resultat); //cambiar
     }  catch (error) {
         res.json({ "error": error.message });
     }
