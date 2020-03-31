@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 });
 
 //Add game to the user falta mirar si ja existex etc etc
-
+//
 router.post('/add_game', verifyToken, async (req, res) => {
     try {
     
