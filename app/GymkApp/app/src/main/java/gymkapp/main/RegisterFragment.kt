@@ -18,6 +18,6 @@ class RegisterFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
     val navController = findNavController()
-    view.buttonBack.setOnClickListener { navController.popBackStack() } //Nota: no permitir esta llamada cuando la pila solo tiene el startDestination, o gestionarla con finish()
+    view.buttonBack.setOnClickListener { navController.navigateUp() } //Nota: no permitir esta llamada cuando la pila solo tiene el startDestination, o gestionarla con finish()
   }
 }
