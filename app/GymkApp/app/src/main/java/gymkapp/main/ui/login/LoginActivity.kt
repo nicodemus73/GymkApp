@@ -10,11 +10,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.login.*
 
 import gymkapp.main.R
 
@@ -25,7 +23,7 @@ class LoginActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    setContentView(R.layout.activity_login)
+    setContentView(R.layout.login)
 
     loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
       .get(LoginViewModel::class.java)
