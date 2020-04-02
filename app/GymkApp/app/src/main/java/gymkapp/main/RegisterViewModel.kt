@@ -10,16 +10,30 @@ class RegisterViewModel: ViewModel() {
     REGISTRATION_COMPLETED,
     REGISTRATION_FAILED
   }
+  //TODO: Cifrar usernae+password
 
-  val registrationState = MutableLiveData<RegistrationState>(RegistrationState.COLLECTING_DATA)
-  var loginToken = ""
+  /**
+   * Al registrationState se le tiene que colocar un observer que cuando este COMPLETED salte a la pantalla principal
+   * y cuando falle ponga en pantalla que ha fallado mediante una alerta
+   */
+  val registrationState = MutableLiveData(RegistrationState.COLLECTING_DATA)
+  var errorMessage = ""
     private set
 
   /**
    * Al llegar aqui los datos de registro deberían ser validos
    * en formato (el boton no se activa hasta que no son validos)
    */
-  fun register(user: String, password: String, confPass:String){
+  fun register(user: String, password: String){
 
+     val (failure, message) = RemoteAPI.register(user,password)
+     if(failure) registrationFailed(message)
+     else registrationState.value = RegistrationState.REGISTRATION_COMPLETED
+
+  }
+
+  private fun registrationFailed(message:String){
+    errorMessage = message
+    registrationState.value = RegistrationState.REGISTRATION_FAILED
   }
 }

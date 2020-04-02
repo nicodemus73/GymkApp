@@ -1,19 +1,26 @@
 package gymkapp.main
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.edit
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.login.view.*
 
 class LoginFragment : Fragment() {
 
+  /**
+   * Esta y la de registro sirven para observar los cambios de validez en los inputFields y activar o desactivar el boton de login (o registro)
+   * Scope de fragmento!
+   */
   private val loginFragmentModel: LoginFragmentModel by viewModels()
   /**
    * Instancia que sirve para mantener datos independientemente del estado del fragmento. ViewModel
@@ -42,5 +49,18 @@ class LoginFragment : Fragment() {
       view.inputPassword.error = loginFragmentModel.validatePassword(view.inputPassword.editText?.text.toString())
       loginFragmentModel.checkIsDataValid()
     }
+
+    viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authState ->
+      when(authState){
+        LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+          activity?.getPreferences(Context.MODE_PRIVATE)?.edit { putString(R.string.TokenKey.toString(),viewModel.loginToken) }
+          navController.navigate(FTUELoginDirections.toMainGraph())
+        }
+        LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
+          Snackbar.make(view,viewModel.errorMessage,1).show()
+        }
+        else -> {}
+      }
+    })
   }
 }

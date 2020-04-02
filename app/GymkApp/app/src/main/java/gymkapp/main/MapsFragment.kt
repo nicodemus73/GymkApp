@@ -50,6 +50,7 @@ class MapsFragment : Fragment() {
     mapFragment?.getMapAsync(callback)
 
     val navController = findNavController()
+    //Añadir un delete del "Token" ?
     loginModel.authenticationState.observe(viewLifecycleOwner, Observer {
       if(it == LoginViewModel.AuthenticationState.UNAUTHENTICATED) navController.navigate(MapsFragmentDirections.toLoginFTUE())
     })

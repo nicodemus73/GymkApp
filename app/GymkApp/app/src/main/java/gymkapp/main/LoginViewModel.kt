@@ -18,14 +18,18 @@ class LoginViewModel: ViewModel() {
 
   //Propiedad observable que representa el estado actual de la sesion
   val authenticationState = MutableLiveData(AuthenticationState.AUTHENTICATED)
-  //valor en memoria del loginToken
-  private var loginToken = ""
+  //valor en memoria del loginToken (Podriamos querer observarlo? No creo...)
+  var loginToken = ""
+    private set
+  var errorMessage = ""
+    private set
 
   /**
    * Comprueba que el usuario activo tenga un login token, si no lo tiene se le asigna uno
    * Si el usuario no tiene un loginToken valido (existe en el modelo o en almacenamiento local) entonces
    * se cambia el estado a "UNAUTHENTICATED"
    * Al entrar en esta funcion el valor por defecto del authenticationState deberia ser "AUTHENTICATED"
+   * Podria tener que estar en el fragmento??
    */
   fun check(pref: SharedPreferences){
 
@@ -36,16 +40,27 @@ class LoginViewModel: ViewModel() {
     }
   }
 
-  fun refuseAuthentication(){
-    authenticationState.value = AuthenticationState.UNAUTHENTICATED
-  }
-
   /**
    * Al entrar el valor de authenticationState debería ser "UNAUTHENTICATED"
    */
   fun login(user:String, password:String){
 
-    //loginToken = remoteApi().login(user,password) ?: ""
-    if(loginToken.isEmpty()) authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+    val (failure,message) = RemoteAPI.login(user,password)
+    if(failure) loginFailed(message)
+    else {
+      loginToken = message
+      authenticationState.value = AuthenticationState.AUTHENTICATED
+    }
+  }
+
+  private fun loginFailed(message:String){
+    errorMessage = message
+    authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+  }
+
+  fun logout(){
+
+    loginToken = ""
+    authenticationState.value = AuthenticationState.UNAUTHENTICATED
   }
 }
