@@ -8,8 +8,8 @@ class RemoteAPI {
 
   companion object{
 
-    fun login(user:String,password:String) = Pair(false,"t0kenInventado")
+    fun login(user:String,password:String) = Pair(true,"Esto es un mensaje de error de registro")
 
-    fun register(user:String,password:String) = Pair(false,"")
+    fun register(user:String,password:String) = Pair(true,"Esto es un mensaje de error de login")
   }
 }

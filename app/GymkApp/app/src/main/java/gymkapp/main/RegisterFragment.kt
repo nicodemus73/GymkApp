@@ -76,7 +76,7 @@ class RegisterFragment : Fragment() {
         RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED -> loginViewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
         RegisterViewModel.RegistrationState.REGISTRATION_FAILED -> {
           val message = registrationViewModel.errorMessage
-          Snackbar.make(view,message,1).show()
+          Snackbar.make(view,message,Snackbar.LENGTH_SHORT).show()
         }
         else -> {}
       }

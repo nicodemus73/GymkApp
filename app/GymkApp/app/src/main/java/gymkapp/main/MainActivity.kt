@@ -9,6 +9,7 @@ class MainActivity : AppCompatActivity() {
     //TODO Resposiveness!!!
     //TODO Quitar drawables, xmls, fuentes y vistas no utilizadas...
     //TODO Se puede guardar las preferencias de forma permanente mediante SharedPreferences (entre actividades?)
+    //TODO cambiar nombres de botones,etc para no confundir al editor (IMPORTANTE)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main_host)
     /*

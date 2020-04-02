@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.edit
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -16,6 +17,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.android.synthetic.main.maps.view.*
 
 class MapsFragment : Fragment() {
 
@@ -55,5 +57,11 @@ class MapsFragment : Fragment() {
       if(it == LoginViewModel.AuthenticationState.UNAUTHENTICATED) navController.navigate(MapsFragmentDirections.toLoginFTUE())
     })
     loginModel.check(activity?.getPreferences(Context.MODE_PRIVATE) ?: return)
+
+    view.buttonLogout.setOnClickListener {
+
+      activity?.getPreferences(Context.MODE_PRIVATE)?.edit { remove(R.string.TokenKey.toString()) }
+      loginModel.logout()
+    }
   }
 }

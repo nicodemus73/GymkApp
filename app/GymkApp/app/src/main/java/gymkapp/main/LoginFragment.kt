@@ -38,8 +38,9 @@ class LoginFragment : Fragment() {
 
     val navController = findNavController()
     view.buttonBack2.setOnClickListener { navController.navigateUp() }
+    view.loginButtonLF.setOnClickListener { viewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString()) }
 
-    loginFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer { view.registerButton.isEnabled = it })
+    loginFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer { view.loginButtonLF.isEnabled = it })
 
     view.inputUsername.editText?.doAfterTextChanged {
       view.inputUsername.error = loginFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
@@ -57,7 +58,7 @@ class LoginFragment : Fragment() {
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
-          Snackbar.make(view,viewModel.errorMessage,1).show()
+          Snackbar.make(view,viewModel.errorMessage,Snackbar.LENGTH_SHORT).show()
         }
         else -> {}
       }
