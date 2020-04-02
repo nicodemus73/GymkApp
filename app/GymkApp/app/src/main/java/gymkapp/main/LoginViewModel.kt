@@ -17,13 +17,9 @@ class LoginViewModel: ViewModel() {
   }
 
   //Propiedad observable que representa el estado actual de la sesion
-  val authenticationState = MutableLiveData<AuthenticationState>()
+  val authenticationState = MutableLiveData(AuthenticationState.AUTHENTICATED)
   //valor en memoria del loginToken
   private var loginToken = ""
-
-  init {
-    authenticationState.value = AuthenticationState.AUTHENTICATED
-  }
 
   /**
    * Comprueba que el usuario activo tenga un login token, si no lo tiene se le asigna uno
@@ -40,5 +36,16 @@ class LoginViewModel: ViewModel() {
     }
   }
 
+  fun refuseAuthentication(){
+    authenticationState.value = AuthenticationState.UNAUTHENTICATED
+  }
 
+  /**
+   * Al entrar el valor de authenticationState debería ser "UNAUTHENTICATED"
+   */
+  fun login(user:String, password:String){
+
+    //loginToken = remoteApi().login(user,password) ?: ""
+    if(loginToken.isEmpty()) authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+  }
 }
