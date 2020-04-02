@@ -3,17 +3,17 @@ package gymkapp.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class LoginFragmentModel: ViewModel() {
+class RegisterFragmentModel: ViewModel() {
 
   val isDataValid = MutableLiveData(false)
-  private val fields = booleanArrayOf(false,false)
+  private val fields = booleanArrayOf(false,false,false)
 
   fun validateUsername(username:String) = when {
-    username.isEmpty() -> "Username must not be empty"
-    username.contains(" ") -> "No spaces permitted"
-    username.length > 20 -> "Username is too long"
-    else -> null
-  }.also { fields[0]= it==null }
+      username.isEmpty() -> "Username must not be empty"
+      username.contains(" ") -> "No spaces permitted"
+      username.length > 20 -> "Username is too long"
+      else -> null
+    }.also { fields[0]= it==null }
 
   fun validatePassword(password: String) = when {
 
@@ -24,7 +24,8 @@ class LoginFragmentModel: ViewModel() {
     else -> null
   }.also { fields[1] = it==null }
 
-  fun checkIsDataValid(){
-    isDataValid.value = fields.all { it }
+  fun checkEquals(pass:String,cpass:String) = (if(pass!=cpass) "Passwords are not equal" else null).also { fields[2]= it==null }
+  fun checkIsDataValid() {
+    isDataValid.value =  fields.all { it }
   }
 }

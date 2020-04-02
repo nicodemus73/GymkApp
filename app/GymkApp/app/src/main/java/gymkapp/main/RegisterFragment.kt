@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.register.view.*
 class RegisterFragment : Fragment() {
 
   private val registrationViewModel: RegisterViewModel by viewModels()
-  private val loginFragmentModel: LoginFragmentModel by viewModels()
+  private val registerFragmentModel: RegisterFragmentModel by viewModels()
   private val loginViewModel: LoginViewModel by activityViewModels()
 
   override fun onCreateView(
@@ -35,23 +35,23 @@ class RegisterFragment : Fragment() {
       )
     }
 
-    loginFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer {valid ->
+    registerFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer { valid ->
       view.registerButton.isEnabled = valid
     })
 
     view.inputUsername.editText?.doAfterTextChanged {
-      view.inputUsername.error = loginFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
-      loginFragmentModel.checkIsDataValid()
+      view.inputUsername.error = registerFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
+      registerFragmentModel.checkIsDataValid()
     }
     view.inputPassword.editText?.doAfterTextChanged {
       val pass = view.inputPassword.editText?.text.toString()
-      view.inputPassword.error = loginFragmentModel.validatePassword(pass)
-      view.inputConfirmPassword.error = loginFragmentModel.checkEquals(pass,view.inputConfirmPassword.editText?.text.toString())
-      loginFragmentModel.checkIsDataValid()
+      view.inputPassword.error = registerFragmentModel.validatePassword(pass)
+      view.inputConfirmPassword.error = registerFragmentModel.checkEquals(pass,view.inputConfirmPassword.editText?.text.toString())
+      registerFragmentModel.checkIsDataValid()
     }
     view.inputConfirmPassword.editText?.doAfterTextChanged {
-      view.inputConfirmPassword.error = loginFragmentModel.checkEquals(view.inputConfirmPassword.editText?.text.toString(),view.inputPassword.editText?.text.toString())
-      loginFragmentModel.checkIsDataValid()
+      view.inputConfirmPassword.error = registerFragmentModel.checkEquals(view.inputConfirmPassword.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+      registerFragmentModel.checkIsDataValid()
     }
   }
 }
