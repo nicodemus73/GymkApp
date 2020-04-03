@@ -11,9 +11,11 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.register.view.*
+import kotlinx.coroutines.launch
 
 class RegisterFragment : Fragment() {
 
@@ -83,7 +85,11 @@ class RegisterFragment : Fragment() {
     registrationViewModel.registrationState.observe(viewLifecycleOwner, Observer { state ->
       when(state){
 
-        RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED -> loginViewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+        RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED -> {
+          viewLifecycleOwner.lifecycleScope.launch {
+            loginViewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+          }
+        }
         RegisterViewModel.RegistrationState.REGISTRATION_FAILED -> {
           val message = registrationViewModel.errorMessage
           Snackbar.make(view,message,Snackbar.LENGTH_SHORT).show()

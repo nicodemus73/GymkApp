@@ -43,7 +43,7 @@ class LoginViewModel: ViewModel() {
   /**
    * Al entrar el valor de authenticationState debería ser "UNAUTHENTICATED"
    */
-  fun login(user:String, password:String){
+  suspend fun login(user:String, password:String){
 
     val (failure,message) = RemoteAPI.login(user,password)
     if(failure) loginFailed(message)

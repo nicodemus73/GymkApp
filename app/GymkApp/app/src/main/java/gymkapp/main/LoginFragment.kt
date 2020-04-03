@@ -11,9 +11,11 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.login.view.*
+import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {
 
@@ -40,7 +42,11 @@ class LoginFragment : Fragment() {
 
     //OnClickListeners - Botones
     view.buttonBack2.setOnClickListener { navController.navigateUp() }
-    view.loginButtonLF.setOnClickListener { viewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString()) }
+    view.loginButtonLF.setOnClickListener {
+      viewLifecycleOwner.lifecycleScope.launch {
+        viewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+      }
+    }
 
     //Activacion del boton de login
     loginFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer { view.loginButtonLF.isEnabled = it })
