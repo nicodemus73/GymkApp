@@ -28,8 +28,11 @@ class RegisterFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+    //TODO: Mejorar tiempo de visualizacion del mensaje de error, que al cambiar de pantalla se destruya y que se pueda descartar
     val navController = findNavController()
-    view.buttonBack.setOnClickListener { navController.navigateUp() } //Nota: no permitir esta llamada cuando la pila solo tiene el startDestination, o gestionarla con finish()
+
+    //OnClickListeners - Botones
+    view.buttonBack.setOnClickListener { navController.navigateUp() }
     view.registerButton.setOnClickListener {
       registrationViewModel.register(
         view.inputUsername.editText?.text.toString(),
@@ -37,10 +40,12 @@ class RegisterFragment : Fragment() {
       )
     }
 
+    //Activacion del boton cuando los datos sean validos
     registerFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer { valid ->
       view.registerButton.isEnabled = valid
     })
 
+    //Comprobacion de los datos y mostrar el mensaje de error si no lo son
     view.inputUsername.editText?.doAfterTextChanged {
       view.inputUsername.error = registerFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
       registerFragmentModel.checkIsDataValid()
@@ -56,13 +61,16 @@ class RegisterFragment : Fragment() {
       registerFragmentModel.checkIsDataValid()
     }
 
+    //Manejo del estado de autenticacion (LOGIN)
     loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authState ->
       when(authState){
+
         LoginViewModel.AuthenticationState.AUTHENTICATED -> {
 
           activity?.getPreferences(Context.MODE_PRIVATE)?.edit { putString(R.string.TokenKey.toString(),loginViewModel.loginToken) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
+        //Improbable que ocurra ya que el registro deberia haber ido bien
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
           val message = loginViewModel.errorMessage
           Snackbar.make(view,message,1).show()
@@ -71,8 +79,10 @@ class RegisterFragment : Fragment() {
       }
     })
 
+    //Manejo del estado de registro (REGISTER)
     registrationViewModel.registrationState.observe(viewLifecycleOwner, Observer { state ->
       when(state){
+
         RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED -> loginViewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
         RegisterViewModel.RegistrationState.REGISTRATION_FAILED -> {
           val message = registrationViewModel.errorMessage

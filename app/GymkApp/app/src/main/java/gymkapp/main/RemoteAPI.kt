@@ -4,10 +4,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-/**
- * Clase de test (Mock) para simular el comportamiento en caso de que vaya bien
- * Las llamadas son estaticas para que se puedan acceder desde toda la app, puede que haya que cambiarlo
- */
 class RemoteAPI {
 
   companion object{

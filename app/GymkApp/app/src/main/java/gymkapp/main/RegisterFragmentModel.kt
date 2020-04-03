@@ -3,6 +3,9 @@ package gymkapp.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
+/**
+ * Clase para manejar los datos de la vista de REGISTRO
+ */
 class RegisterFragmentModel: ViewModel() {
 
   val isDataValid = MutableLiveData(false)

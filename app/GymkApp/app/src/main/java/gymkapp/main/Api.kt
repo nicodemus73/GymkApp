@@ -7,11 +7,11 @@ import retrofit2.http.POST
 
 interface Api {
 
-    @FormUrlEncoded
-    @POST("user/registration")
-    fun createUser(
-            @Field("username") username:String,
-            @Field("password") password:String
-    ):Call<DefaulResponseLogin>
+  @FormUrlEncoded
+  @POST("user/registration")
+  fun createUser(
+    @Field("username") username: String,
+    @Field("password") password: String
+  ): Call<DefaulResponseLogin>
 
 }

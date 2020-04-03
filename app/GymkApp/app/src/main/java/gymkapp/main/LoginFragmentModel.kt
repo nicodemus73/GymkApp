@@ -3,12 +3,16 @@ package gymkapp.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
+/**
+ * Clase para manejar los datos de la pantalla o vista de LOGIN
+ */
 class LoginFragmentModel: ViewModel() {
 
   val isDataValid = MutableLiveData(false)
   private val fields = booleanArrayOf(false,false)
 
   fun validateUsername(username:String) = when {
+
     username.isEmpty() -> "Username must not be empty"
     username.contains(" ") -> "No spaces permitted"
     username.length > 20 -> "Username is too long"

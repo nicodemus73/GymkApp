@@ -37,11 +37,15 @@ class LoginFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
     val navController = findNavController()
+
+    //OnClickListeners - Botones
     view.buttonBack2.setOnClickListener { navController.navigateUp() }
     view.loginButtonLF.setOnClickListener { viewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString()) }
 
+    //Activacion del boton de login
     loginFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer { view.loginButtonLF.isEnabled = it })
 
+    //Si el texto cambia se tiene que validar y mostrar error si sale mal
     view.inputUsername.editText?.doAfterTextChanged {
       view.inputUsername.error = loginFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
       loginFragmentModel.checkIsDataValid()
@@ -51,6 +55,7 @@ class LoginFragment : Fragment() {
       loginFragmentModel.checkIsDataValid()
     }
 
+    //Seguimiento del estado de autenticacion (LOGIN)
     viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authState ->
       when(authState){
         LoginViewModel.AuthenticationState.AUTHENTICATED -> {
