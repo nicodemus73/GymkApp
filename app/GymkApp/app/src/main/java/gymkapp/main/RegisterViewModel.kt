@@ -29,11 +29,11 @@ class RegisterViewModel: ViewModel() {
      val (failure, message) = RemoteAPI.register(user,password)
      if(failure) registrationFailed(message)
      else registrationState.value = RegistrationState.REGISTRATION_COMPLETED
-
   }
 
   private fun registrationFailed(message:String){
     errorMessage = message
     registrationState.value = RegistrationState.REGISTRATION_FAILED
+    registrationState.value = RegistrationState.COLLECTING_DATA
   }
 }

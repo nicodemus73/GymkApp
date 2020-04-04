@@ -56,6 +56,7 @@ class LoginViewModel: ViewModel() {
   private fun loginFailed(message:String){
     errorMessage = message
     authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
+    authenticationState.value = AuthenticationState.UNAUTHENTICATED
   }
 
   fun logout(){
