@@ -8,8 +8,15 @@ const dotenv = require('dotenv').config('.env');
 // DB connection
 mongoose.set('useUnifiedTopology', true);
 mongoose.set('useCreateIndex', true);
-mongoose.connect('mongodb://localhost/crud-mongo',  { useNewUrlParser: true }) //nom de la bbdd
-    .then(db => console.log('DB connected!'))//promesa
+
+// Try to find DB in localhost, if not look for docker.
+setTimeout(function () {
+    mongoose.connect('mongodb://localhost/crud-mongo', { useNewUrlParser: true })
+        .then(db => console.log('Localhost DB connected.'))
+        .catch(err => console.log(err));
+}, 5000);
+mongoose.connect('mongodb://172.16.16.2/crud-mongo', { useNewUrlParser: true })
+    .then(db => console.log('Docker DB connected.'))
     .catch(err => console.log(err));
 
 // Middlewares
