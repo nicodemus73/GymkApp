@@ -14,7 +14,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.login.view.*
 import kotlinx.android.synthetic.main.register.view.*
+import kotlinx.android.synthetic.main.register.view.inputPassword
+import kotlinx.android.synthetic.main.register.view.inputUsername
 import kotlinx.coroutines.launch
 
 class RegisterFragment : Fragment() {
@@ -36,10 +39,9 @@ class RegisterFragment : Fragment() {
     //OnClickListeners - Botones
     view.buttonBack.setOnClickListener { navController.navigateUp() }
     view.registerButton.setOnClickListener {
-      registrationViewModel.register(
-        view.inputUsername.editText?.text.toString(),
-        view.inputPassword.editText?.text.toString()
-      )
+      viewLifecycleOwner.lifecycleScope.launch {
+        registrationViewModel.register(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+      }
     }
 
     //Activacion del boton cuando los datos sean validos

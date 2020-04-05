@@ -24,7 +24,7 @@ class RegisterViewModel: ViewModel() {
    * Al llegar aqui los datos de registro deberían ser validos
    * en formato (el boton no se activa hasta que no son validos)
    */
-  fun register(user: String, password: String){
+  suspend fun register(user: String, password: String){
 
      val (failure, message) = RemoteAPI.register(user,password)
      if(failure) registrationFailed(message)

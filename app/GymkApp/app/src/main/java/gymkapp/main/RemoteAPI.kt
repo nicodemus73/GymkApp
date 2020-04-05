@@ -17,6 +17,7 @@ class RemoteAPI {
     private const val baseUrl = "http://10.4.41.144:3001"
     private data class UserInfo(val username: String, val password: String)
     private data class ErrorMessage(val error: String)
+    private data class UserId(val user_id: String)
 
     //TODO Agrupar las llamadas (Diferentes intercaces por tipo de llamada)
     //TODO Clase Interceptor (OkHttp interceptor) permite añadir una header a cada request
@@ -29,6 +30,11 @@ class RemoteAPI {
       //Para procesar los dos casos (error - JSON o exito - Header token) solo se me ocurre procesar leer la respuesta como un string y procesarlo a posteriori
       @POST("/user/login")
       suspend fun login(@Body userinfo: UserInfo): Response<String>
+
+      @POST("/user/register")
+      suspend fun register(@Body userinfo: UserInfo): Response<String>
+
+
 
       companion object Factory {
 
@@ -51,13 +57,21 @@ class RemoteAPI {
       return Pair(token==null, "Esto es un mensaje de error de login")*/
       val response = scalarAPICalls.login(UserInfo(username = user, password = password))
       val token = response.headers()["Authorization"]
-      val failure = token==null
+      val failure = (token==null && response.code() != 200)
       val message = try {
         if(failure) Gson().fromJson(response.body(),ErrorMessage::class.java).error else token ?: "null"
       } catch (e: Exception){ "Error inesperado" }
       //println("failure: $failure message: $message")
       return Pair(failure,message)
     }
-    fun register(user:String,password:String) = Pair(true,"Esto es un mensaje de error de registro")
+    suspend fun register(user:String,password:String) : Pair<Boolean,String> {
+      val response = scalarAPICalls.register(UserInfo(username = user, password = password))
+      val failure = !response.isSuccessful //(response.code()!= 200)
+      val message = try {
+        if (failure) Gson().fromJson(response.body(),ErrorMessage::class.java).error
+        else Gson().fromJson(response.body(),UserId::class.java).user_id //aqui esta el id del usuario en caso de success (200)
+      } catch (e: Exception){ "Error inesperado" }
+      return Pair(failure,message)
+    }
   }
 }
