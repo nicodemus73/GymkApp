@@ -3,7 +3,7 @@ const router = express.Router();
 
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../functMiddle/VerifyToken');
-const Usuario = require('../bbdd/Usuario');
+const Usuario = require('../bbdd/UserSchema');
 
 router.get('/', (req, res) => {
     //console.log(Date.now.toString);
