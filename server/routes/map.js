@@ -12,8 +12,9 @@ router.get('/', (req, res) => { //get all maps summary info
                 "points": 1
             }).populate('points')
                 .exec(function (err, map) {
-                    if (err) return console.error(err);
-                    res.json({
+                    if (err) res.json({ "error": err.message });
+                    else if (map == null) res.json({ "error": 'Map does not exist' });
+                    else res.json({
                         "_id": map._id,
                         "name": map.name,
                         "metadata": map.metadata,
@@ -27,9 +28,10 @@ router.get('/', (req, res) => { //get all maps summary info
                 "metadata.description": 1
             },
                 function (err, maps) {
-                    if (err) return console.error(err);
-                    res.json(maps);
-                })
+                    if (err) res.json({ "error": err.message });
+                    else res.json(maps);
+                }
+            )
         }
     } catch (err) {
         res.json({ "error": err.message });
@@ -48,10 +50,11 @@ router.post('/', async (req, res) => {
             },
             points: req.body.points
         });
-        const savedUser = await map.save();
-        res.json(savedUser);
+        await map.save(function (err, savedMap) {
+            if (err) res.json({ "error": err.message });
+            else res.json(savedMap);
+        });
     } catch (err) {
-        console.error(err);
         res.json({ "error": err.message });
     }
 });
