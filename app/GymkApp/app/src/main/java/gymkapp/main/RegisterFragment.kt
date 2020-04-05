@@ -14,10 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.login.view.*
 import kotlinx.android.synthetic.main.register.view.*
-import kotlinx.android.synthetic.main.register.view.inputPassword
-import kotlinx.android.synthetic.main.register.view.inputUsername
 import kotlinx.coroutines.launch
 
 class RegisterFragment : Fragment() {
