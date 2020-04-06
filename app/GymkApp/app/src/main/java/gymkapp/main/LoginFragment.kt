@@ -49,16 +49,16 @@ class LoginFragment : Fragment() {
     }
 
     //Activacion del boton de login
-    loginFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer { view.loginButtonLF.isEnabled = it })
+    loginFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer { valid ->
+      view.loginButtonLF.isEnabled = valid
+    })
 
     //Si el texto cambia se tiene que validar y mostrar error si sale mal
     view.inputUsername.editText?.doAfterTextChanged {
       view.inputUsername.error = loginFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
-      loginFragmentModel.checkIsDataValid()
     }
     view.inputPassword.editText?.doAfterTextChanged {
       view.inputPassword.error = loginFragmentModel.validatePassword(view.inputPassword.editText?.text.toString())
-      loginFragmentModel.checkIsDataValid()
     }
 
     //Seguimiento del estado de autenticacion (LOGIN)

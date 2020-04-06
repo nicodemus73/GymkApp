@@ -9,15 +9,24 @@ import androidx.lifecycle.ViewModel
 class LoginFragmentModel: ViewModel() {
 
   val isDataValid = MutableLiveData(false)
-  private val fields = booleanArrayOf(false,false)
+  private var correctUsername = false
+    set(value){
+      field = value
+      isDataValid.value = field && correctPassword
+    }
+  private var correctPassword = false
+    set(value){
+      field = value
+      isDataValid.value = field && correctUsername
+    }
 
   fun validateUsername(username:String) = when {
 
     username.isEmpty() -> "Username must not be empty"
     username.contains(" ") -> "No spaces permitted"
-    username.length > 20 -> "Username is too long"
+    username.length !in 3..20 -> "Length must be 3 to 20 characters"
     else -> null
-  }.also { fields[0]= it==null }
+  }.also { correctUsername = it==null }
 
   fun validatePassword(password: String) = when {
 
@@ -26,9 +35,5 @@ class LoginFragmentModel: ViewModel() {
     password.contains(" ") -> "No spaces permitted"
     password.firstOrNull { it.isUpperCase() } == null -> "At least one uppercase is required"
     else -> null
-  }.also { fields[1] = it==null }
-
-  fun checkIsDataValid(){
-    isDataValid.value = fields.all { it }
-  }
+  }.also { correctPassword = it==null }
 }

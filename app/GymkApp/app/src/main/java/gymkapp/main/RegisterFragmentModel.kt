@@ -9,14 +9,21 @@ import androidx.lifecycle.ViewModel
 class RegisterFragmentModel: ViewModel() {
 
   val isDataValid = MutableLiveData(false)
-  private val fields = booleanArrayOf(false,false,false)
+  private val checkIsDataValid
+    inline get() = correctUsername && correctPassword && correctConfPass
+  private var correctUsername = false
+    set(value){field = value; isDataValid.value = checkIsDataValid}
+  private var correctPassword = false
+    set(value){field = value; isDataValid.value = checkIsDataValid}
+  private var correctConfPass = false
+    set(value){field = value; isDataValid.value = checkIsDataValid}
 
   fun validateUsername(username:String) = when {
       username.isEmpty() -> "Username must not be empty"
       username.contains(" ") -> "No spaces permitted"
-      username.length > 20 -> "Username is too long"
+      username.length !in 3..20 -> "Length must be 3 to 20 characters"
       else -> null
-    }.also { fields[0]= it==null }
+    }.also { correctUsername= it==null }
 
   fun validatePassword(password: String) = when {
 
@@ -25,10 +32,7 @@ class RegisterFragmentModel: ViewModel() {
     password.contains(" ") -> "No spaces permitted"
     password.firstOrNull { it.isUpperCase() } == null -> "At least one uppercase is required"
     else -> null
-  }.also { fields[1] = it==null }
+  }.also { correctPassword = it==null }
 
-  fun checkEquals(pass:String,cpass:String) = (if(pass!=cpass) "Passwords are not equal" else null).also { fields[2]= it==null }
-  fun checkIsDataValid() {
-    isDataValid.value =  fields.all { it }
-  }
+  fun checkEquals(pass:String,cpass:String) = (if(pass!=cpass) "Passwords are not equal" else null).also { correctConfPass = it==null }
 }

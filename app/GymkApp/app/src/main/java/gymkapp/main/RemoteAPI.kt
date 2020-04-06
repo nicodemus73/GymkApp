@@ -17,7 +17,7 @@ class RemoteAPI {
     private const val baseUrl = "http://10.4.41.144:3001"
     private data class UserInfo(val username: String, val password: String)
     private data class ErrorMessage(val error: String)
-    //private data class UserId(val user_id: String)
+    //private data class UserId(val user_id: String) - No le veo uso a esta respuesta
 
     //TODO Agrupar las llamadas (Diferentes intercaces por tipo de llamada)
     //TODO Clase Interceptor (OkHttp interceptor) permite añadir una header a cada request

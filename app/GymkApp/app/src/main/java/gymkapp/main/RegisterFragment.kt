@@ -49,17 +49,14 @@ class RegisterFragment : Fragment() {
     //Comprobacion de los datos y mostrar el mensaje de error si no lo son
     view.inputUsername.editText?.doAfterTextChanged {
       view.inputUsername.error = registerFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
-      registerFragmentModel.checkIsDataValid()
     }
     view.inputPassword.editText?.doAfterTextChanged {
       val pass = view.inputPassword.editText?.text.toString()
       view.inputPassword.error = registerFragmentModel.validatePassword(pass)
       view.inputConfirmPassword.error = registerFragmentModel.checkEquals(pass,view.inputConfirmPassword.editText?.text.toString())
-      registerFragmentModel.checkIsDataValid()
     }
     view.inputConfirmPassword.editText?.doAfterTextChanged {
       view.inputConfirmPassword.error = registerFragmentModel.checkEquals(view.inputConfirmPassword.editText?.text.toString(),view.inputPassword.editText?.text.toString())
-      registerFragmentModel.checkIsDataValid()
     }
 
     //Manejo del estado de autenticacion (LOGIN)
