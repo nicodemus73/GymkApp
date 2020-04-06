@@ -30,6 +30,7 @@ class LoginFragment : Fragment() {
    * y guardar datos sobre el usuario a lo largo de la aplicacion como el nombre de usuario o el authenticationToken
    */
   private val viewModel: LoginViewModel by activityViewModels()
+  private lateinit var errorSnackBar: Snackbar
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -69,10 +70,16 @@ class LoginFragment : Fragment() {
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
-          Snackbar.make(view,viewModel.errorMessage,Snackbar.LENGTH_SHORT).show()
+          errorSnackBar = Snackbar.make(view,viewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
+          errorSnackBar.show()
         }
         else -> {}
       }
     })
+  }
+
+  override fun onStop() {
+    super.onStop()
+    if(::errorSnackBar.isInitialized) errorSnackBar.dismiss()
   }
 }

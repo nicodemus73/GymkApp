@@ -22,6 +22,7 @@ class RegisterFragment : Fragment() {
   private val registrationViewModel: RegisterViewModel by viewModels()
   private val registerFragmentModel: RegisterFragmentModel by viewModels()
   private val loginViewModel: LoginViewModel by activityViewModels()
+  private lateinit var errorSnackbar: Snackbar
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -70,8 +71,8 @@ class RegisterFragment : Fragment() {
         }
         //Improbable que ocurra ya que el registro deberia haber ido bien
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
-          val message = loginViewModel.errorMessage
-          Snackbar.make(view,message,1).show()
+          errorSnackbar = Snackbar.make(view,loginViewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
+          errorSnackbar.show()
         }
         else -> {}
       }
@@ -87,11 +88,16 @@ class RegisterFragment : Fragment() {
           }
         }
         RegisterViewModel.RegistrationState.REGISTRATION_FAILED -> {
-          val message = registrationViewModel.errorMessage
-          Snackbar.make(view,message,Snackbar.LENGTH_SHORT).show()
+          errorSnackbar = Snackbar.make(view,registrationViewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
+          errorSnackbar.show()
         }
         else -> {}
       }
     })
+  }
+
+  override fun onStop() {
+    super.onStop()
+    if(::errorSnackbar.isInitialized) errorSnackbar.dismiss()
   }
 }

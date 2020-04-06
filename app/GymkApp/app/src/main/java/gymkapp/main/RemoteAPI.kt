@@ -9,6 +9,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import java.lang.Exception
+import java.net.SocketTimeoutException
 
 class RemoteAPI {
 
@@ -49,7 +50,8 @@ class RemoteAPI {
 
     suspend fun login(user:String, password:String) : Pair<Boolean,String> {
 
-      val response = scalarAPICalls.login(UserInfo(username = user, password = password))
+      //Arreglo temporal, si tenemos que añadir mas excepciones tendriamos que hacerlo un poco mas limpio. Podriamos omitir lo de la VPN para la entrega.
+      val response = try{ scalarAPICalls.login(UserInfo(username = user, password = password)) } catch (e: SocketTimeoutException){ return Pair(true, "Can't connect to the server") }
       var failure = !response.isSuccessful
       val message = try {
         if(failure) Gson().fromJson(response.body(),ErrorMessage::class.java).error
@@ -66,7 +68,7 @@ class RemoteAPI {
 
     suspend fun register(user:String,password:String) : Pair<Boolean,String> {
 
-      val response = scalarAPICalls.register(UserInfo(username = user, password = password))
+      val response = try { scalarAPICalls.register(UserInfo(username = user, password = password)) } catch (e: SocketTimeoutException){ return Pair(true, "Can't connect to the server")}
       var failure = !response.isSuccessful //(response.code()!= 200)
       val message = try {
         if (failure) Gson().fromJson(response.body(),ErrorMessage::class.java).error
