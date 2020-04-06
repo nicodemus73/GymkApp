@@ -2,7 +2,7 @@ version: "3"
 services:
   app:
     restart: always
-    build: .
+    image: gimkapp/gymkapp:latest
     ports: 
       - 3001:3001
     depends_on: 
