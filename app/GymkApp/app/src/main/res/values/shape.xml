@@ -40,7 +40,7 @@
     </style>
 
     <style name="ShapeAppearance.MyTheme.SmallComponent.NavButtons" parent="ShapeAppearance.MyTheme.SmallComponent">
-        <item name="cornerSize">30dp</item>
+        <item name="cornerSize">35dp</item>
     </style>
     <!--Shape Appearance for medium components like cards, alert dialogs-->
     <style name="ShapeAppearance.MyTheme.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">

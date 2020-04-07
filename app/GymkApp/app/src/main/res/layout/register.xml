@@ -9,9 +9,9 @@
     <Button
         android:id="@+id/buttonBack"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-        android:layout_width="60dp"
-        android:layout_height="70dp"
-        app:icon="@drawable/back_icon"
+        android:layout_width="65dp"
+        android:layout_height="75dp"
+        app:icon="@drawable/arrow_back"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.045"
@@ -47,9 +47,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/prompt_username"
-            app:endIconMode="clear_text"
             app:counterEnabled="true"
-            app:counterMaxLength="20">
+            app:counterMaxLength="20"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/user_icon">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="298dp"
@@ -60,34 +61,36 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:hint="@string/prompt_password"
             app:endIconMode="password_toggle"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            app:startIconDrawable="@drawable/lock_icon">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:selectAllOnFocus="true"/>
+                android:selectAllOnFocus="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputConfirmPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:hint="@string/prompt_confirm_password"
             app:endIconMode="password_toggle"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            app:startIconDrawable="@drawable/lock_icon">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:selectAllOnFocus="true"/>
+                android:selectAllOnFocus="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
