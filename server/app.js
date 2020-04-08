@@ -13,11 +13,11 @@ mongoose.set('useCreateIndex', true);
 setTimeout(function () {
     mongoose.connect('mongodb://localhost/crud-mongo', { useNewUrlParser: true })
         .then(db => console.log('Localhost DB connected.'))
-        .catch(err => console.log(err));
+        .catch(err => console.log('Localhost DB not connected.'));
 }, 5000);
 mongoose.connect('mongodb://172.16.16.2/crud-mongo', { useNewUrlParser: true })
     .then(db => console.log('Docker DB connected.'))
-    .catch(err => console.log(err));
+    .catch(err => console.log('Docker DB not connected.'));
 
 // Middlewares
 app.use(express.urlencoded({ extended: false }));

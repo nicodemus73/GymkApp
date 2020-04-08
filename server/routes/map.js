@@ -6,15 +6,12 @@ router.get('/', (req, res) => { //get all maps summary info
 
     try {
         if (req.body._id) { // ID received: send one map.
-            Map.findById(req.body._id, {
-                "name": 1,
-                "metadata": 1,
-                "points": 1
-            }).populate('points')
+            Map.findById(req.body._id).populate('points')
                 .exec(function (err, map) {
-                    if (err) res.json({ "error": err.message });
-                    else if (map == null) res.json({ "error": 'Map does not exist' });
-                    else res.json({
+                    if (err) res.status(400).json({ "error": err.message });
+                    else if (map == null)
+                        res.status(404).json({ "error": 'Map does not exist' });
+                    else res.status(200).json({
                         "_id": map._id,
                         "name": map.name,
                         "metadata": map.metadata,
@@ -28,13 +25,13 @@ router.get('/', (req, res) => { //get all maps summary info
                 "metadata.description": 1
             },
                 function (err, maps) {
-                    if (err) res.json({ "error": err.message });
-                    else res.json(maps);
+                    if (err) res.status(400).json({ "error": err.message });
+                    else res.status(200).json(maps);
                 }
             )
         }
     } catch (err) {
-        res.json({ "error": err.message });
+        res.status(500).json({ "error": err.message });
     }
 });
 
@@ -51,11 +48,15 @@ router.post('/', async (req, res) => {
             points: req.body.points
         });
         await map.save(function (err, savedMap) {
-            if (err) res.json({ "error": err.message });
-            else res.json(savedMap);
+            if (err) {
+                if (err.message.substring(0, 6) == 'E11000')
+                    res.status(409).json({ "error": "Map already exists." });
+                else res.status(400).json({ "error": err.message });
+            }
+            else res.status(200).json(savedMap);
         });
     } catch (err) {
-        res.json({ "error": err.message });
+        res.status(500).json({ "error": err.message });
     }
 });
 

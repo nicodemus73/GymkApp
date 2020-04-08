@@ -18,11 +18,15 @@ router.post('/', async (req, res) => {
         });
 
         await point.save(function (err, savedPoint) {
-            if (err) res.json({ "error": err.message });
-            else res.json(savedPoint);
+            if (err) {
+                if (err.message.substring(0, 6) == 'E11000')
+                    res.status(409).json({ "error": "Point already exists." });
+                else res.status(400).json({ "error": err.message });
+            }
+            else res.status(200).json(savedPoint);
         });
     } catch (err) {
-        res.json({ "error": err.message });
+        res.status(500).json({ "error": err.message });
     }
 });
 
