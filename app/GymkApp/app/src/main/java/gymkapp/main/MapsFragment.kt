@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.maps.view.*
 
 class MapsFragment : Fragment() {
 
-  private val callback = OnMapReadyCallback { googleMap ->
+  /*private val callback = OnMapReadyCallback { googleMap ->
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -34,7 +34,7 @@ class MapsFragment : Fragment() {
     val sydney = LatLng(-34.0, 151.0)
     googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
     googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-  }
+  }*/
 
   private val loginModel:LoginViewModel by activityViewModels()
 
@@ -47,21 +47,22 @@ class MapsFragment : Fragment() {
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-    mapFragment?.getMapAsync(callback)
+    //super.onViewCreated(view, savedInstanceState)
+    //val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+    //mapFragment?.getMapAsync(callback)
 
     val navController = findNavController()
     //Añadir un delete del "Token" ?
-    loginModel.authenticationState.observe(viewLifecycleOwner, Observer {
-      if(it == LoginViewModel.AuthenticationState.UNAUTHENTICATED) navController.navigate(MapsFragmentDirections.toLoginFTUE())
-    })
     loginModel.check(activity?.getPreferences(Context.MODE_PRIVATE) ?: return)
-
-    view.buttonLogout.setOnClickListener {
+    loginModel.authenticationState.observe(viewLifecycleOwner, Observer {
+      if(it == LoginViewModel.AuthenticationState.UNAUTHENTICATED){
+        navController.navigate(MapsFragmentDirections.toLoginFTUE())
+      }
+    })
+    /*view.buttonLogout.setOnClickListener {
 
       activity?.getPreferences(Context.MODE_PRIVATE)?.edit { remove(R.string.TokenKey.toString()) }
       loginModel.logout()
-    }
+    }*/
   }
 }

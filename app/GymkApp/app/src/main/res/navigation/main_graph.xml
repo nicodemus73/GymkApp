@@ -9,13 +9,7 @@
         android:id="@+id/mapsFragment"
         android:name="gymkapp.main.MapsFragment"
         android:label="maps"
-        tools:layout="@layout/maps" >
-        <action
-            android:id="@+id/toLoginFTUE"
-            app:destination="@id/FTUE_login"
-            app:popUpTo="@id/mapsFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/maps" />
     <navigation
         android:id="@+id/FTUE_login"
         app:startDestination="@id/welcomeFragment" >
@@ -59,4 +53,19 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </navigation>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="gymkapp.main.SettingsFragment"
+        android:label="settings"
+        tools:layout="@layout/settings" />
+    <fragment
+        android:id="@+id/socialFragment"
+        android:name="gymkapp.main.SocialFragment"
+        android:label="social"
+        tools:layout="@layout/social" />
+    <action
+        android:id="@+id/toLoginFTUE"
+        app:destination="@id/FTUE_login"
+        app:popUpTo="@id/mapsFragment"
+        app:popUpToInclusive="true" />
 </navigation>

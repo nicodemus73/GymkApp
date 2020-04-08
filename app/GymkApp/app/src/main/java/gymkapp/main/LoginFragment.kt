@@ -66,6 +66,7 @@ class LoginFragment : Fragment() {
     viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authState ->
       when(authState){
         LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+
           activity?.getPreferences(Context.MODE_PRIVATE)?.edit { putString(R.string.TokenKey.toString(),viewModel.loginToken) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }

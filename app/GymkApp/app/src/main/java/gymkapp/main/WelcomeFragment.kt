@@ -1,6 +1,8 @@
 package gymkapp.main
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +19,7 @@ class WelcomeFragment : Fragment() {
   ): View? = inflater.inflate(R.layout.welcome,container,false)
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
     view.nightModeSwitch.setOnCheckedChangeListener{
         _,isChecked ->
       if(isChecked) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -26,5 +29,6 @@ class WelcomeFragment : Fragment() {
     val navController = findNavController()
     view.loginButton.setOnClickListener{ navController.navigate(WelcomeFragmentDirections.toLogin()) }
     view.registerButton.setOnClickListener { navController.navigate(WelcomeFragmentDirections.toRegister()) }
+    Log.d(javaClass.name,"Me han creado")
   }
 }
