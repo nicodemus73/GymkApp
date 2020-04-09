@@ -34,17 +34,4 @@
         android:name="gymkapp.main.RegisterFragment"
         android:label="register"
         tools:layout="@layout/register" />
-    <activity
-        android:id="@+id/mainActivity"
-        android:name="gymkapp.main.MainActivity"
-        android:label="bottom_nav"
-        tools:layout="@layout/main_host" />
-    <action
-        android:id="@+id/toMainActivity"
-        app:destination="@id/mainActivity"
-        app:enterAnim="@anim/nav_default_enter_anim"
-        app:exitAnim="@anim/nav_default_exit_anim"
-        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-        app:popExitAnim="@anim/nav_default_pop_exit_anim"
-        app:popUpToInclusive="false" />
 </navigation>

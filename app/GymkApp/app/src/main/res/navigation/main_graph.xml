@@ -20,15 +20,4 @@
         android:name="gymkapp.main.SocialFragment"
         android:label="social"
         tools:layout="@layout/social" />
-    <activity
-        android:id="@+id/FTUEActivity"
-        android:name="gymkapp.main.FTUEActivity"
-        android:label="main_host"
-        tools:layout="@layout/login_host" />
-    <action
-        android:id="@+id/toLoginFTUE"
-        app:destination="@id/FTUEActivity"
-        app:launchSingleTop="false"
-        app:popUpTo="@id/FTUEActivity"
-        app:popUpToInclusive="false" />
 </navigation>

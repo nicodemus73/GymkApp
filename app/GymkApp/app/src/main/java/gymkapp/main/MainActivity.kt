@@ -27,25 +27,20 @@ class MainActivity : AppCompatActivity() {
     // Me veo incapaz de mantener la coherencia con una sola actividad. Se rompe la barra de navegacion constantemente, haga lo que haga.
 
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.main_host)
-
-
-    val navController = findNavController(R.id.main_content)
-    bottomNavigationView.setupWithNavController(navController)
 
     sesionModel.currentSesionState.observe(this, Observer {state ->
       when(state){
        UNKNOWN -> {
 
-         if(intent.hasExtra("gymkapp.main.extra.${R.string.TokenKey}")){
+         intent.extras?.getString("$EXTRA_PREFIX${R.string.TokenKey}")?.run{
 
+           val token = this
            Log.d(javaClass.name,"Recibo el token y lo guardo")
-           val token = intent.getStringExtra("$EXTRA_PREFIX${R.string.TokenKey}")
            sesionModel.checkActiveSesion(token)
            getPreferences(MODE_PRIVATE).edit {
              putString(R.string.TokenKey.toString(),token)
            }
-         } else{
+         } ?: run{
 
            Log.d(javaClass.name,"Leo de disco el token")
 
@@ -59,9 +54,14 @@ class MainActivity : AppCompatActivity() {
        }
         INVALID -> {
           Log.d(javaClass.name,"No hay token, voy al login")
-          startActivity(Intent(this,FTUEActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)) //No he encontrado otra manera de vaciar la pila de actividades...
+          startActivity(Intent(this,FTUEActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION))
         }
-        else -> {}
+        else -> {
+
+          setContentView(R.layout.main_host)
+          val navController = findNavController(R.id.main_content)
+          bottomNavigationView.setupWithNavController(navController)
+        }
       }
     })
   }
