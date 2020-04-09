@@ -8,11 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 
 class MapsFragment : Fragment() {
   //TODO Valor por defecto de authenticate -> AUTHENTICATED (o deberia)
 
-  /*private val callback = OnMapReadyCallback { googleMap ->
+  private val callback = OnMapReadyCallback { googleMap ->
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -25,7 +30,7 @@ class MapsFragment : Fragment() {
     val sydney = LatLng(-34.0, 151.0)
     googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
     googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-  }*/
+  }
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -36,10 +41,11 @@ class MapsFragment : Fragment() {
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
     Log.d(javaClass.name,"Me han creado")
-    //super.onViewCreated(view, savedInstanceState)
-    //val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-    //mapFragment?.getMapAsync(callback)
+    super.onViewCreated(view, savedInstanceState)
+    val mapFragment = childFragmentManager.findFragmentById(R.id.map_container) as SupportMapFragment?
+    mapFragment?.getMapAsync(callback)
 
     val navController = findNavController()
   }
