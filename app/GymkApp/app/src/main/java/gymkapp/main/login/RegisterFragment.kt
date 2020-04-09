@@ -1,4 +1,4 @@
-package gymkapp.main
+package gymkapp.main.login
 
 import android.os.Bundle
 import android.util.Log
@@ -13,10 +13,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import gymkapp.main.R
 import kotlinx.android.synthetic.main.register.view.*
 import kotlinx.coroutines.launch
-import gymkapp.main.LoginViewModel.AuthenticationState.*
-import gymkapp.main.RegisterViewModel.RegistrationState.*
+import gymkapp.main.login.LoginViewModel.AuthenticationState.*
+import gymkapp.main.login.RegisterViewModel.RegistrationState.*
 
 class RegisterFragment : Fragment() {
 

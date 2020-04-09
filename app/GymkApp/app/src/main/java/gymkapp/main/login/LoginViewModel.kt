@@ -1,8 +1,8 @@
-package gymkapp.main
+package gymkapp.main.login
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import gymkapp.main.RESTapi.RemoteAPI
 
 /**
  * Clase para gestionar el estado de sesión del usuario
@@ -27,17 +27,23 @@ class LoginViewModel: ViewModel() {
    */
   suspend fun login(user:String, password:String){
 
-    val (failure,message) = RemoteAPI.login(user,password)
+    val (failure,message) = RemoteAPI.login(
+      user,
+      password
+    )
     if(failure) loginFailed(message)
     else {
       loginToken = message
-      authenticationState.value = AuthenticationState.AUTHENTICATED
+      authenticationState.value =
+        AuthenticationState.AUTHENTICATED
     }
   }
 
   private fun loginFailed(message:String){
     errorMessage = message
-    authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
-    authenticationState.value = AuthenticationState.UNAUTHENTICATED
+    authenticationState.value =
+      AuthenticationState.INVALID_AUTHENTICATION
+    authenticationState.value =
+      AuthenticationState.UNAUTHENTICATED
   }
 }

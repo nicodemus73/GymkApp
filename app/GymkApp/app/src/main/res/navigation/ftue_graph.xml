@@ -6,7 +6,7 @@
     app:startDestination="@id/welcomeFragment">
     <fragment
         android:id="@+id/loginFragment"
-        android:name="gymkapp.main.LoginFragment"
+        android:name="gymkapp.main.login.LoginFragment"
         android:label="login"
         tools:layout="@layout/login" />
     <fragment
@@ -31,7 +31,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
-        android:name="gymkapp.main.RegisterFragment"
+        android:name="gymkapp.main.login.RegisterFragment"
         android:label="register"
         tools:layout="@layout/register" />
 </navigation>

@@ -1,6 +1,5 @@
-package gymkapp.main
+package gymkapp.main.RESTapi
 
-import com.google.gson.Gson
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -8,8 +7,6 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import java.lang.Exception
-import java.net.SocketTimeoutException
 
 class RemoteAPI {
 
@@ -46,7 +43,8 @@ class RemoteAPI {
       }
     }
 
-    private val scalarAPICalls = ScalarResponseCalls.create()
+    private val scalarAPICalls =
+      ScalarResponseCalls.create()
 
     suspend fun login(user:String, password:String) : Pair<Boolean,String> = Pair(false,"t0kenFalso")
     /*{

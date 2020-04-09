@@ -1,4 +1,4 @@
-package gymkapp.main
+package gymkapp.main.login
 
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +15,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.login.view.*
 import kotlinx.coroutines.launch
-import gymkapp.main.LoginViewModel.AuthenticationState.*
+import gymkapp.main.login.LoginViewModel.AuthenticationState.*
+import gymkapp.main.R
 
 class LoginFragment : Fragment() {
 

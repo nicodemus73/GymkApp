@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupWithNavController
 import kotlinx.android.synthetic.main.main_host.*
 import java.lang.Exception
 import gymkapp.main.MainViewModel.SesionState.*
+import gymkapp.main.login.FTUEActivity
 
 const val EXTRA_PREFIX = "gymkapp.main.extra."
 
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
        }
         INVALID -> {
           Log.d(javaClass.name,"No hay token, voy al login")
-          startActivity(Intent(this,FTUEActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION))
+          startActivity(Intent(this, FTUEActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION))
         }
         else -> {
 
