@@ -15,8 +15,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 class MapsFragment : Fragment() {
-  //TODO Valor por defecto de authenticate -> AUTHENTICATED (o deberia)
 
+  //TODO Valor por defecto de authenticate -> AUTHENTICATED (o deberia)
   private val callback = OnMapReadyCallback { googleMap ->
     /**
      * Manipulates the map once available.
@@ -27,9 +27,9 @@ class MapsFragment : Fragment() {
      * install it inside the SupportMapFragment. This method will only be triggered once the
      * user has installed Google Play services and returned to the app.
      */
-    val sydney = LatLng(-34.0, 151.0)
-    googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-    googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+    val barcelona = LatLng(41.404423, 2.174071)
+    googleMap.addMarker(MarkerOptions().position(barcelona).title("Marker in Barcelona"))
+    googleMap.moveCamera(CameraUpdateFactory.newLatLng(barcelona))
   }
 
   override fun onCreateView(
