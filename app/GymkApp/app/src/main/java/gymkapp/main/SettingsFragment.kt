@@ -7,12 +7,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.settings.*
 import gymkapp.main.MainViewModel.SesionState.*
+import kotlinx.android.synthetic.main.settings.view.*
 
 /**
  * A simple [Fragment] subclass.
@@ -39,6 +41,11 @@ class SettingsFragment : Fragment() {
       }?.also {
         sesionModel.logout()
       } ?: Log.d(javaClass.name,"Error al intentar cerrar la sesion")
+    }
+
+    view.nightModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+      if (isChecked) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+      else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
   }
 }

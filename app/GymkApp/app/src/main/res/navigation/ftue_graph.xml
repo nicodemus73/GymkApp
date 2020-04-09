@@ -11,7 +11,7 @@
         tools:layout="@layout/login" />
     <fragment
         android:id="@+id/welcomeFragment"
-        android:name="gymkapp.main.WelcomeFragment"
+        android:name="gymkapp.main.login.WelcomeFragment"
         android:label="welcome"
         tools:layout="@layout/welcome" >
         <action
