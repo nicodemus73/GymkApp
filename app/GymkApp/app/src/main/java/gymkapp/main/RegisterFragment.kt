@@ -1,12 +1,11 @@
 package gymkapp.main
 
-import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.edit
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -16,6 +15,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.register.view.*
 import kotlinx.coroutines.launch
+import gymkapp.main.LoginViewModel.AuthenticationState.*
+import gymkapp.main.RegisterViewModel.RegistrationState.*
 
 class RegisterFragment : Fragment() {
 
@@ -27,7 +28,7 @@ class RegisterFragment : Fragment() {
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? = inflater.inflate(R.layout.register,container,false)
+  ): View? = inflater.inflate(R.layout.register, container, false)
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -38,7 +39,10 @@ class RegisterFragment : Fragment() {
     view.buttonBack.setOnClickListener { navController.navigateUp() }
     view.registerButton.setOnClickListener {
       viewLifecycleOwner.lifecycleScope.launch {
-        registrationViewModel.register(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+        registrationViewModel.register(
+          view.inputUsername.editText?.text.toString(),
+          view.inputPassword.editText?.text.toString()
+        )
       }
     }
 
@@ -49,55 +53,60 @@ class RegisterFragment : Fragment() {
 
     //Comprobacion de los datos y mostrar el mensaje de error si no lo son
     view.inputUsername.editText?.doAfterTextChanged {
-      view.inputUsername.error = registerFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
+      view.inputUsername.error =
+        registerFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
     }
     view.inputPassword.editText?.doAfterTextChanged {
       val pass = view.inputPassword.editText?.text.toString()
       view.inputPassword.error = registerFragmentModel.validatePassword(pass)
-      view.inputConfirmPassword.error = registerFragmentModel.checkEquals(pass,view.inputConfirmPassword.editText?.text.toString())
+      view.inputConfirmPassword.error =
+        registerFragmentModel.checkEquals(pass, view.inputConfirmPassword.editText?.text.toString())
     }
     view.inputConfirmPassword.editText?.doAfterTextChanged {
-      view.inputConfirmPassword.error = registerFragmentModel.checkEquals(view.inputConfirmPassword.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+      view.inputConfirmPassword.error = registerFragmentModel.checkEquals(
+        view.inputConfirmPassword.editText?.text.toString(),
+        view.inputPassword.editText?.text.toString()
+      )
     }
 
     //Manejo del estado de autenticacion (LOGIN)
     loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authState ->
-      when(authState){
-
-        LoginViewModel.AuthenticationState.AUTHENTICATED -> {
-
-          activity?.getPreferences(Context.MODE_PRIVATE)?.edit { putString(R.string.TokenKey.toString(),loginViewModel.loginToken) }
-          navController.navigate(FTUELoginDirections.toMainGraph())
-        }
-        //Improbable que ocurra ya que el registro deberia haber ido bien
-        LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
-          errorSnackbar = Snackbar.make(view,loginViewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
-          errorSnackbar.show()
-        }
-        else -> {}
+      if (authState == INVALID_AUTHENTICATION) {
+        Log.d(javaClass.name, "Error en la autenticacion")
+        errorSnackbar = Snackbar.make(view, loginViewModel.errorMessage, Snackbar.LENGTH_SHORT)
+          .setAction("Ignore") {}
+        errorSnackbar.show()
       }
     })
 
     //Manejo del estado de registro (REGISTER)
     registrationViewModel.registrationState.observe(viewLifecycleOwner, Observer { state ->
-      when(state){
+      when (state) {
 
-        RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED -> {
+        REGISTRATION_COMPLETED -> {
+          Log.d(javaClass.name, "Registro exitoso, voy a hacer login")
           viewLifecycleOwner.lifecycleScope.launch {
-            loginViewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+            loginViewModel.login(
+              view.inputUsername.editText?.text.toString(),
+              view.inputPassword.editText?.text.toString()
+            )
           }
         }
-        RegisterViewModel.RegistrationState.REGISTRATION_FAILED -> {
-          errorSnackbar = Snackbar.make(view,registrationViewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
+        REGISTRATION_FAILED -> {
+          Log.d(javaClass.name, "Error al registrarse. Se mostrara un mensaje")
+          errorSnackbar =
+            Snackbar.make(view, registrationViewModel.errorMessage, Snackbar.LENGTH_SHORT)
+              .setAction("Ignore") {}
           errorSnackbar.show()
         }
-        else -> {}
+        else -> {
+        }
       }
     })
   }
 
   override fun onStop() {
     super.onStop()
-    if(::errorSnackbar.isInitialized) errorSnackbar.dismiss()
+    if (::errorSnackbar.isInitialized) errorSnackbar.dismiss()
   }
 }

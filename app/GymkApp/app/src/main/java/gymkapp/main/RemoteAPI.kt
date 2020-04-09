@@ -48,7 +48,8 @@ class RemoteAPI {
 
     private val scalarAPICalls = ScalarResponseCalls.create()
 
-    suspend fun login(user:String, password:String) : Pair<Boolean,String> {
+    suspend fun login(user:String, password:String) : Pair<Boolean,String> = Pair(false,"t0kenFalso")
+    /*{
 
       //Arreglo temporal, si tenemos que añadir mas excepciones tendriamos que hacerlo un poco mas limpio. Podriamos omitir lo de la VPN para la entrega.
       val response = try{ scalarAPICalls.login(UserInfo(username = user, password = password)) } catch (e: SocketTimeoutException){ return Pair(true, "Can't connect to the server") }
@@ -64,9 +65,10 @@ class RemoteAPI {
       println("La llamada ha salido ${if(failure)"mal" else "bien"} y el mensaje es $message")
 
       return Pair(failure,message)
-    }
+    }*/
 
-    suspend fun register(user:String,password:String) : Pair<Boolean,String> {
+    suspend fun register(user:String,password:String) : Pair<Boolean,String> = Pair(false,"registro exitoso")
+    /*{
 
       val response = try { scalarAPICalls.register(UserInfo(username = user, password = password)) } catch (e: SocketTimeoutException){ return Pair(true, "Can't connect to the server")}
       var failure = !response.isSuccessful //(response.code()!= 200)
@@ -78,6 +80,6 @@ class RemoteAPI {
         "Unexpected error while trying to register"
       }
       return Pair(failure,message)
-    }
+    }*/
   }
 }

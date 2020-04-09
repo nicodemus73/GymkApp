@@ -1,9 +1,11 @@
 package gymkapp.main
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,8 +20,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.maps.view.*
+import gymkapp.main.LoginViewModel.AuthenticationState.*
+import java.lang.Exception
 
 class MapsFragment : Fragment() {
+  //TODO Valor por defecto de authenticate -> AUTHENTICATED (o deberia)
 
   /*private val callback = OnMapReadyCallback { googleMap ->
     /**
@@ -36,8 +41,6 @@ class MapsFragment : Fragment() {
     googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
   }*/
 
-  private val loginModel:LoginViewModel by activityViewModels()
-
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -47,22 +50,11 @@ class MapsFragment : Fragment() {
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    Log.d(javaClass.name,"Me han creado")
     //super.onViewCreated(view, savedInstanceState)
     //val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
     //mapFragment?.getMapAsync(callback)
 
     val navController = findNavController()
-    //Añadir un delete del "Token" ?
-    loginModel.check(activity?.getPreferences(Context.MODE_PRIVATE) ?: return)
-    loginModel.authenticationState.observe(viewLifecycleOwner, Observer {
-      if(it == LoginViewModel.AuthenticationState.UNAUTHENTICATED){
-        navController.navigate(MapsFragmentDirections.toLoginFTUE())
-      }
-    })
-    /*view.buttonLogout.setOnClickListener {
-
-      activity?.getPreferences(Context.MODE_PRIVATE)?.edit { remove(R.string.TokenKey.toString()) }
-      loginModel.logout()
-    }*/
   }
 }

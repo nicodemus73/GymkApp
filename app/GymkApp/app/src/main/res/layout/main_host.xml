@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    tools:context=".MainActivity">
 
-    <fragment
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/main_content"
-        app:navGraph="@navigation/main_graph"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        tools:context=".MainActivity"/>
-</FrameLayout>
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintTop_toTopOf="parent" >
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/main_content"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/main_graph"
+            android:name="androidx.navigation.fragment.NavHostFragment"/>
+    </FrameLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav_menu"
+        style="@style/Widget.MaterialComponents.BottomNavigationView"/> <!-- A cambiar segun quede mejor-->
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ftue_graph"
+    app:startDestination="@id/welcomeFragment">
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="gymkapp.main.LoginFragment"
+        android:label="login"
+        tools:layout="@layout/login" />
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="gymkapp.main.WelcomeFragment"
+        android:label="welcome"
+        tools:layout="@layout/welcome" >
+        <action
+            android:id="@+id/welcomeToLogin"
+            app:destination="@id/loginFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/welcomeToRegister"
+            app:destination="@id/registerFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="gymkapp.main.RegisterFragment"
+        android:label="register"
+        tools:layout="@layout/register" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="gymkapp.main.MainActivity"
+        android:label="bottom_nav"
+        tools:layout="@layout/main_host" />
+    <action
+        android:id="@+id/toMainActivity"
+        app:destination="@id/mainActivity"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:exitAnim="@anim/nav_default_exit_anim"
+        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@anim/nav_default_pop_exit_anim"
+        app:popUpToInclusive="false" />
+</navigation>
