@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main_host)
 
+
     val navController = findNavController(R.id.main_content)
     bottomNavigationView.setupWithNavController(navController)
 
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
        }
         INVALID -> {
           Log.d(javaClass.name,"No hay token, voy al login")
-          startActivity(Intent(this,FTUEActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)) //No he encontrado otra manera de vaciar la pila de actividades...
+          startActivity(Intent(this,FTUEActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)) //No he encontrado otra manera de vaciar la pila de actividades...
         }
         else -> {}
       }

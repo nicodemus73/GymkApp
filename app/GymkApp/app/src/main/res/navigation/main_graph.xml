@@ -28,7 +28,7 @@
     <action
         android:id="@+id/toLoginFTUE"
         app:destination="@id/FTUEActivity"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/mapsFragment"
-        app:popUpToInclusive="true" />
+        app:launchSingleTop="false"
+        app:popUpTo="@id/FTUEActivity"
+        app:popUpToInclusive="false" />
 </navigation>
