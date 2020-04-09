@@ -9,7 +9,6 @@ const {registerValidation, loginValidation} = require('../bbdd/Validation');
 router.get('/', async(req, res) => {
     try {
         await Usuario.find({}, function (err, maps) {
-            if (err) return console.error(err);
             if (err) return res.status(500).json({"error": err.message});//Internal Server Error
             res.status(200).json(maps);
         })
@@ -30,7 +29,7 @@ router.post('/register', async(req, res) => {
         //validar que username sigui unic
 
         const usernameExist = await Usuario.findOne({username: req.body.username});
-        if (usernameExist) return res.status(409).json({"message":"Username already exists"}); //conflict
+        if (usernameExist) return res.status(409).json({"error":"Username already exists"}); //conflict
 
         //hashear la password 
 
@@ -46,7 +45,7 @@ router.post('/register', async(req, res) => {
             //lastname: req.body.lastname,
         });
             const savedUser = await usern.save(10);
-            res.status(200).json({userid: usern._id}); //ok
+            res.status(200)//.json({userid: usern._id}); //ok
     } catch(err) {
         console.error(err);
         res.status(400).json({"error": err.message}); //bad request
@@ -72,7 +71,7 @@ try {
 
     //crear y asignar token al usuario
     const token = jwt.sign({_id: username._id}, process.env.TOKEN_KEY);
-    res.status(200).header('Authorization', token).json({"token": token});
+    res.status(200).header('Authorization', token)//.json({"token": token});
     //res.send('Logged in!');
 } catch(err) {
     res.status(400).json({ "error": err.message });
@@ -89,8 +88,6 @@ router.post('/delete/:id', async function(req, res) {
     .exec()
     .then(doc => {
         //console.log(doc);
-        if (!doc) {return res.status(404).send('Document not found').end();}
-        return res.send('File deleted').end();
         if (!doc) {return res.status(404).json({"error":"Document not found"}).end();}
         return res.status(200).json({"message":"File deleted"}).end();
     })
