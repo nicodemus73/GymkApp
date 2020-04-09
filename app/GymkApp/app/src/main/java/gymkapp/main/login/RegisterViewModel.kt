@@ -1,7 +1,8 @@
-package gymkapp.main
+package gymkapp.main.login
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import gymkapp.main.api.RemoteAPI
 
 class RegisterViewModel: ViewModel() {
 
@@ -26,14 +27,20 @@ class RegisterViewModel: ViewModel() {
    */
   suspend fun register(user: String, password: String){
 
-     val (failure, message) = RemoteAPI.register(user,password)
+     val (failure, message) = RemoteAPI.register(
+       user,
+       password
+     )
      if(failure) registrationFailed(message)
-     else registrationState.value = RegistrationState.REGISTRATION_COMPLETED
+     else registrationState.value =
+       RegistrationState.REGISTRATION_COMPLETED
   }
 
   private fun registrationFailed(message:String){
     errorMessage = message
-    registrationState.value = RegistrationState.REGISTRATION_FAILED
-    registrationState.value = RegistrationState.COLLECTING_DATA
+    registrationState.value =
+      RegistrationState.REGISTRATION_FAILED
+    registrationState.value =
+      RegistrationState.COLLECTING_DATA
   }
 }

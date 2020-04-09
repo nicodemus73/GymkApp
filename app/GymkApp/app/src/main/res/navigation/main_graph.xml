@@ -15,12 +15,12 @@
         app:startDestination="@id/welcomeFragment" >
         <fragment
             android:id="@+id/loginFragment"
-            android:name="gymkapp.main.LoginFragment"
+            android:name="gymkapp.main.login.LoginFragment"
             android:label="login"
             tools:layout="@layout/login"/>
         <fragment
             android:id="@+id/welcomeFragment"
-            android:name="gymkapp.main.WelcomeFragment"
+            android:name="gymkapp.main.login.WelcomeFragment"
             android:label="welcome"
             tools:layout="@layout/welcome">
             <action
@@ -40,7 +40,7 @@
         </fragment>
         <fragment
             android:id="@+id/registerFragment"
-            android:name="gymkapp.main.RegisterFragment"
+            android:name="gymkapp.main.login.RegisterFragment"
             android:label="register"
             tools:layout="@layout/register"/>
         <action

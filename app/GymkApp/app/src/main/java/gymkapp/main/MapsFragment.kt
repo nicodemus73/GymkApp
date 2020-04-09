@@ -4,13 +4,14 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.edit
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import gymkapp.main.LoginViewModel.AuthenticationState.*
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.maps.view.*
+import java.lang.Exception
 
 class MapsFragment : Fragment() {
 
@@ -36,7 +38,7 @@ class MapsFragment : Fragment() {
     googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
   }*/
 
-  private val loginModel:LoginViewModel by activityViewModels()
+  private val loginModel: LoginViewModel by activityViewModels()
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -52,17 +54,25 @@ class MapsFragment : Fragment() {
     //mapFragment?.getMapAsync(callback)
 
     val navController = findNavController()
-    //Añadir un delete del "Token" ?
-    loginModel.check(activity?.getPreferences(Context.MODE_PRIVATE) ?: return)
+
+    if(loginModel.authenticationState.value==INVALID_AUTHENTICATION){
+
+      Log.d(javaClass.simpleName,"Leyendo el disco")
+      loginModel.authenticate(
+        try {
+          activity?.getPreferences(Context.MODE_PRIVATE)?.getString(R.string.TokenKey.toString(), null)
+        } catch (e: Exception) {
+          Log.d(javaClass.simpleName,"Error al intentar leer el disco")
+          null
+        }
+      )
+    }
+
     loginModel.authenticationState.observe(viewLifecycleOwner, Observer {
-      if(it == LoginViewModel.AuthenticationState.UNAUTHENTICATED){
+      if (it == UNAUTHENTICATED){
+        Log.d(javaClass.simpleName, "No autenticado, yendo a la pantalla login")
         navController.navigate(MapsFragmentDirections.toLoginFTUE())
       }
     })
-    /*view.buttonLogout.setOnClickListener {
-
-      activity?.getPreferences(Context.MODE_PRIVATE)?.edit { remove(R.string.TokenKey.toString()) }
-      loginModel.logout()
-    }*/
   }
 }

@@ -1,4 +1,4 @@
-package gymkapp.main
+package gymkapp.main.login
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

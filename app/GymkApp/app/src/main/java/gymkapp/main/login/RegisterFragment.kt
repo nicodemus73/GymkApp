@@ -1,7 +1,8 @@
-package gymkapp.main
+package gymkapp.main.login
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import gymkapp.main.*
 import kotlinx.android.synthetic.main.register.view.*
 import kotlinx.coroutines.launch
 
@@ -66,11 +68,13 @@ class RegisterFragment : Fragment() {
 
         LoginViewModel.AuthenticationState.AUTHENTICATED -> {
 
+          Log.d(javaClass.name,"Autenticado, guardando y moviendose al grafico principal")
           activity?.getPreferences(Context.MODE_PRIVATE)?.edit { putString(R.string.TokenKey.toString(),loginViewModel.loginToken) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         //Improbable que ocurra ya que el registro deberia haber ido bien
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
+          Log.d(javaClass.name,"Logeo no ha salido bien")
           errorSnackbar = Snackbar.make(view,loginViewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
           errorSnackbar.show()
         }
@@ -83,11 +87,13 @@ class RegisterFragment : Fragment() {
       when(state){
 
         RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED -> {
+          Log.d(javaClass.name, "Registro completado, logeandose")
           viewLifecycleOwner.lifecycleScope.launch {
             loginViewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
           }
         }
         RegisterViewModel.RegistrationState.REGISTRATION_FAILED -> {
+          Log.d(javaClass.name,"Registro incorrecto")
           errorSnackbar = Snackbar.make(view,registrationViewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
           errorSnackbar.show()
         }

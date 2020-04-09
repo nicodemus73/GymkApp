@@ -1,7 +1,8 @@
-package gymkapp.main
+package gymkapp.main.login
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import gymkapp.main.FTUELoginDirections
+import gymkapp.main.LoginViewModel
+import gymkapp.main.R
 import kotlinx.android.synthetic.main.login.view.*
 import kotlinx.coroutines.launch
 
@@ -67,10 +71,12 @@ class LoginFragment : Fragment() {
       when(authState){
         LoginViewModel.AuthenticationState.AUTHENTICATED -> {
 
+          Log.d(javaClass.name,"Autenticado, guardando y pasando al grafico principal")
           activity?.getPreferences(Context.MODE_PRIVATE)?.edit { putString(R.string.TokenKey.toString(),viewModel.loginToken) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
+          Log.d(javaClass.name,"Entrada invalida, imprimiendo mensaje de error")
           errorSnackBar = Snackbar.make(view,viewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
           errorSnackBar.show()
         }

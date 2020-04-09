@@ -1,5 +1,6 @@
-package gymkapp.main
+package gymkapp.main.api
 
+import android.util.Log
 import com.google.gson.Gson
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -46,32 +47,51 @@ class RemoteAPI {
       }
     }
 
-    private val scalarAPICalls = ScalarResponseCalls.create()
+    private val scalarAPICalls =
+      ScalarResponseCalls.create()
 
     suspend fun login(user:String, password:String) : Pair<Boolean,String> {
 
+      val tag = RemoteAPI::class.java.simpleName
       //Arreglo temporal, si tenemos que añadir mas excepciones tendriamos que hacerlo un poco mas limpio. Podriamos omitir lo de la VPN para la entrega.
-      val response = try{ scalarAPICalls.login(UserInfo(username = user, password = password)) } catch (e: SocketTimeoutException){ return Pair(true, "Can't connect to the server") }
+      Log.d(tag,"el usuario es $user, la contraseña es $password")
+      val response = try{ scalarAPICalls.login(
+        UserInfo(
+          username = user,
+          password = password
+        )
+      ) } catch (e: SocketTimeoutException){ return Pair(true, "Can't connect to the server") }
       var failure = !response.isSuccessful
       val message = try {
-        if(failure) Gson().fromJson(response.body(),ErrorMessage::class.java).error
+        if(failure) {
+          Log.d(tag,"Intento leer el JSON")
+          Gson().fromJson(response.errorBody()?.charStream()?.readText(),
+            ErrorMessage::class.java).error
+        }
         else response.headers()["Authorization"]!! // "!!" asegura que no es nulo, y si lo es salta una excepcion
       } catch (e: Exception) {
+        Log.d(tag,"Error al intentar leer el JSON")
         failure = true
         "Unexpected error while trying to login" //El formato de los mensajes de llegada es incorrecto
       }
 
-      println("La llamada ha salido ${if(failure)"mal" else "bien"} y el mensaje es $message")
+      Log.d(tag,"La llamada ha salido ${if(failure)"mal" else "bien"} y el mensaje es $message")
 
       return Pair(failure,message)
     }
 
     suspend fun register(user:String,password:String) : Pair<Boolean,String> {
 
-      val response = try { scalarAPICalls.register(UserInfo(username = user, password = password)) } catch (e: SocketTimeoutException){ return Pair(true, "Can't connect to the server")}
+      val response = try { scalarAPICalls.register(
+        UserInfo(
+          username = user,
+          password = password
+        )
+      ) } catch (e: SocketTimeoutException){ return Pair(true, "Can't connect to the server")}
       var failure = !response.isSuccessful //(response.code()!= 200)
       val message = try {
-        if (failure) Gson().fromJson(response.body(),ErrorMessage::class.java).error
+        if (failure) Gson().fromJson(response.errorBody()?.charStream()?.readText(),
+          ErrorMessage::class.java).error
         else "You were registrated successfully" //Gson().fromJson(response.body(),UserId::class.java).user_id //aqui esta el id del usuario en caso de success (200)
       } catch (e: Exception){
         failure = true

@@ -2,12 +2,14 @@ package gymkapp.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import kotlinx.android.synthetic.main.bottom_nav.*
+import gymkapp.main.LoginViewModel.AuthenticationState.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,12 +22,9 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.bottom_nav)
 
+    Log.d(javaClass.simpleName,"Me han creado")
     val navController = findNavController(R.id.fragments_content)
     bottomNavigationView.setupWithNavController(navController)
-
-    loginViewModel.authenticationState.observe(this, Observer {state ->
-      if(state == LoginViewModel.AuthenticationState.AUTHENTICATED) bottomNavigationView?.visibility = View.VISIBLE
-      else if(state == LoginViewModel.AuthenticationState.UNAUTHENTICATED) bottomNavigationView?.visibility = View.GONE
-    })
+    loginViewModel.authenticationState.observe(this, Observer { bottomNavigationView.visibility = if(it==AUTHENTICATED) View.VISIBLE else View.GONE })
   }
 }

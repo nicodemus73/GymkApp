@@ -1,6 +1,5 @@
-package gymkapp.main
+package gymkapp.main.login
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
@@ -37,9 +36,4 @@ class LoginFragmentModel: ViewModel() {
     password.firstOrNull { it.isUpperCase() } == null -> "At least one uppercase is required"
     else -> null
   }.also { correctPassword = it==null }
-
-  //A borrar, ejemplo para ver como loggear errores, visible desde Logcat, aunque se cierre la app
-  override fun onCleared() {
-    Log.d(LoginFragmentModel::class.java.simpleName,"Me estan borrando D:")
-  }
 }
