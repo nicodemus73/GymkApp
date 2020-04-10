@@ -7,10 +7,10 @@ const Usuario = require('../bbdd/UserSchema');
 router.get('/', verifyToken /*middleware*/,  (req, res) => {
     //obtenim l'usuari
     Usuario.findById(req.usernameId, function (err, user) {
-        if (err) return res.status(500).json({"error":"There was a problem finding the user."});
-        if (!user) return res.status(404).json({"error": "No user found."});
+        if (err) return res.status(500).send("There was a problem finding the user.");
+        if (!user) return res.status(404).send("No user found.");
         
-        res.status(200).json(user);
+        res.status(200).send(user);
       });
     /*res.json({
         post: {
@@ -25,10 +25,10 @@ router.get('/', verifyToken /*middleware*/,  (req, res) => {
 router.post('/', verifyToken /*middleware*/,  (req, res) => {
     //obtenim l'usuari
     Usuario.findById(req.usernameId, function (err, user) {
-        if (err) return res.status(500).json({"error":"There was a problem finding the user."});
-        if (!user) return res.status(404).json({"error":"No user found."});
+        if (err) return res.status(500).send("There was a problem finding the user.");
+        if (!user) return res.status(404).send("No user found.");
         
-        res.status(200).json(user);
+        res.status(200).send(user);
       });
     /*res.json({
         post: {
