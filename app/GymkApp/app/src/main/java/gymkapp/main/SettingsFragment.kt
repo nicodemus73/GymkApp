@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -30,6 +31,12 @@ class SettingsFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
 
     val navController = findNavController()
+    view.nightModeSwitch.setOnCheckedChangeListener{
+        _,isChecked ->
+      if(isChecked) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+      else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+    }
+
     view.logoutButton.setOnClickListener {
 
       activity?.getPreferences(Context.MODE_PRIVATE)?.edit {

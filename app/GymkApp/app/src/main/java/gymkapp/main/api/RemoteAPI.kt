@@ -14,16 +14,17 @@ import java.net.SocketTimeoutException
 
 class RemoteAPI {
 
-  companion object{
+  companion object {
 
     private const val baseUrl = "http://10.4.41.144:3001"
+
     private data class UserInfo(val username: String, val password: String)
     private data class ErrorMessage(val error: String)
     //private data class UserId(val user_id: String) - No le veo uso a esta respuesta
 
     //TODO Agrupar las llamadas (Diferentes intercaces por tipo de llamada)
     //TODO Clase Interceptor (OkHttp interceptor) permite añadir una header a cada request
-    private interface ScalarResponseCalls{
+    private interface ScalarResponseCalls {
 
       //Usar Response<String> para ver el contexto de respuesta https://github.com/square/retrofit/blob/master/CHANGELOG.md#version-260-2019-06-05
       @GET("/")
@@ -50,7 +51,9 @@ class RemoteAPI {
     private val scalarAPICalls =
       ScalarResponseCalls.create()
 
-    suspend fun login(user:String, password:String) : Pair<Boolean,String> {
+    suspend fun login(user: String, password: String): Pair<Boolean, String> =
+      Pair(false, "falseT0ken")
+    /*{
 
       val tag = RemoteAPI::class.java.simpleName
       //Arreglo temporal, si tenemos que añadir mas excepciones tendriamos que hacerlo un poco mas limpio. Podriamos omitir lo de la VPN para la entrega.
@@ -60,7 +63,7 @@ class RemoteAPI {
           username = user,
           password = password
         )
-      ) } catch (e: SocketTimeoutException){ return Pair(true, "Can't connect to the server") }
+      ) } catch (e: Exception){ return Pair(true, "Can't connect to the server") }
       var failure = !response.isSuccessful
       val message = try {
         if(failure) {
@@ -78,16 +81,18 @@ class RemoteAPI {
       Log.d(tag,"La llamada ha salido ${if(failure)"mal" else "bien"} y el mensaje es $message")
 
       return Pair(failure,message)
-    }
+    }*/
 
-    suspend fun register(user:String,password:String) : Pair<Boolean,String> {
+    suspend fun register(user: String, password: String): Pair<Boolean, String> =
+      Pair(false, "mensaje de exito")
+    /*{
 
       val response = try { scalarAPICalls.register(
         UserInfo(
           username = user,
           password = password
         )
-      ) } catch (e: SocketTimeoutException){ return Pair(true, "Can't connect to the server")}
+      ) } catch (e: Exception){ return Pair(true, "Can't connect to the server")}
       var failure = !response.isSuccessful //(response.code()!= 200)
       val message = try {
         if (failure) Gson().fromJson(response.errorBody()?.charStream()?.readText(),
@@ -98,6 +103,6 @@ class RemoteAPI {
         "Unexpected error while trying to register"
       }
       return Pair(failure,message)
-    }
+    }*/
   }
 }
