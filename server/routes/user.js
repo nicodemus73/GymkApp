@@ -34,7 +34,7 @@ router.post('/register', async (req, res) => {
         const hashpsswd = await bcrypt.hash(req.body.password, salt);
 
         //crea l'usuari
-        const usern = new Usuario({
+        const usern = new User({
             username: req.body.username,
             password: hashpsswd,//req.body.password,
             //firstname: req.body.firstname,
