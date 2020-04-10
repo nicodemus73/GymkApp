@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
 
         //el usuario ha de existir
         const username = await User.findOne({ username: req.body.username });
-        if (!username) return res.status(404).json({ "error": "Incorrect Username or Password1" }); //Not Found  no existe el usuario
+        if (!username) return res.status(404).json({ "error": "Incorrect Username or Password" }); //Not Found  no existe el usuario
 
         const validPasswd = await bcrypt.compare(req.body.password, username.password);
         if (!validPasswd) return res.status(404).json({ "error": "Incorrect Username or Password" }); //not found
@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
         res.status(200).header('Authorization', token).end();//.json({"token": token});
         //res.send('Logged in!');
     } catch (err) {
-        res.status(400).json({ "error": err.message });
+        res.status(500).json({ "error": err.message });
     }
 
 });
