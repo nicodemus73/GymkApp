@@ -5,7 +5,7 @@ const Map = require('../bbdd/MapSchema');
 const Point = require('../bbdd/PointSchema');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../functMiddle/VerifyToken');
-const Usuario = require('../bbdd/Usuario');
+const Usuario = require('../bbdd/UserSchema');
 
 router.get('/', async (req, res) => {
 

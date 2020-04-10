@@ -35,13 +35,10 @@ const userSchema = new Schema({
          type: Schema.Types.ObjectId, 
          ref: 'Friends'
         }],*/
-
     createdDate: { 
         type: Date, 
         default: Date.now  //es pot modificar
     }
-
-
 });
 
-module.exports = mongoose.model('Usuario', userSchema); //toma el schema y lo guarda en una coleccion de mongodb
+module.exports = mongoose.model('user', userSchema); //toma el schema y lo guarda en una coleccion de mongodb

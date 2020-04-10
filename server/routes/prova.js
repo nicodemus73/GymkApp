@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const verifyToken = require('../functMiddle/VerifyToken');
-const Usuario = require('../bbdd/Usuario');
+const Usuario = require('../bbdd/UserSchema');
 //nomes entra si se li pasa el token pel header Authorization <valor>  es el numero que surt quan fas loggin
 router.get('/', verifyToken /*middleware*/,  (req, res) => {
     //obtenim l'usuari
