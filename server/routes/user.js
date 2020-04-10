@@ -45,7 +45,7 @@ router.post('/register', async(req, res) => {
             //lastname: req.body.lastname,
         });
             const savedUser = await usern.save(10);
-            res.status(200)//.json({userid: usern._id}); //ok
+            res.status(200);//.json({userid: usern._id}); //ok
     } catch(err) {
         console.error(err);
         res.status(400).json({"error": err.message}); //bad request
@@ -71,7 +71,7 @@ try {
 
     //crear y asignar token al usuario
     const token = jwt.sign({_id: username._id}, process.env.TOKEN_KEY);
-    res.status(200).header('Authorization', token)//.json({"token": token});
+    res.status(200).header('Authorization', token);//.json({"token": token});
     //res.send('Logged in!');
 } catch(err) {
     res.status(400).json({ "error": err.message });
