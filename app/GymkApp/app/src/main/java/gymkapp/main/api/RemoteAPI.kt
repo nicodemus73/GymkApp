@@ -10,7 +10,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import java.lang.Exception
-import java.net.SocketTimeoutException
 
 class RemoteAPI {
 
@@ -51,9 +50,7 @@ class RemoteAPI {
     private val scalarAPICalls =
       ScalarResponseCalls.create()
 
-    suspend fun login(user: String, password: String): Pair<Boolean, String> =
-      Pair(false, "falseT0ken")
-    /*{
+    suspend fun login(user: String, password: String): Pair<Boolean, String> {
 
       val tag = RemoteAPI::class.java.simpleName
       //Arreglo temporal, si tenemos que añadir mas excepciones tendriamos que hacerlo un poco mas limpio. Podriamos omitir lo de la VPN para la entrega.
@@ -73,7 +70,6 @@ class RemoteAPI {
         }
         else response.headers()["Authorization"]!! // "!!" asegura que no es nulo, y si lo es salta una excepcion
       } catch (e: Exception) {
-        Log.d(tag,"Error al intentar leer el JSON")
         failure = true
         "Unexpected error while trying to login" //El formato de los mensajes de llegada es incorrecto
       }
@@ -81,11 +77,9 @@ class RemoteAPI {
       Log.d(tag,"La llamada ha salido ${if(failure)"mal" else "bien"} y el mensaje es $message")
 
       return Pair(failure,message)
-    }*/
+    }
 
-    suspend fun register(user: String, password: String): Pair<Boolean, String> =
-      Pair(false, "mensaje de exito")
-    /*{
+    suspend fun register(user: String, password: String): Pair<Boolean, String> {
 
       val response = try { scalarAPICalls.register(
         UserInfo(
@@ -103,6 +97,6 @@ class RemoteAPI {
         "Unexpected error while trying to register"
       }
       return Pair(failure,message)
-    }*/
+    }
   }
 }
