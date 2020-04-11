@@ -42,8 +42,8 @@ class SettingsFragment : Fragment() {
       activity?.getPreferences(Context.MODE_PRIVATE)?.edit {
         remove(R.string.TokenKey.toString())
       }
-      loginModel.logout()
       navController.navigate(SettingsFragmentDirections.toLoginFTUE())
+      loginModel.logout()
     }
   }
 }
