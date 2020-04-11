@@ -13,17 +13,15 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import gymkapp.main.LoginViewModel.AuthenticationState.*
 
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.ktx.addMarker
 import kotlinx.android.synthetic.main.maps.view.*
 import java.lang.Exception
 
 class MapsFragment : Fragment() {
 
-  private val callback = OnMapReadyCallback { googleMap ->
+  /*private val callback = OnMapReadyCallback { googleMap ->
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -34,9 +32,11 @@ class MapsFragment : Fragment() {
      * user has installed Google Play services and returned to the app.
      */
     val barcelona = LatLng(41.404423, 2.174071)
-    googleMap.addMarker(MarkerOptions().position(barcelona).title("Marker in Barcelona"))
-    googleMap.moveCamera(CameraUpdateFactory.newLatLng(barcelona))
-  }
+    googleMap.addMarker{
+      position(barcelona)
+      title("Marker in Barcelona")
+    }
+  }*/
 
   private val loginModel: LoginViewModel by activityViewModels()
 
@@ -50,8 +50,14 @@ class MapsFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-    mapFragment?.getMapAsync(callback)
+    val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+    mapFragment?.getMapAsync { map ->
+      val barcelona = LatLng(41.404423, 2.174071)
+      map.addMarker{
+        position(barcelona)
+        title("Marker in Barcelona")
+      }
+    }
 
     val navController = findNavController()
 
