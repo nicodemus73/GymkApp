@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const GameSchema = new Schema({
 
-    user:       { type: String, required: true},
+    user:       { type: Schema.Types.ObjectId, ref: 'user', required: true},
     map:        { type: Schema.Types.ObjectId, ref: 'map', required: true },
     startDate:  { type: Date,   required: true, default: Date.now},
     startCoord: {

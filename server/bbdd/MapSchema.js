@@ -6,7 +6,7 @@ const MapSchema = new Schema({
     name:   { type: String,  required: true, unique: true, 
             minlength: process.env.MAP_NAME_MIN_LENGTH, 
             maxlength: process.env.MAP_NAME_MAX_LENGTH },
-    owner:  { type: String,  required: true, maxlength: 15 }, 
+    owner:  { type: Schema.Types.ObjectId, ref: 'user', required: true}, 
     public: { type: Boolean, default:  true },
     metadata: {
         author:      { type: String, maxlength: 15 },

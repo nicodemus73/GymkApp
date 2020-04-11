@@ -66,6 +66,7 @@ router.post('/', async (req, res) => {
 
             const game = await Game.findById(req.body.game);
             if (game == null) throw new Error('404Game does not exist');
+            if (game.user != req.usernameId._id) throw new Error('400This game is not yours');
             if (game.status != 'inProgress') throw new Error('400Game is not in progress');
 
             const currentPoint = await Point.findById(game.progress[game.progress.length - 1].point);
@@ -107,7 +108,7 @@ router.post('/', async (req, res) => {
             if (map == null) throw new Error('404Map does not exist'); // protect against nonexistant maps
             //if ( too far from start ) throw new Error('You ate too far from start point'); 
             const game = new Game({
-                user: req.body.user,
+                user: req.usernameId._id,
                 map: req.body.map,
                 startCoord: {
                     lat: req.body.location.lat,

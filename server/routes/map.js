@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
     try {
         const map = new Map({
             name: req.body.name,
-            owner: req.body.owner,
+            owner: req.usernameId._id,
             metadata: {
                 author: req.body.metadata.author,
                 description: req.body.metadata.description,

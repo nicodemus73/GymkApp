@@ -7,7 +7,7 @@ router.post('/', async (req, res) => {
     try {
         const point = new Point({
             name: req.body.name,
-            owner: req.body.owner,
+            owner: req.usernameId._id,
             type: req.body.type,
             description: req.body.description,
             public: req.body.public,
