@@ -15,14 +15,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import gymkapp.main.LoginViewModel.AuthenticationState.*
 
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.ktx.addMarker
-import kotlinx.android.synthetic.main.maps.view.*
 import java.lang.Exception
 
 const val REQUEST_CODE = 3
@@ -42,21 +40,7 @@ class MapsFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    initialChecks()
-
-    val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-    mapFragment?.getMapAsync {
-
-      map = it
-      if(ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-        map.isMyLocationEnabled = true
-      } else{
-
-        if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))
-          Snackbar.make(view,"Location permission is required to show near gymkhanas",Snackbar.LENGTH_SHORT).show()
-        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
-      }
-    }
+    initialChecks(view)
   }
 
   override fun onRequestPermissionsResult(
@@ -65,32 +49,64 @@ class MapsFragment : Fragment() {
     grantResults: IntArray
   ) {
 
-    if(requestCode == REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+    if (requestCode == REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+      Log.d(javaClass.simpleName,"Activando la localizacion")
       map.isMyLocationEnabled = true
+    }
   }
 
-  fun initialChecks(){
+  private fun initialChecks(view: View) {
 
     val navController = findNavController()
 
-    if(loginModel.authenticationState.value==INVALID_AUTHENTICATION){
+    if (loginModel.authenticationState.value == INVALID_AUTHENTICATION) {
 
-      Log.d(javaClass.simpleName,"Leyendo el disco")
+      Log.d(javaClass.simpleName, "Leyendo el disco")
       loginModel.authenticate(
         try {
-          activity?.getPreferences(Context.MODE_PRIVATE)?.getString(R.string.TokenKey.toString(), null)
+          activity?.getPreferences(Context.MODE_PRIVATE)
+            ?.getString(R.string.TokenKey.toString(), null)
         } catch (e: Exception) {
-          Log.d(javaClass.simpleName,"Error al intentar leer el disco")
+          Log.d(javaClass.simpleName, "Error al intentar leer el disco")
           null
         }
       )
     }
 
     loginModel.authenticationState.observe(viewLifecycleOwner, Observer {
-      if (it == UNAUTHENTICATED){
+      if (it == UNAUTHENTICATED) {
         Log.d(javaClass.simpleName, "No autenticado, yendo a la pantalla login")
         navController.navigate(MapsFragmentDirections.toLoginFTUE())
-      }
+      } else if(it==AUTHENTICATED) startMaps(view)
     })
+  }
+
+  private fun startMaps(view: View){
+
+    (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.getMapAsync {
+
+      map = it
+      val barcelona = LatLng(41.403698, 2.174225)
+      map.addMarker {
+        position(barcelona)
+        title("Marker")
+      }
+      if (ContextCompat.checkSelfPermission(
+          requireContext(),
+          Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+      ) {
+        map.isMyLocationEnabled = true
+      } else {
+
+        if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))
+          Snackbar.make(
+            view,
+            "Location permission is required to show near gymkhanas",
+            Snackbar.LENGTH_LONG
+          ).show()
+        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
+      }
+    }
   }
 }
