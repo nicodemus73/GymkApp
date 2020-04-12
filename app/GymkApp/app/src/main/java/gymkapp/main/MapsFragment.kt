@@ -14,6 +14,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
 import gymkapp.main.LoginViewModel.AuthenticationState.*
 
@@ -29,6 +31,7 @@ class MapsFragment : Fragment() {
 
   private val loginModel: LoginViewModel by activityViewModels()
   private lateinit var map: GoogleMap
+  private lateinit var fusedLocationClient: FusedLocationProviderClient
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -83,6 +86,7 @@ class MapsFragment : Fragment() {
 
   private fun startMaps(view: View){
 
+    fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
     (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.getMapAsync {
 
       map = it
@@ -106,6 +110,14 @@ class MapsFragment : Fragment() {
             Snackbar.LENGTH_LONG
           ).show()
         requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
+      }
+      map.setOnMyLocationButtonClickListener {
+        fusedLocationClient.lastLocation.addOnSuccessListener { loc ->
+          loc?.run {
+            Snackbar.make(view,"Your location: Lat: $latitude, Long: $longitude",Snackbar.LENGTH_LONG).show()
+          } ?: Log.d(javaClass.simpleName,"Localizacion no disponible")
+        }
+        false
       }
     }
   }
