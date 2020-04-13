@@ -1,5 +1,7 @@
 package gymkapp.main
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,11 +17,13 @@ class MainActivity : AppCompatActivity() {
 
   private val loginViewModel: LoginViewModel by viewModels()
 
+  @SuppressLint("SourceLockedOrientationActivity")
   override fun onCreate(savedInstanceState: Bundle?) {
     //TODO Resposiveness!!!
     //TODO cambiar nombres de botones,etc para no confundir al editor (IMPORTANTE)
     //TODO borrar fragmento de mapa, cuidado con los accesos a views que pueden ser nulos...
     super.onCreate(savedInstanceState)
+    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT //Desactivamos el modo "landscape"
     setContentView(R.layout.bottom_nav)
 
     Log.d(javaClass.simpleName,"Me han creado")

@@ -11,9 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import java.lang.Exception
 
-class RemoteAPI {
-
-  companion object {
+ object RemoteAPI {
 
     private const val baseUrl = "http://10.4.41.144:3001"
 
@@ -52,7 +50,7 @@ class RemoteAPI {
 
     suspend fun login(user: String, password: String): Pair<Boolean, String> {
 
-      val tag = RemoteAPI::class.java.simpleName
+      val tag = javaClass.simpleName
       //Arreglo temporal, si tenemos que añadir mas excepciones tendriamos que hacerlo un poco mas limpio. Podriamos omitir lo de la VPN para la entrega.
       Log.d(tag,"el usuario es $user, la contraseña es $password")
       val response = try{ scalarAPICalls.login(
@@ -99,4 +97,3 @@ class RemoteAPI {
       return Pair(failure,message)
     }
   }
-}

@@ -86,15 +86,11 @@ class MapsFragment : Fragment() {
 
   private fun startMaps(view: View){
 
-    fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
     (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.getMapAsync {
 
       map = it
-      val barcelona = LatLng(41.403698, 2.174225)
-      map.addMarker {
-        position(barcelona)
-        title("Marker")
-      }
+      fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
       if (ContextCompat.checkSelfPermission(
           requireContext(),
           Manifest.permission.ACCESS_FINE_LOCATION
@@ -103,14 +99,16 @@ class MapsFragment : Fragment() {
         map.isMyLocationEnabled = true
       } else {
 
-        if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))
+        if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
           Snackbar.make(
             view,
             "Location permission is required to show near gymkhanas",
             Snackbar.LENGTH_LONG
           ).show()
+        }
         requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
       }
+
       map.setOnMyLocationButtonClickListener {
         fusedLocationClient.lastLocation.addOnSuccessListener { loc ->
           loc?.run {
