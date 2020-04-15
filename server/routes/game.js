@@ -6,6 +6,7 @@ const Point = require('../bbdd/PointSchema');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../functMiddle/VerifyToken');
 const Usuario = require('../bbdd/UserSchema');
+const distance = require('turf-distance');
 
 router.get('/', async (req, res) => {
 
@@ -61,7 +62,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
 
     try {
-        if (!(req.body.location.lat && req.body.location.long)) throw new Error('400No location sent');
+        if (!req.body.location) throw new Error('400No location sent');
         if (req.body.game) { // ID received: update a game: validate current point (and end game).
 
             const game = await Game.findById(req.body.game);
@@ -71,8 +72,7 @@ router.post('/', async (req, res) => {
 
             const currentPoint = await Point.findById(game.progress[game.progress.length - 1].point);
 
-            if (distance(req.body.location.lat, req.body.location.long,
-                currentPoint.coord.lat, currentPoint.coord.long) < process.env.ONFOOT_CHECK_DIST) { // point completed
+            if (distance(req.body.location, currentPoint.location)*1000 < process.env.ONFOOT_CHECK_DIST) { // point completed
 
                 const date = new Date();
                 game.progress[game.progress.length - 1].completedDate = date;
@@ -93,7 +93,7 @@ router.post('/', async (req, res) => {
                     game.progress.push({ point: point._id });
                     res.status(200).json({
                         "description": point.description,
-                        "coord": point.coord
+                        "location": point.location
                     });
                 }
             }
@@ -106,14 +106,11 @@ router.post('/', async (req, res) => {
         else { // No ID received: start new game.
             const map = await Map.findById(req.body.map); // so we can dereference point 0
             if (map == null) throw new Error('404Map does not exist'); // protect against nonexistant maps
-            //if ( too far from start ) throw new Error('You ate too far from start point'); 
+            if ( distance(req.body.location, map.firstLocation)*1000 > process.env.ONFOOT_START_DIST) throw new Error('400You are too far from start point'); 
             const game = new Game({
                 user: req.usernameId._id,
                 map: req.body.map,
-                startCoord: {
-                    lat: req.body.location.lat,
-                    long: req.body.location.long,
-                },
+                startLocation: req.body.location,
                 progress: {
                     point: map.points[0], // point 0 dereferenced
                 }
@@ -125,7 +122,7 @@ router.post('/', async (req, res) => {
                     res.status(200).json({
                         "_id": savedGame._id,
                         "description": point.description,
-                        "coord": point.coord
+                        "location": point.location
                     });
                 }
             });
@@ -187,20 +184,3 @@ function parseTime(milliseconds) {
     return h + 'h' + m + 'm' + s + 's';
 }
 
-function distance(lat1, lon1, lat2, lon2) {
-    var R = 6371; // km
-    var dLat = toRad(lat2 - lat1);
-    var dLon = toRad(lon2 - lon1);
-    var lat1 = toRad(lat1);
-    var lat2 = toRad(lat2);
-
-    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c;
-    return d * 1000;
-}
-
-function toRad(Value) {
-    return Value * Math.PI / 180;
-}
