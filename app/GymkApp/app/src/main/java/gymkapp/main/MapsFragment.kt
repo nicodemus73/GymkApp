@@ -25,6 +25,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitMap
+import gymkapp.main.databinding.MapsBinding
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -38,6 +39,8 @@ class MapsFragment : Fragment() {
   private lateinit var map: GoogleMap
   private lateinit var fusedLocationClient: FusedLocationProviderClient
   private var currentLoc: Location? = null
+  private var _bind : MapsBinding? = null
+  private val bind: MapsBinding get() = _bind!!
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -130,5 +133,10 @@ class MapsFragment : Fragment() {
       map.isMyLocationEnabled = true
       fusedLocationClient.lastLocation.addOnSuccessListener { currentLoc = it } //get the last known location
     }
+  }
+
+  override fun onDestroyView() {
+    super.onDestroyView()
+    _bind = null
   }
 }

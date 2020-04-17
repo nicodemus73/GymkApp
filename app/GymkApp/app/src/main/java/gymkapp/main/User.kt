@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 object User {
 
   @SerializedName("token")
-  val loginToken : String? = null
+  var loginToken : String? = null
   //NO SE ENVIA
   var name : String? = null
   var maps = mutableListOf<Map>()
