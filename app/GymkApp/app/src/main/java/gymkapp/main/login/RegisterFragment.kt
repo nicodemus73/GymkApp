@@ -38,7 +38,6 @@ class RegisterFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-    //TODO: Mejorar tiempo de visualizacion del mensaje de error, que al cambiar de pantalla se destruya y que se pueda descartar
     val navController = findNavController()
 
     //OnClickListeners - Botones

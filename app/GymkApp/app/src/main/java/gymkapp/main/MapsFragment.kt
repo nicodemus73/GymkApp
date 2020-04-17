@@ -27,6 +27,8 @@ const val REQUEST_CODE = 3
 
 class MapsFragment : Fragment() {
 
+  //TODO Al aceptar acceso de localizacion no funciona hasta recargarse
+
   private val loginModel: LoginViewModel by activityViewModels()
   private lateinit var map: GoogleMap
   private lateinit var fusedLocationClient: FusedLocationProviderClient

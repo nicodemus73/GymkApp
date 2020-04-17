@@ -21,8 +21,8 @@ class MainActivity : AppCompatActivity() {
   @SuppressLint("SourceLockedOrientationActivity")
   override fun onCreate(savedInstanceState: Bundle?) {
     //TODO Resposiveness!!!
-    //TODO cambiar nombres de botones,etc para no confundir al editor (IMPORTANTE)
-    //TODO borrar fragmento de mapa, cuidado con los accesos a views que pueden ser nulos...
+    //TODO SharedPreference cifrado
+    //TODO secure.properties API KEY y otras formas de proteger la API KEY
     super.onCreate(savedInstanceState)
     bind = BottomNavBinding.inflate(layoutInflater)
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT //Desactivamos el modo "landscape"
