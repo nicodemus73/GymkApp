@@ -10,34 +10,35 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.settings.view.*
+import gymkapp.main.databinding.SettingsBinding
 
-/**
- * A simple [Fragment] subclass.
- */
+
 class SettingsFragment : Fragment() {
 
-  val loginModel: LoginViewModel by activityViewModels()
+  private val loginModel: LoginViewModel by activityViewModels()
+  private var _bind : SettingsBinding? = null
+  private val bind : SettingsBinding get() = _bind!!
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.settings, container, false)
+
+    _bind = SettingsBinding.inflate(inflater,container,false)
+    return bind.root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
     val navController = findNavController()
-    view.nightModeSwitch.setOnCheckedChangeListener{
+    bind.nightModeSwitch.setOnCheckedChangeListener{
         _,isChecked ->
       if(isChecked) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
       else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
-    view.logoutButton.setOnClickListener {
+    bind.logoutButton.setOnClickListener {
 
       activity?.getPreferences(Context.MODE_PRIVATE)?.edit {
         remove(R.string.TokenKey.toString())
@@ -45,5 +46,10 @@ class SettingsFragment : Fragment() {
       navController.navigate(SettingsFragmentDirections.toLoginFTUE())
       loginModel.logout()
     }
+  }
+
+  override fun onDestroyView() {
+    super.onDestroyView()
+    _bind = null
   }
 }

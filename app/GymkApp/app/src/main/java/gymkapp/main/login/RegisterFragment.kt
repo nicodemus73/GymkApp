@@ -16,7 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import gymkapp.main.*
-import kotlinx.android.synthetic.main.register.view.*
+import gymkapp.main.databinding.RegisterBinding
 import kotlinx.coroutines.launch
 
 class RegisterFragment : Fragment() {
@@ -25,11 +25,16 @@ class RegisterFragment : Fragment() {
   private val registerFragmentModel: RegisterFragmentModel by viewModels()
   private val loginViewModel: LoginViewModel by activityViewModels()
   private lateinit var errorSnackbar: Snackbar
+  private var _bind : RegisterBinding? = null
+  private val bind : RegisterBinding get() = _bind!!
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? = inflater.inflate(R.layout.register,container,false)
+  ): View? {
+    _bind = RegisterBinding.inflate(inflater,container,false)
+    return bind.root
+  }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -37,29 +42,29 @@ class RegisterFragment : Fragment() {
     val navController = findNavController()
 
     //OnClickListeners - Botones
-    view.buttonBack.setOnClickListener { navController.navigateUp() }
-    view.registerButton.setOnClickListener {
+    bind.buttonBack.setOnClickListener { navController.navigateUp() }
+    bind.registerButton.setOnClickListener {
       viewLifecycleOwner.lifecycleScope.launch {
-        registrationViewModel.register(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+        registrationViewModel.register(bind.inputUsername.editText?.text.toString(),bind.inputPassword.editText?.text.toString())
       }
     }
 
     //Activacion del boton cuando los datos sean validos
     registerFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer { valid ->
-      view.registerButton.isEnabled = valid
+      bind.registerButton.isEnabled = valid
     })
 
     //Comprobacion de los datos y mostrar el mensaje de error si no lo son
-    view.inputUsername.editText?.doAfterTextChanged {
-      view.inputUsername.error = registerFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
+    bind.inputUsername.editText?.doAfterTextChanged {
+      bind.inputUsername.error = registerFragmentModel.validateUsername(bind.inputUsername.editText?.text.toString())
     }
-    view.inputPassword.editText?.doAfterTextChanged {
-      val pass = view.inputPassword.editText?.text.toString()
-      view.inputPassword.error = registerFragmentModel.validatePassword(pass)
-      view.inputConfirmPassword.error = registerFragmentModel.checkEquals(pass,view.inputConfirmPassword.editText?.text.toString())
+    bind.inputPassword.editText?.doAfterTextChanged {
+      val pass = bind.inputPassword.editText?.text.toString()
+      bind.inputPassword.error = registerFragmentModel.validatePassword(pass)
+      bind.inputConfirmPassword.error = registerFragmentModel.checkEquals(pass,bind.inputConfirmPassword.editText?.text.toString())
     }
-    view.inputConfirmPassword.editText?.doAfterTextChanged {
-      view.inputConfirmPassword.error = registerFragmentModel.checkEquals(view.inputConfirmPassword.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+    bind.inputConfirmPassword.editText?.doAfterTextChanged {
+      bind.inputConfirmPassword.error = registerFragmentModel.checkEquals(bind.inputConfirmPassword.editText?.text.toString(),bind.inputPassword.editText?.text.toString())
     }
 
     //Manejo del estado de autenticacion (LOGIN)
@@ -89,7 +94,7 @@ class RegisterFragment : Fragment() {
         RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED -> {
           Log.d(javaClass.name, "Registro completado, logeandose")
           viewLifecycleOwner.lifecycleScope.launch {
-            loginViewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+            loginViewModel.login(bind.inputUsername.editText?.text.toString(),bind.inputPassword.editText?.text.toString())
           }
         }
         RegisterViewModel.RegistrationState.REGISTRATION_FAILED -> {
@@ -105,5 +110,10 @@ class RegisterFragment : Fragment() {
   override fun onStop() {
     super.onStop()
     if(::errorSnackbar.isInitialized) errorSnackbar.dismiss()
+  }
+
+  override fun onDestroyView() {
+    super.onDestroyView()
+    _bind = null
   }
 }

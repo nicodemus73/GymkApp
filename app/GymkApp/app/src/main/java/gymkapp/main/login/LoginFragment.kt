@@ -18,7 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import gymkapp.main.FTUELoginDirections
 import gymkapp.main.LoginViewModel
 import gymkapp.main.R
-import kotlinx.android.synthetic.main.login.view.*
+import gymkapp.main.databinding.LoginBinding
 import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {
@@ -28,6 +28,8 @@ class LoginFragment : Fragment() {
    * Scope de fragmento!
    */
   private val loginFragmentModel: LoginFragmentModel by viewModels()
+  private var _bind : LoginBinding? = null
+  private val bind : LoginBinding get() = _bind!!
   /**
    * Instancia que sirve para mantener datos independientemente del estado del fragmento. ViewModel
    * provee funciones para gestionar el estado del login, el estado del registro, para cambiar estados
@@ -39,31 +41,36 @@ class LoginFragment : Fragment() {
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? = inflater.inflate(R.layout.login,container,false)
+  ): View? {
+    _bind = LoginBinding.inflate(inflater,container,false)
+    return bind.root
+  }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
     val navController = findNavController()
+    val edTextUser = bind.edTextUserLogin
+    val edTextPass = bind.edTextPassLogin
 
     //OnClickListeners - Botones
-    view.buttonBack2.setOnClickListener { navController.navigateUp() }
-    view.loginButtonLF.setOnClickListener {
+    bind.buttonBack2.setOnClickListener { navController.navigateUp() }
+    bind.loginButtonLF.setOnClickListener {
       viewLifecycleOwner.lifecycleScope.launch {
-        viewModel.login(view.inputUsername.editText?.text.toString(),view.inputPassword.editText?.text.toString())
+        viewModel.login(edTextUser?.text.toString(),edTextPass?.text.toString())
       }
     }
 
     //Activacion del boton de login
     loginFragmentModel.isDataValid.observe(viewLifecycleOwner, Observer { valid ->
-      view.loginButtonLF.isEnabled = valid
+      bind.loginButtonLF.isEnabled = valid
     })
 
     //Si el texto cambia se tiene que validar y mostrar error si sale mal
-    view.inputUsername.editText?.doAfterTextChanged {
-      view.inputUsername.error = loginFragmentModel.validateUsername(view.inputUsername.editText?.text.toString())
+    bind.inputUsername.editText?.doAfterTextChanged {
+      bind.inputUsername.error = loginFragmentModel.validateUsername(edTextUser?.text.toString())
     }
-    view.inputPassword.editText?.doAfterTextChanged {
-      view.inputPassword.error = loginFragmentModel.validatePassword(view.inputPassword.editText?.text.toString())
+    bind.inputPassword.editText?.doAfterTextChanged {
+      bind.inputPassword.error = loginFragmentModel.validatePassword(edTextPass?.text.toString())
     }
 
     //Seguimiento del estado de autenticacion (LOGIN)
@@ -88,5 +95,10 @@ class LoginFragment : Fragment() {
   override fun onStop() {
     super.onStop()
     if(::errorSnackBar.isInitialized) errorSnackBar.dismiss()
+  }
+
+  override fun onDestroyView() {
+    super.onDestroyView()
+    _bind = null
   }
 }

@@ -20,9 +20,7 @@ import com.google.android.gms.maps.GoogleMap
 import gymkapp.main.LoginViewModel.AuthenticationState.*
 
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
-import com.google.maps.android.ktx.addMarker
 import java.lang.Exception
 
 const val REQUEST_CODE = 3
