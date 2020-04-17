@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     //TODO Resposiveness!!!
     //TODO SharedPreference cifrado
     //TODO secure.properties API KEY y otras formas de proteger la API KEY
+    //TODO añadir loader para la conexion al server
     super.onCreate(savedInstanceState)
     bind = BottomNavBinding.inflate(layoutInflater)
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT //Desactivamos el modo "landscape"

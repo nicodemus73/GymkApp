@@ -39,12 +39,15 @@ class RegisterFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
     val navController = findNavController()
+    val fieldUsername = bind.edTextUser
+    val fieldPassword = bind.edTextPass
+    val fieldCPassword = bind.edTextCPass
 
     //OnClickListeners - Botones
     bind.buttonBack.setOnClickListener { navController.navigateUp() }
     bind.registerButton.setOnClickListener {
       viewLifecycleOwner.lifecycleScope.launch {
-        registrationViewModel.register(bind.inputUsername.editText?.text.toString(),bind.inputPassword.editText?.text.toString())
+        registrationViewModel.register(fieldUsername.text.toString(),fieldPassword.text.toString())
       }
     }
 
@@ -54,16 +57,16 @@ class RegisterFragment : Fragment() {
     })
 
     //Comprobacion de los datos y mostrar el mensaje de error si no lo son
-    bind.inputUsername.editText?.doAfterTextChanged {
-      bind.inputUsername.error = registerFragmentModel.validateUsername(bind.inputUsername.editText?.text.toString())
+    fieldUsername.doAfterTextChanged {
+      bind.inputUsername.error = registerFragmentModel.validateUsername(fieldUsername.text.toString())
     }
-    bind.inputPassword.editText?.doAfterTextChanged {
-      val pass = bind.inputPassword.editText?.text.toString()
+    fieldPassword.doAfterTextChanged {
+      val pass = fieldPassword.text.toString()
       bind.inputPassword.error = registerFragmentModel.validatePassword(pass)
-      bind.inputConfirmPassword.error = registerFragmentModel.checkEquals(pass,bind.inputConfirmPassword.editText?.text.toString())
+      bind.inputConfirmPassword.error = registerFragmentModel.checkEquals(pass,fieldCPassword.text.toString())
     }
-    bind.inputConfirmPassword.editText?.doAfterTextChanged {
-      bind.inputConfirmPassword.error = registerFragmentModel.checkEquals(bind.inputConfirmPassword.editText?.text.toString(),bind.inputPassword.editText?.text.toString())
+    fieldCPassword.doAfterTextChanged {
+      bind.inputConfirmPassword.error = registerFragmentModel.checkEquals(fieldPassword.text.toString(),fieldCPassword.text.toString())
     }
 
     //Manejo del estado de autenticacion (LOGIN)
@@ -72,13 +75,13 @@ class RegisterFragment : Fragment() {
 
         LoginViewModel.AuthenticationState.AUTHENTICATED -> {
 
-          Log.d(javaClass.name,"Autenticado, guardando y moviendose al grafico principal")
+          Log.d(javaClass.simpleName,"Autenticado, guardando y moviendose al grafico principal")
           activity?.getPreferences(Context.MODE_PRIVATE)?.edit { putString(R.string.TokenKey.toString(),loginViewModel.loginToken) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         //Improbable que ocurra ya que el registro deberia haber ido bien
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
-          Log.d(javaClass.name,"Logeo no ha salido bien")
+          Log.d(javaClass.simpleName,"Logeo no ha salido bien")
           errorSnackbar = Snackbar.make(view,loginViewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
           errorSnackbar.show()
         }
@@ -91,13 +94,13 @@ class RegisterFragment : Fragment() {
       when(state){
 
         RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED -> {
-          Log.d(javaClass.name, "Registro completado, logeandose")
+          Log.d(javaClass.simpleName, "Registro completado, logeandose")
           viewLifecycleOwner.lifecycleScope.launch {
-            loginViewModel.login(bind.inputUsername.editText?.text.toString(),bind.inputPassword.editText?.text.toString())
+            loginViewModel.login(fieldUsername.text.toString(),fieldPassword.text.toString())
           }
         }
         RegisterViewModel.RegistrationState.REGISTRATION_FAILED -> {
-          Log.d(javaClass.name,"Registro incorrecto")
+          Log.d(javaClass.simpleName,"Registro incorrecto")
           errorSnackbar = Snackbar.make(view,registrationViewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
           errorSnackbar.show()
         }

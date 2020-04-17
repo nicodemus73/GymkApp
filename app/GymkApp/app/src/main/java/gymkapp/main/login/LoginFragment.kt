@@ -49,14 +49,14 @@ class LoginFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
     val navController = findNavController()
-    val edTextUser = bind.edTextUserLogin
-    val edTextPass = bind.edTextPassLogin
+    val fieldUsername = bind.edTextUserLogin
+    val fieldPassword = bind.edTextPassLogin
 
     //OnClickListeners - Botones
     bind.buttonBack2.setOnClickListener { navController.navigateUp() }
     bind.loginButtonLF.setOnClickListener {
       viewLifecycleOwner.lifecycleScope.launch {
-        viewModel.login(edTextUser?.text.toString(),edTextPass?.text.toString())
+        viewModel.login(fieldUsername.text.toString(), fieldPassword.text.toString())
       }
     }
 
@@ -66,11 +66,11 @@ class LoginFragment : Fragment() {
     })
 
     //Si el texto cambia se tiene que validar y mostrar error si sale mal
-    bind.inputUsername.editText?.doAfterTextChanged {
-      bind.inputUsername.error = loginFragmentModel.validateUsername(edTextUser?.text.toString())
+    fieldUsername.doAfterTextChanged {
+      bind.inputUsername.error = loginFragmentModel.validateUsername(fieldUsername.text.toString())
     }
-    bind.inputPassword.editText?.doAfterTextChanged {
-      bind.inputPassword.error = loginFragmentModel.validatePassword(edTextPass?.text.toString())
+    fieldPassword.doAfterTextChanged {
+      bind.inputPassword.error = loginFragmentModel.validatePassword(fieldPassword.text.toString())
     }
 
     //Seguimiento del estado de autenticacion (LOGIN)
@@ -78,12 +78,12 @@ class LoginFragment : Fragment() {
       when(authState){
         LoginViewModel.AuthenticationState.AUTHENTICATED -> {
 
-          Log.d(javaClass.name,"Autenticado, guardando y pasando al grafico principal")
+          Log.d(javaClass.simpleName,"Autenticado, guardando y pasando al grafico principal")
           activity?.getPreferences(Context.MODE_PRIVATE)?.edit { putString(R.string.TokenKey.toString(),viewModel.loginToken) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
-          Log.d(javaClass.name,"Entrada invalida, imprimiendo mensaje de error")
+          Log.d(javaClass.simpleName,"Entrada invalida, imprimiendo mensaje de error")
           errorSnackBar = Snackbar.make(view,viewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
           errorSnackBar.show()
         }
