@@ -7,6 +7,7 @@ import android.location.Location
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,8 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.GoogleMap
 import gymkapp.main.LoginViewModel.AuthenticationState.*
 
@@ -28,17 +28,23 @@ import com.google.maps.android.ktx.awaitMap
 import gymkapp.main.databinding.MapsBinding
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import java.util.concurrent.TimeUnit
 
 const val REQUEST_CODE = 3
 
 class MapsFragment : Fragment() {
 
+  private val classTag = javaClass.simpleName
   //TODO Al aceptar acceso de localizacion no funciona hasta recargarse
 
   private val loginModel: LoginViewModel by activityViewModels()
   private lateinit var map: GoogleMap
+
   private lateinit var fusedLocationClient: FusedLocationProviderClient
+  private lateinit var locationRequest: LocationRequest
+  private lateinit var locationCallback: LocationCallback
   private var currentLoc: Location? = null
+
   private var _bind : MapsBinding? = null
   private val bind: MapsBinding get() = _bind!!
 
@@ -47,7 +53,8 @@ class MapsFragment : Fragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    return inflater.inflate(R.layout.maps, container, false)
+    _bind = MapsBinding.inflate(inflater,container,false)
+    return bind.root
   }
 
   @MapsExperimentalFeature
@@ -63,13 +70,13 @@ class MapsFragment : Fragment() {
 
     if (loginModel.authenticationState.value == INVALID_AUTHENTICATION) {
 
-      Log.d(javaClass.simpleName, "Leyendo el disco")
+      Log.d(classTag, "Leyendo el disco")
       loginModel.authenticate(
         try {
           activity?.getPreferences(Context.MODE_PRIVATE)
             ?.getString(R.string.TokenKey.toString(), null)
         } catch (e: Exception) {
-          Log.d(javaClass.simpleName, "Error al intentar leer el disco")
+          Log.d(classTag, "Error al intentar leer el disco")
           null
         }
       )
@@ -77,7 +84,7 @@ class MapsFragment : Fragment() {
 
     loginModel.authenticationState.observe(viewLifecycleOwner, Observer {
       if (it == UNAUTHENTICATED) {
-        Log.d(javaClass.simpleName, "No autenticado, yendo a la pantalla login")
+        Log.d(classTag, "No autenticado, yendo a la pantalla login")
         navController.navigate(MapsFragmentDirections.toLoginFTUE())
       } else if (it == AUTHENTICATED) lifecycleScope.launch { startMaps(view) }
     })
@@ -109,16 +116,42 @@ class MapsFragment : Fragment() {
     map.setOnMyLocationButtonClickListener {
 
       fusedLocationClient.lastLocation.addOnSuccessListener { loc ->
-        Log.d(javaClass.simpleName,map.isMyLocationEnabled.toString())
+        Log.d(classTag,"localizacion ${if(map.isMyLocationEnabled) "activada" else "desactivada"}")
         loc?.run {
           Snackbar.make(
             view,
             "Your location: Lat: $latitude, Long: $longitude",
             Snackbar.LENGTH_LONG
           ).setAction("Ignore"){}.show()
-        } ?: Log.d(javaClass.simpleName, "Localizacion no disponible")
+        } ?: Log.d(classTag, "Localizacion no disponible")
       }
       false
+    }
+
+    createLocationRequest()
+    val builder = LocationSettingsRequest.Builder()
+      .addLocationRequest(locationRequest)
+    val client = LocationServices.getSettingsClient(requireContext())
+    val task = client.checkLocationSettings(builder.build())
+    task.addOnSuccessListener {
+
+      Log.d(classTag,"Acaba la tarea exitosamente")
+      locationCallback = object : LocationCallback(){
+        override fun onLocationResult(locRes: LocationResult?) {
+          locRes ?: return
+          currentLoc = locRes.lastLocation
+          Log.d(classTag,"Recibe localizacion: ${currentLoc?.latitude}, ${currentLoc?.longitude}")
+        }
+      }
+      fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper())
+    }
+  }
+
+  private fun createLocationRequest() {
+    locationRequest = LocationRequest().apply {
+      interval = 60000
+      fastestInterval = 30000
+      priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
   }
 
@@ -129,7 +162,7 @@ class MapsFragment : Fragment() {
   ) {
 
     if (requestCode == REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-      Log.d(javaClass.simpleName, "Activando la localizacion")
+      Log.d(classTag, "Activando la localizacion")
       map.isMyLocationEnabled = true
       fusedLocationClient.lastLocation.addOnSuccessListener { currentLoc = it } //get the last known location
     }

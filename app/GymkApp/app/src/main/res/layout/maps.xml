@@ -24,7 +24,6 @@
         android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/my_location"
-        app:tint="@color/colorAccent" />
+        app:srcCompat="@drawable/my_location" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

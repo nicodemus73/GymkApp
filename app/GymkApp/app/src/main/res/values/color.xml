@@ -45,26 +45,26 @@
         <!-- Light Theme -->
 
     <color name="purple_500">#211A51</color> <!--Color primary-->
-    <color name="purple_700">#1B92FB</color> <!--Color primary variant-->
+    <color name="purple_700">@color/purple_500</color> <!--Color primary variant-->
     <!-- SECONDARY & SECONDARY VARIANT ON BOTH -->
-    <color name="red_600">#D45F47</color> <!--Color error-->
+    <color name="red_600">#E53935</color> <!--Color error-->
     <!-- <color name="white_50">#FFFFFF</color> Background & Surface & OnPrimary & On error -->
     <!-- <color name="black_900">#141414</color> OnSecondary & OnBackground & OnSurface -->
 
-        <!-- Dark Theme -->
+    <!-- Dark Theme -->
 
-    <color name="purple_200">#FF7700</color> <!--Color primary-->
-    <color name="purple_600">#AF0E0E</color> <!--Color primary variant-->
+    <color name="purple_200">#FFFFFF</color> <!--Color primary-->
+    <color name="purple_600">@color/purple_200</color> <!--Color primary variant-->
     <!-- SECONDARY & SECONDARY VARIANT ON BOTH -->
-    <color name="red_200">#BF0000</color> <!--Color error-->
-    <color name="black_800">#000E8E</color> <!-- Color Surface -->
+    <color name="red_200">#E53935</color> <!--Color error-->
+    <color name="black_800">#211A51</color> <!-- Color Surface -->
     <!-- <color name="white_50">#FFFFFF</color> OnBackground & OnSurface -->
     <!-- <color name="black_900">#141414</color> Background & OnPrimary & OnSecondary & OnError -->
 
-        <!-- Light & Dark -->
+    <!-- Light & Dark -->
 
-    <color name="green_200">#FF9800</color> <!-- Color SECONDARY -->
-    <color name="green_500">#FFC107</color> <!-- Color SECONDARY VARIANT -->
+    <color name="green_200">#00A3FF</color> <!-- Color SECONDARY -->
+    <color name="green_500">@color/green_200</color> <!-- Color SECONDARY VARIANT -->
     <color name="white_50">#FFFFFF</color>
-    <color name="black_900">#202020</color>
+    <color name="black_900">#211A51</color>
 </resources>
