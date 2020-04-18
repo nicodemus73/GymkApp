@@ -127,30 +127,12 @@ class MapsFragment : Fragment() {
       }
       false
     }
-
-    createLocationRequest()
-    val builder = LocationSettingsRequest.Builder()
-      .addLocationRequest(locationRequest)
-    val client = LocationServices.getSettingsClient(requireContext())
-    val task = client.checkLocationSettings(builder.build())
-    task.addOnSuccessListener {
-
-      Log.d(classTag,"Acaba la tarea exitosamente")
-      locationCallback = object : LocationCallback(){
-        override fun onLocationResult(locRes: LocationResult?) {
-          locRes ?: return
-          currentLoc = locRes.lastLocation
-          Log.d(classTag,"Recibe localizacion: ${currentLoc?.latitude}, ${currentLoc?.longitude}")
-        }
-      }
-      fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper())
-    }
   }
 
   private fun createLocationRequest() {
     locationRequest = LocationRequest().apply {
-      interval = 60000
-      fastestInterval = 30000
+      interval = 10000
+      fastestInterval = 1000
       priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
   }
@@ -165,6 +147,27 @@ class MapsFragment : Fragment() {
       Log.d(classTag, "Activando la localizacion")
       map.isMyLocationEnabled = true
       fusedLocationClient.lastLocation.addOnSuccessListener { currentLoc = it } //get the last known location
+      createLocationRequest()
+      val builder = LocationSettingsRequest.Builder()
+        .addLocationRequest(locationRequest)
+      val client = LocationServices.getSettingsClient(requireContext())
+      val task = client.checkLocationSettings(builder.build())
+      task.addOnSuccessListener {
+
+        Log.d(classTag,"Acaba la tarea exitosamente")
+        locationCallback = object : LocationCallback(){
+          override fun onLocationResult(locRes: LocationResult?) {
+            Log.d(classTag,"He obtenido un resultado")
+            locRes ?: return
+            currentLoc = locRes.lastLocation
+            for(loc in locRes.locations){
+              Log.d(classTag,"localizacion: ${loc.latitude},${loc.longitude}")
+              Log.d(classTag,"ultima posicion: ${currentLoc?.latitude},${currentLoc?.longitude}")
+            }
+          }
+        }
+        fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper())
+      }
     }
   }
 
