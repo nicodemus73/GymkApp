@@ -30,13 +30,12 @@ import com.google.maps.android.ktx.awaitMap
 import gymkapp.main.databinding.MapsBinding
 import kotlinx.coroutines.launch
 import java.lang.Exception
-import java.util.concurrent.TimeUnit
 
 const val REQUEST_CODE = 3
 
 class MapsFragment : Fragment() {
 
-  private val classTag = javaClass.simpleName
+  private val classTag = javaClass.simpleName //Solo para debugeo
 
   private val loginModel: LoginViewModel by activityViewModels()
   private lateinit var map: GoogleMap
@@ -96,14 +95,14 @@ class MapsFragment : Fragment() {
 
     map = (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.awaitMap() ?: return
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+    map.uiSettings.isMyLocationButtonEnabled = false
+
     if (ContextCompat.checkSelfPermission(
         requireContext(),
         Manifest.permission.ACCESS_FINE_LOCATION
       ) == PackageManager.PERMISSION_GRANTED
     ) {
-      map.isMyLocationEnabled = true
-      map.uiSettings.isMyLocationButtonEnabled = false
-      //fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper()) //Pedir actualizaciones, se podria activar en otra parte...
+      doAfterLocationGranted()
     } else {
 
       if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -123,14 +122,6 @@ class MapsFragment : Fragment() {
     }
   }
 
-  private fun createLocationRequest() {
-    locationRequest = LocationRequest().apply {
-      interval = 10000
-      fastestInterval = 1000
-      priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
-  }
-
   override fun onRequestPermissionsResult(
     requestCode: Int,
     permissions: Array<out String>,
@@ -139,15 +130,29 @@ class MapsFragment : Fragment() {
 
     if (requestCode == REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       Log.d(classTag, "Activando la localizacion")
-      map.isMyLocationEnabled = true
-      map.uiSettings.isMyLocationButtonEnabled = false
-      //TODO explorar otras opciones que permite personalizar uiSettings
-      createLocationRequest()
-      checkSettings()
+      doAfterLocationGranted()
+    }
+  }
+
+  private fun doAfterLocationGranted(){
+
+    map.isMyLocationEnabled = true
+    bind.locationButton.show()
+    createLocationRequest()
+    checkSettings()
+  }
+
+  private fun createLocationRequest() {
+
+    locationRequest = LocationRequest().apply {
+      interval = 10000
+      fastestInterval = 1000
+      priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
   }
 
   private fun checkSettings(){
+
     val builder = LocationSettingsRequest.Builder()
       .addLocationRequest(locationRequest)
     val client = LocationServices.getSettingsClient(requireContext())
