@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     //TODO SharedPreference cifrado
     //TODO secure.properties API KEY y otras formas de proteger la API KEY
     //TODO añadir loader para la conexion al server
+    //TODO esconder el teclado al pasar a la vista de mapas
     super.onCreate(savedInstanceState)
     bind = BottomNavBinding.inflate(layoutInflater)
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT //Desactivamos el modo "landscape"

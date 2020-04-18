@@ -18,10 +18,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import gymkapp.main.LoginViewModel.AuthenticationState.*
 
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitMap
@@ -35,7 +37,6 @@ const val REQUEST_CODE = 3
 class MapsFragment : Fragment() {
 
   private val classTag = javaClass.simpleName
-  //TODO Al aceptar acceso de localizacion no funciona hasta recargarse
 
   private val loginModel: LoginViewModel by activityViewModels()
   private lateinit var map: GoogleMap
@@ -101,6 +102,8 @@ class MapsFragment : Fragment() {
       ) == PackageManager.PERMISSION_GRANTED
     ) {
       map.isMyLocationEnabled = true
+      map.uiSettings.isMyLocationButtonEnabled = false
+      //fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper()) //Pedir actualizaciones, se podria activar en otra parte...
     } else {
 
       if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -112,20 +115,11 @@ class MapsFragment : Fragment() {
       }
       requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
     }
-
-    map.setOnMyLocationButtonClickListener {
-
-      fusedLocationClient.lastLocation.addOnSuccessListener { loc ->
-        Log.d(classTag,"localizacion ${if(map.isMyLocationEnabled) "activada" else "desactivada"}")
-        loc?.run {
-          Snackbar.make(
-            view,
-            "Your location: Lat: $latitude, Long: $longitude",
-            Snackbar.LENGTH_LONG
-          ).setAction("Ignore"){}.show()
-        } ?: Log.d(classTag, "Localizacion no disponible")
+    bind.locationButton.setOnClickListener{
+      //TODO esconder hasta que tenga el permiso
+      currentLoc?.run {
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude,longitude), 10F))
       }
-      false
     }
   }
 
@@ -146,28 +140,27 @@ class MapsFragment : Fragment() {
     if (requestCode == REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       Log.d(classTag, "Activando la localizacion")
       map.isMyLocationEnabled = true
-      fusedLocationClient.lastLocation.addOnSuccessListener { currentLoc = it } //get the last known location
+      map.uiSettings.isMyLocationButtonEnabled = false
+      //TODO explorar otras opciones que permite personalizar uiSettings
       createLocationRequest()
-      val builder = LocationSettingsRequest.Builder()
-        .addLocationRequest(locationRequest)
-      val client = LocationServices.getSettingsClient(requireContext())
-      val task = client.checkLocationSettings(builder.build())
-      task.addOnSuccessListener {
+      checkSettings()
+    }
+  }
 
-        Log.d(classTag,"Acaba la tarea exitosamente")
-        locationCallback = object : LocationCallback(){
-          override fun onLocationResult(locRes: LocationResult?) {
-            Log.d(classTag,"He obtenido un resultado")
-            locRes ?: return
-            currentLoc = locRes.lastLocation
-            for(loc in locRes.locations){
-              Log.d(classTag,"localizacion: ${loc.latitude},${loc.longitude}")
-              Log.d(classTag,"ultima posicion: ${currentLoc?.latitude},${currentLoc?.longitude}")
-            }
-          }
+  private fun checkSettings(){
+    val builder = LocationSettingsRequest.Builder()
+      .addLocationRequest(locationRequest)
+    val client = LocationServices.getSettingsClient(requireContext())
+    val task = client.checkLocationSettings(builder.build())
+    task.addOnSuccessListener {
+
+      Log.d(classTag,"Acaba la tarea exitosamente")
+      locationCallback = object : LocationCallback(){
+        override fun onLocationResult(locRes: LocationResult?) {
+          currentLoc = locRes?.lastLocation
         }
-        fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper())
       }
+      fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper()) //Pedir actualizaciones, se podria activar en otra parte...
     }
   }
 
