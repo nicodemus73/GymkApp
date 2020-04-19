@@ -54,6 +54,32 @@ class LoginViewModel : ViewModel() {
 
   companion object {
 
+    fun validateUsername(username: String) = with(username){
+      when{
+        isEmpty() -> "Username must not be empty"
+        length !in USER_MIN_LENGTH..USER_MAX_LENGTH -> "3 to 20 characters required"
+        contains(' ') -> "No spaces allowed"
+        else -> null
+      }
+    }
 
+    fun validatePassword(password: String) = with(password){
+
+      when{
+        isEmpty() -> "Password must not be empty"
+        length < 8 -> "At least 8 characters are required"
+        else -> {
+          var space = false
+          var uppercase = false
+          forEach {
+            if(it.isUpperCase())uppercase = true
+            else if(it==' ')space = true
+          }
+          if(space) "No spaces allowed"
+          else if(!uppercase) "At least one uppercase is required"
+          else null
+        }
+      }
+    }
   }
 }

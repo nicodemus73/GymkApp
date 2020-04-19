@@ -5,7 +5,7 @@ const val LOCATION_REQUEST_CODE = 0
 const val DEFAULT_VIEW_RADIUS = 300
 
 //Server
-const val BASE_URL = "http://10.4.4.144:3001"
+const val BASE_URL = "http://10.4.41.144:3001"
 
 //Login & Register validation
 const val USER_MIN_LENGTH = 3
