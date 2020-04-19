@@ -27,7 +27,8 @@ class MainActivity : AppCompatActivity() {
     //TODO esconder el teclado al pasar a la vista de mapas -- Solo pasa con el teclado fisico... Ignorar por el momento
     super.onCreate(savedInstanceState)
     bind = BottomNavBinding.inflate(layoutInflater)
-    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT //Desactivamos el modo "landscape"
+    requestedOrientation =
+      ActivityInfo.SCREEN_ORIENTATION_PORTRAIT //Desactivamos el modo "landscape"
     setContentView(bind.root)
 
     Log.d(javaClass.simpleName, "Me han creado")

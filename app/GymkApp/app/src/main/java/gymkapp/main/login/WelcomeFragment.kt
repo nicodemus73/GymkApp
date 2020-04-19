@@ -12,14 +12,14 @@ import gymkapp.main.databinding.WelcomeBinding
 class WelcomeFragment : Fragment() {
 
   private var _bind: WelcomeBinding? = null
-  private val bind get() = _bind!!
+  private val bind inline get() = _bind!!
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
 
-    _bind = WelcomeBinding.inflate(inflater,container,false)
+    _bind = WelcomeBinding.inflate(inflater, container, false)
     return bind.root
   }
 
@@ -28,9 +28,9 @@ class WelcomeFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
 
     val navController = findNavController()
-    bind.loginButton.setOnClickListener{ navController.navigate(WelcomeFragmentDirections.toLogin()) }
+    bind.loginButton.setOnClickListener { navController.navigate(WelcomeFragmentDirections.toLogin()) }
     bind.registerButton.setOnClickListener { navController.navigate(WelcomeFragmentDirections.toRegister()) }
-    Log.d(javaClass.simpleName,"Me han creado")
+    Log.d(javaClass.simpleName, "Me han creado")
   }
 
   override fun onDestroyView() {

@@ -4,9 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import gymkapp.main.api.RemoteAPI
 
-class RegisterViewModel: ViewModel() {
+class RegisterViewModel : ViewModel() {
 
-  enum class RegistrationState{
+  enum class RegistrationState {
     COLLECTING_DATA,
     REGISTRATION_COMPLETED,
     REGISTRATION_FAILED
@@ -25,18 +25,18 @@ class RegisterViewModel: ViewModel() {
    * Al llegar aqui los datos de registro deberían ser validos
    * en formato (el boton no se activa hasta que no son validos)
    */
-  suspend fun register(user: String, password: String){
+  suspend fun register(user: String, password: String) {
 
-     val (failure, message) = RemoteAPI.register(
-       user,
-       password
-     )
-     if(failure) registrationFailed(message)
-     else registrationState.value =
-       RegistrationState.REGISTRATION_COMPLETED
+    val (failure, message) = RemoteAPI.register(
+      user,
+      password
+    )
+    if (failure) registrationFailed(message)
+    else registrationState.value =
+      RegistrationState.REGISTRATION_COMPLETED
   }
 
-  private fun registrationFailed(message:String){
+  private fun registrationFailed(message: String) {
     errorMessage = message
     registrationState.value =
       RegistrationState.REGISTRATION_FAILED

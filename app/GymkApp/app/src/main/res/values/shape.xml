@@ -41,12 +41,12 @@
 
     <style name="ShapeAppearance.MyTheme.SmallComponent.NavButtons" parent="ShapeAppearance.MyTheme.SmallComponent">
         <item name="cornerSize">35dp</item>
-       <!-- android:layout_width="64dp" Diferencia de 10 (a ojo) segun este tamaño
-        android:layout_height="74dp"
-        app:icon="@drawable/arrow_back"
-        app:iconGravity="textEnd" Para centrar el icono
-        app:iconPadding="0dp"
-        app:iconSize="48dp" Cutre pero es la unica forma de hacerlo circular...-->
+        <!-- android:layout_width="64dp" Diferencia de 10 (a ojo) segun este tamaño
+         android:layout_height="74dp"
+         app:icon="@drawable/arrow_back"
+         app:iconGravity="textEnd" Para centrar el icono
+         app:iconPadding="0dp"
+         app:iconSize="48dp" Cutre pero es la unica forma de hacerlo circular...-->
     </style>
     <!--Shape Appearance for medium components like cards, alert dialogs-->
     <style name="ShapeAppearance.MyTheme.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">

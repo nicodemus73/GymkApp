@@ -25,14 +25,14 @@ class RegisterFragment : Fragment() {
   private val registerFragmentModel: RegisterFragmentModel by viewModels()
   private val loginViewModel: LoginViewModel by activityViewModels()
   private lateinit var errorSnackbar: Snackbar
-  private var _bind : RegisterBinding? = null
-  private val bind : RegisterBinding get() = _bind!!
+  private var _bind: RegisterBinding? = null
+  private val bind: RegisterBinding inline get() = _bind!!
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    _bind = RegisterBinding.inflate(inflater,container,false)
+    _bind = RegisterBinding.inflate(inflater, container, false)
     return bind.root
   }
 
@@ -47,7 +47,7 @@ class RegisterFragment : Fragment() {
     bind.buttonBack.setOnClickListener { navController.navigateUp() }
     bind.registerButton.setOnClickListener {
       viewLifecycleOwner.lifecycleScope.launch {
-        registrationViewModel.register(fieldUsername.text.toString(),fieldPassword.text.toString())
+        registrationViewModel.register(fieldUsername.text.toString(), fieldPassword.text.toString())
       }
     }
 
@@ -58,60 +58,71 @@ class RegisterFragment : Fragment() {
 
     //Comprobacion de los datos y mostrar el mensaje de error si no lo son
     fieldUsername.doAfterTextChanged {
-      bind.inputUsername.error = registerFragmentModel.validateUsername(fieldUsername.text.toString())
+      bind.inputUsername.error =
+        registerFragmentModel.validateUsername(fieldUsername.text.toString())
     }
     fieldPassword.doAfterTextChanged {
       val pass = fieldPassword.text.toString()
       bind.inputPassword.error = registerFragmentModel.validatePassword(pass)
-      bind.inputConfirmPassword.error = registerFragmentModel.checkEquals(pass,fieldCPassword.text.toString())
+      bind.inputConfirmPassword.error =
+        registerFragmentModel.checkEquals(pass, fieldCPassword.text.toString())
     }
     fieldCPassword.doAfterTextChanged {
-      bind.inputConfirmPassword.error = registerFragmentModel.checkEquals(fieldPassword.text.toString(),fieldCPassword.text.toString())
+      bind.inputConfirmPassword.error = registerFragmentModel.checkEquals(
+        fieldPassword.text.toString(),
+        fieldCPassword.text.toString()
+      )
     }
 
     //Manejo del estado de autenticacion (LOGIN)
     loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authState ->
-      when(authState){
+      when (authState) {
 
         LoginViewModel.AuthenticationState.AUTHENTICATED -> {
 
-          Log.d(javaClass.simpleName,"Autenticado, guardando y moviendose al grafico principal")
-          activity?.getPreferences(Context.MODE_PRIVATE)?.edit { putString(R.string.TokenKey.toString(),loginViewModel.loginToken) }
+          Log.d(javaClass.simpleName, "Autenticado, guardando y moviendose al grafico principal")
+          activity?.getPreferences(Context.MODE_PRIVATE)
+            ?.edit { putString(R.string.TokenKey.toString(), loginViewModel.loginToken) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         //Improbable que ocurra ya que el registro deberia haber ido bien
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
-          Log.d(javaClass.simpleName,"Logeo no ha salido bien")
-          errorSnackbar = Snackbar.make(view,loginViewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
+          Log.d(javaClass.simpleName, "Logeo no ha salido bien")
+          errorSnackbar = Snackbar.make(view, loginViewModel.errorMessage, Snackbar.LENGTH_SHORT)
+            .setAction("Ignore") {}
           errorSnackbar.show()
         }
-        else -> {}
+        else -> {
+        }
       }
     })
 
     //Manejo del estado de registro (REGISTER)
     registrationViewModel.registrationState.observe(viewLifecycleOwner, Observer { state ->
-      when(state){
+      when (state) {
 
         RegisterViewModel.RegistrationState.REGISTRATION_COMPLETED -> {
           Log.d(javaClass.simpleName, "Registro completado, logeandose")
           viewLifecycleOwner.lifecycleScope.launch {
-            loginViewModel.login(fieldUsername.text.toString(),fieldPassword.text.toString())
+            loginViewModel.login(fieldUsername.text.toString(), fieldPassword.text.toString())
           }
         }
         RegisterViewModel.RegistrationState.REGISTRATION_FAILED -> {
-          Log.d(javaClass.simpleName,"Registro incorrecto")
-          errorSnackbar = Snackbar.make(view,registrationViewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
+          Log.d(javaClass.simpleName, "Registro incorrecto")
+          errorSnackbar =
+            Snackbar.make(view, registrationViewModel.errorMessage, Snackbar.LENGTH_SHORT)
+              .setAction("Ignore") {}
           errorSnackbar.show()
         }
-        else -> {}
+        else -> {
+        }
       }
     })
   }
 
   override fun onStop() {
     super.onStop()
-    if(::errorSnackbar.isInitialized) errorSnackbar.dismiss()
+    if (::errorSnackbar.isInitialized) errorSnackbar.dismiss()
   }
 
   override fun onDestroyView() {

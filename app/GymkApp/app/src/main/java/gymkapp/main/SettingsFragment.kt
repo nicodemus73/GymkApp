@@ -16,15 +16,15 @@ import gymkapp.main.databinding.SettingsBinding
 class SettingsFragment : Fragment() {
 
   private val loginModel: LoginViewModel by activityViewModels()
-  private var _bind : SettingsBinding? = null
-  private val bind : SettingsBinding get() = _bind!!
+  private var _bind: SettingsBinding? = null
+  private val bind: SettingsBinding get() = _bind!!
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
 
-    _bind = SettingsBinding.inflate(inflater,container,false)
+    _bind = SettingsBinding.inflate(inflater, container, false)
     return bind.root
   }
 
@@ -32,9 +32,8 @@ class SettingsFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
 
     val navController = findNavController()
-    bind.nightModeSwitch.setOnCheckedChangeListener{
-        _,isChecked ->
-      if(isChecked) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+    bind.nightModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+      if (isChecked) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
       else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 

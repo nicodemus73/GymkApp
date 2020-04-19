@@ -12,12 +12,12 @@
         tools:layout="@layout/maps" />
     <navigation
         android:id="@+id/FTUE_login"
-        app:startDestination="@id/welcomeFragment" >
+        app:startDestination="@id/welcomeFragment">
         <fragment
             android:id="@+id/loginFragment"
             android:name="gymkapp.main.login.LoginFragment"
             android:label="login"
-            tools:layout="@layout/login"/>
+            tools:layout="@layout/login" />
         <fragment
             android:id="@+id/welcomeFragment"
             android:name="gymkapp.main.login.WelcomeFragment"
@@ -42,7 +42,7 @@
             android:id="@+id/registerFragment"
             android:name="gymkapp.main.login.RegisterFragment"
             android:label="register"
-            tools:layout="@layout/register"/>
+            tools:layout="@layout/register" />
         <action
             android:id="@+id/toMainGraph"
             app:destination="@id/mapsFragment"

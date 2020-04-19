@@ -31,8 +31,6 @@ import gymkapp.main.databinding.MapsBinding
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-const val REQUEST_CODE = 3
-
 class MapsFragment : Fragment() {
 
   private val classTag = javaClass.simpleName //Solo para debugeo
@@ -46,8 +44,8 @@ class MapsFragment : Fragment() {
   private var currentLoc: Location? = null
   private var recievingLocUpdates = false
 
-  private var _bind : MapsBinding? = null
-  private val bind: MapsBinding get() = _bind!!
+  private var _bind: MapsBinding? = null
+  private val bind: MapsBinding inline get() = _bind!!
 
   //TODO Flujo de permisos y settings
   //TODO llamada a la fucion para obtener puntos cercanos
@@ -59,7 +57,7 @@ class MapsFragment : Fragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    _bind = MapsBinding.inflate(inflater,container,false)
+    _bind = MapsBinding.inflate(inflater, container, false)
     return bind.root
   }
 
@@ -99,10 +97,12 @@ class MapsFragment : Fragment() {
   @MapsExperimentalFeature
   private suspend fun startMaps(view: View) {
 
-    map = (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.awaitMap() ?: return
+    map =
+      (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.awaitMap() ?: return
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     map.uiSettings.isMyLocationButtonEnabled = false
 
+    Log.d(classTag, map.maxZoomLevel.toString())
     if (ContextCompat.checkSelfPermission(
         requireContext(),
         Manifest.permission.ACCESS_FINE_LOCATION
@@ -118,12 +118,12 @@ class MapsFragment : Fragment() {
           Snackbar.LENGTH_LONG
         ).show()
       }
-      requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
+      requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
     }
-    bind.locationButton.setOnClickListener{
+    bind.locationButton.setOnClickListener {
 
       currentLoc?.run {
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude,longitude), 10F))
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 10F))
       }
     }
   }
@@ -134,13 +134,13 @@ class MapsFragment : Fragment() {
     grantResults: IntArray
   ) {
 
-    if (requestCode == REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+    if (requestCode == LOCATION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       Log.d(classTag, "Activando la localizacion")
       doAfterLocationGranted()
     }
   }
 
-  private fun doAfterLocationGranted(){
+  private fun doAfterLocationGranted() {
 
     map.isMyLocationEnabled = true
     bind.locationButton.show()
@@ -161,7 +161,7 @@ class MapsFragment : Fragment() {
    * Comprueba si el usuario tiene activada la localizacion
    * Solo se comprueba al iniciar el fragmento
    */
-  private fun checkSettings(){
+  private fun checkSettings() {
 
     val builder = LocationSettingsRequest.Builder()
       .addLocationRequest(locationRequest)
@@ -169,27 +169,35 @@ class MapsFragment : Fragment() {
     val task = client.checkLocationSettings(builder.build())
     task.addOnSuccessListener {
 
-      Log.d(classTag,"check settings SUCCESSFUL")
-      locationCallback = object : LocationCallback(){
+      Log.d(classTag, "check settings SUCCESSFUL")
+      locationCallback = object : LocationCallback() {
         override fun onLocationResult(locRes: LocationResult?) {
 
-          Log.d(classTag,"Recibiendo actualizacion Lat Long: ${currentLoc?.latitude},${currentLoc?.longitude} -> ${locRes?.lastLocation?.latitude}, ${locRes?.lastLocation?.longitude}")
+          Log.d(
+            classTag,
+            "Recibiendo actualizacion Lat Long: ${currentLoc?.latitude},${currentLoc?.longitude} -> ${locRes?.lastLocation?.latitude}, ${locRes?.lastLocation?.longitude}"
+          )
           currentLoc = locRes?.lastLocation
         }
       }
       recievingLocUpdates = true
-      fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper())
+      fusedLocationClient.requestLocationUpdates(
+        locationRequest,
+        locationCallback,
+        Looper.getMainLooper()
+      )
     }
 
-    task.addOnFailureListener{
-      Log.d(classTag,"check settings FAILED")
+    task.addOnFailureListener {
+      Log.d(classTag, "check settings FAILED")
       //TODO a lo mejor no mostrar la ultima localizacion si esto falla
     }
   }
 
   override fun onPause() {
     super.onPause()
-    if(recievingLocUpdates) fusedLocationClient.removeLocationUpdates(locationCallback).also { recievingLocUpdates=false }
+    if (recievingLocUpdates) fusedLocationClient.removeLocationUpdates(locationCallback)
+      .also { recievingLocUpdates = false }
   }
 
   override fun onDestroyView() {

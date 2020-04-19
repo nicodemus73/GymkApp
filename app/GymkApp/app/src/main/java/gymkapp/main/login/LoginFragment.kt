@@ -28,8 +28,9 @@ class LoginFragment : Fragment() {
    * Scope de fragmento!
    */
   private val loginFragmentModel: LoginFragmentModel by viewModels()
-  private var _bind : LoginBinding? = null
-  private val bind : LoginBinding get() = _bind!!
+  private var _bind: LoginBinding? = null
+  private val bind: LoginBinding inline get() = _bind!!
+
   /**
    * Instancia que sirve para mantener datos independientemente del estado del fragmento. ViewModel
    * provee funciones para gestionar el estado del login, el estado del registro, para cambiar estados
@@ -42,7 +43,7 @@ class LoginFragment : Fragment() {
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    _bind = LoginBinding.inflate(inflater,container,false)
+    _bind = LoginBinding.inflate(inflater, container, false)
     return bind.root
   }
 
@@ -75,26 +76,29 @@ class LoginFragment : Fragment() {
 
     //Seguimiento del estado de autenticacion (LOGIN)
     viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authState ->
-      when(authState){
+      when (authState) {
         LoginViewModel.AuthenticationState.AUTHENTICATED -> {
 
-          Log.d(javaClass.simpleName,"Autenticado, guardando y pasando al grafico principal")
-          activity?.getPreferences(Context.MODE_PRIVATE)?.edit { putString(R.string.TokenKey.toString(),viewModel.loginToken) }
+          Log.d(javaClass.simpleName, "Autenticado, guardando y pasando al grafico principal")
+          activity?.getPreferences(Context.MODE_PRIVATE)
+            ?.edit { putString(R.string.TokenKey.toString(), viewModel.loginToken) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
-          Log.d(javaClass.simpleName,"Entrada invalida, imprimiendo mensaje de error")
-          errorSnackBar = Snackbar.make(view,viewModel.errorMessage,Snackbar.LENGTH_SHORT).setAction("Ignore"){}
+          Log.d(javaClass.simpleName, "Entrada invalida, imprimiendo mensaje de error")
+          errorSnackBar = Snackbar.make(view, viewModel.errorMessage, Snackbar.LENGTH_SHORT)
+            .setAction("Ignore") {}
           errorSnackBar.show()
         }
-        else -> {}
+        else -> {
+        }
       }
     })
   }
 
   override fun onStop() {
     super.onStop()
-    if(::errorSnackBar.isInitialized) errorSnackBar.dismiss()
+    if (::errorSnackBar.isInitialized) errorSnackBar.dismiss()
   }
 
   override fun onDestroyView() {
