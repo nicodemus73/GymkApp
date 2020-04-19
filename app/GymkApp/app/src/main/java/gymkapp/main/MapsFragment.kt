@@ -1,5 +1,6 @@
 package gymkapp.main
 
+import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import android.os.Looper
@@ -24,15 +25,14 @@ import com.google.maps.android.ktx.awaitMap
 import gymkapp.main.LoginViewModel.AuthenticationState.*
 import gymkapp.main.databinding.MapsBinding
 import kotlinx.coroutines.launch
-import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
 class MapsFragment : Fragment() {
 
   private val classTag = javaClass.simpleName //Solo para debugeo
 
-  private val loginModel: LoginViewModel by viewModels()
-  private val mapsModel: MapsFragmentModel by activityViewModels()
+  private val mapsModel: MapsFragmentModel by viewModels()
+  private val loginModel: LoginViewModel by activityViewModels()
   private lateinit var map: GoogleMap
 
   private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -126,6 +126,10 @@ class MapsFragment : Fragment() {
         }
       }
     })*/
+
+    if(EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)){
+      doAfterLocationGranted()
+    } else EasyPermissions.requestPermissions(this,"Location is required to show near gymkhanas", LOCATION_REQUEST_CODE,Manifest.permission.ACCESS_FINE_LOCATION)
   }
 
   override fun onRequestPermissionsResult(
@@ -134,10 +138,25 @@ class MapsFragment : Fragment() {
     grantResults: IntArray
   ) {
 
-    EasyPermissions.onRequestPermissionsResult(requestCode,permissions,grantResults,this)
+    EasyPermissions.onRequestPermissionsResult(requestCode,permissions,grantResults, object: EasyPermissions.PermissionCallbacks{
+      override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        doAfterLocationGranted()
+      }
+
+      override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+
+      }
+
+      override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+      ) {
+
+      }
+    })
   }
 
-  @AfterPermissionGranted(LOCATION_REQUEST_CODE)
   private fun doAfterLocationGranted() {
 
     map.isMyLocationEnabled = true
