@@ -1,5 +1,10 @@
 package gymkapp.main
 
+import android.location.Location
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.ktx.utils.withSphericalOffset
+
 //Map Fragment
 const val LOCATION_REQUEST_CODE = 0
 const val DEFAULT_VIEW_RADIUS = 500 //Radio a utilizar para ver los puntos cercanos
@@ -19,3 +24,13 @@ const val MAP_DESCRIPTION_MAX_LENGTH = 150
 //Game comment validation
 const val GAME_COMMENT_MIN_LENGTH = 1
 const val GAME_COMMENT_MAX_LENGTH = 150
+
+fun Location.toLatLng() = LatLng(latitude,longitude)
+
+fun LatLng.createBounds(radius: Int): LatLngBounds = LatLngBounds
+  .builder()
+  .include(withSphericalOffset(radius.toDouble(),0.0))
+  .include(withSphericalOffset(radius.toDouble(),90.0))
+  .include(withSphericalOffset(radius.toDouble(),180.0))
+  .include(withSphericalOffset(radius.toDouble(),270.0))
+  .build()
