@@ -4,10 +4,11 @@ import android.location.Location
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 
 class MapsFragmentModel : ViewModel(){
-
 
   enum class LocationSettingsStatus {
     ENABLED,
@@ -15,7 +16,7 @@ class MapsFragmentModel : ViewModel(){
     UNKNOWN
   }
 
-  private val classTag = javaClass.simpleName
+  private val classTag = javaClass.simpleName //TODO: borrar cuando acabemos
 
   val locationRequest: LocationRequest by lazy {
     LocationRequest().apply {
@@ -37,6 +38,8 @@ class MapsFragmentModel : ViewModel(){
       }
     }
   }
+
+  var isFirstTime = true
 
   var currentLoc : Location? = null
 }
