@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitMap
+import com.google.maps.android.ktx.utils.sphericalDistance
 import com.google.maps.android.ktx.utils.withSphericalOffset
 import gymkapp.main.databinding.MapsBinding
 import kotlinx.coroutines.launch
@@ -126,8 +127,22 @@ class MapsFragment : Fragment() {
 
       currentLoc?.run {
 
-        val currentLatLng = LatLng(latitude, longitude).also { it.boundsFromRadius(
-          DEFAULT_VIEW_RADIUS) }
+        val currentLatLng = LatLng(latitude, longitude)
+        /*currentLatLng.run {
+
+          val radius = DEFAULT_VIEW_RADIUS
+          val n = withSphericalOffset(radius.toDouble(),0.0)
+          val e = withSphericalOffset(radius.toDouble(),90.0)
+          val s = withSphericalOffset(radius.toDouble(),180.0)
+          val w = withSphericalOffset(radius.toDouble(),270.0)
+          Log.d(classTag,"""
+            north: ${n.latitude}, ${n.longitude}, distance = ${n.sphericalDistance(s)}
+            east: ${e.latitude}, ${e.longitude}, distance = ${e.sphericalDistance(w)}
+            south: ${s.latitude}, ${s.longitude}, distance = ${s.sphericalDistance(n)}
+            west: ${w.latitude}, ${w.longitude}, distance = ${w.sphericalDistance(e)}
+          """.trimIndent())
+        }*/
+        //TODO añadir algo de padding o aumentar el radio en x metros
         map.animateCamera(
           CameraUpdateFactory.newLatLngBounds(
             currentLatLng.boundsFromRadius(
@@ -204,10 +219,13 @@ class MapsFragment : Fragment() {
     }
   }
 
-  private fun LatLng.boundsFromRadius(radius: Int) = LatLngBounds(
-    withSphericalOffset(radius.toDouble(), HEADING_FROM_NORTH + 180.0),
-    withSphericalOffset(radius.toDouble(), HEADING_FROM_NORTH)
-  )
+  private fun LatLng.boundsFromRadius(radius: Int) = LatLngBounds
+    .builder()
+    .include(withSphericalOffset(radius.toDouble(),0.0))
+    .include(withSphericalOffset(radius.toDouble(),90.0))
+    .include(withSphericalOffset(radius.toDouble(),180.0))
+    .include(withSphericalOffset(radius.toDouble(),270.0))
+    .build()
 
   override fun onPause() {
     super.onPause()

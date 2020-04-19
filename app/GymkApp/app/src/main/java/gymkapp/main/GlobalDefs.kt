@@ -2,9 +2,7 @@ package gymkapp.main
 
 //Map Fragment
 const val LOCATION_REQUEST_CODE = 0
-const val DEFAULT_VIEW_RADIUS = 500
-const val HEADING_FROM_NORTH = 90.0
-
+const val DEFAULT_VIEW_RADIUS = 500 //Radio a utilizar para ver los puntos cercanos
 //Server
 const val BASE_URL = "http://10.4.41.144:3001"
 
