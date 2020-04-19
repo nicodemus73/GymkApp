@@ -17,7 +17,7 @@ class SettingsFragment : Fragment() {
 
   private val loginModel: LoginViewModel by activityViewModels()
   private var _bind: SettingsBinding? = null
-  private val bind: SettingsBinding get() = _bind!!
+  private val bind: SettingsBinding inline get() = _bind!!
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,

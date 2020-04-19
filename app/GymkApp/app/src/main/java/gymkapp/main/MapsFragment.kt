@@ -24,9 +24,11 @@ import gymkapp.main.LoginViewModel.AuthenticationState.*
 
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitMap
+import com.google.maps.android.ktx.utils.withSphericalOffset
 import gymkapp.main.databinding.MapsBinding
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -123,7 +125,16 @@ class MapsFragment : Fragment() {
     bind.locationButton.setOnClickListener {
 
       currentLoc?.run {
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 10F))
+
+        val currentLatLng = LatLng(latitude, longitude).also { it.boundsFromRadius(
+          DEFAULT_VIEW_RADIUS) }
+        map.animateCamera(
+          CameraUpdateFactory.newLatLngBounds(
+            currentLatLng.boundsFromRadius(
+              DEFAULT_VIEW_RADIUS
+            ), 0
+          )
+        )
       }
     }
   }
@@ -159,7 +170,6 @@ class MapsFragment : Fragment() {
 
   /**
    * Comprueba si el usuario tiene activada la localizacion
-   * Solo se comprueba al iniciar el fragmento
    */
   private fun checkSettings() {
 
@@ -193,6 +203,11 @@ class MapsFragment : Fragment() {
       //TODO a lo mejor no mostrar la ultima localizacion si esto falla
     }
   }
+
+  private fun LatLng.boundsFromRadius(radius: Int) = LatLngBounds(
+    withSphericalOffset(radius.toDouble(), HEADING_FROM_NORTH + 180.0),
+    withSphericalOffset(radius.toDouble(), HEADING_FROM_NORTH)
+  )
 
   override fun onPause() {
     super.onPause()
