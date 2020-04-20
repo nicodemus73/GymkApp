@@ -175,16 +175,28 @@ class MapsFragment : Fragment() {
 
     map.isMyLocationEnabled = true
     bind.locationButton.show()
-    bind.locationButton.setOnClickListener {
+    bind.locationButton.setOnClickListener{ mapsModel.switchFollowing() }
 
-      switchFollowingUserOrSet()
-      bind.locationButton.imageTintList =
-        if (mapsModel.isFollowingUser) enabledColor else disabledColor
-    }
+    mapsModel.followingStatus.observe(viewLifecycleOwner, Observer {
+      when(it){
+        MapsFragmentModel.FollowingStatus.FOLLOWING -> {
+          fusedLocationClient.requestLocationUpdates(mapsModel.locationRequest,mapsModel.locationCallback,
+            Looper.getMainLooper())
+          bind.locationButton.imageTintList = enabledColor
+        }
+        MapsFragmentModel.FollowingStatus.DISABLED -> {
+          fusedLocationClient.removeLocationUpdates(mapsModel.locationCallback)
+          bind.locationButton.imageTintList = disabledColor
+        }
+        else -> {}
+      }
+    })
+
     mapsModel.currentLoc.observe(viewLifecycleOwner, Observer {
       if (it != null) {
         Log.d(classTag, "Actualizando la loc -> ${it.toLatLng()}")
         if (isFirstLoc) {
+          mapsModel.startFollowing()
           isFirstLoc = false
           it.zoomCamera(animate = false)
         } else it.zoomCamera()
@@ -205,29 +217,12 @@ class MapsFragment : Fragment() {
     task.addOnSuccessListener {
 
       Log.d(classTag, "check settings SUCCESSFUL")
-      switchFollowingUserOrSet()
-      bind.locationButton.imageTintList =
-        if (mapsModel.isFollowingUser) enabledColor else disabledColor
     }
 
     task.addOnFailureListener {
       Log.d(classTag, "check settings FAILED")
       //TODO a lo mejor no mostrar la ultima localizacion si esto falla
     }
-  }
-
-  /**
-   * Empieza o paara de seguir al usuario (para las actualizaciones)
-   * El comportamiento por defecto es alternar
-   */
-  private fun switchFollowingUserOrSet(follow: Boolean = !mapsModel.isFollowingUser) {
-
-    mapsModel.isFollowingUser = follow
-    if(follow) fusedLocationClient.requestLocationUpdates(
-      mapsModel.locationRequest, mapsModel.locationCallback,
-      Looper.getMainLooper()
-    )
-    else fusedLocationClient.removeLocationUpdates(mapsModel.locationCallback)
   }
 
   private fun Location.zoomCamera(animate: Boolean = true) {
@@ -240,12 +235,12 @@ class MapsFragment : Fragment() {
 
   override fun onPause() {
     super.onPause()
-    if (mapsModel.isFollowingUser) switchFollowingUserOrSet(follow = false)
+    mapsModel.stopFollowing()
   }
 
   override fun onResume() {
     super.onResume()
-    if(::fusedLocationClient.isInitialized) switchFollowingUserOrSet(follow = true)
+    mapsModel.startFollowing()
   }
 
   override fun onDestroyView() {

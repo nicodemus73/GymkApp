@@ -16,6 +16,12 @@ class MapsFragmentModel : ViewModel(){
     UNKNOWN
   }
 
+  enum class FollowingStatus {
+    UNKNOWN,
+    FOLLOWING,
+    DISABLED
+  }
+
   private val classTag = javaClass.simpleName //TODO: borrar cuando acabemos
 
   val locationRequest: LocationRequest by lazy {
@@ -35,6 +41,22 @@ class MapsFragmentModel : ViewModel(){
   }
 
   var isFirstTime = true
-  var isFollowingUser = false
-  var currentLoc = MutableLiveData<Location?>(null)
+  val followingStatus = MutableLiveData(FollowingStatus.UNKNOWN)
+  val currentLoc = MutableLiveData<Location?>(null)
+
+  fun startFollowing(){
+    followingStatus.value = FollowingStatus.FOLLOWING
+  }
+
+  fun stopFollowing(){
+    followingStatus.value = FollowingStatus.DISABLED
+  }
+
+  fun switchFollowing(){
+    if (followingStatus.value==FollowingStatus.UNKNOWN){
+      Log.d(classTag,"Operacion incompatible")
+      return
+    }
+    followingStatus.value = if(followingStatus.value == FollowingStatus.FOLLOWING)FollowingStatus.DISABLED else FollowingStatus.FOLLOWING
+  }
 }
