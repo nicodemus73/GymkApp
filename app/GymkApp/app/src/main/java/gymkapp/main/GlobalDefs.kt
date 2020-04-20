@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.ktx.utils.withSphericalOffset
 
 //Map Fragment
+const val PERMISSION_SETTINGS_REQ_CODE = 1
 const val LOCATION_REQUEST_CODE = 0
 const val DEFAULT_VIEW_RADIUS = 500 //Radio a utilizar para ver los puntos cercanos
 //Server

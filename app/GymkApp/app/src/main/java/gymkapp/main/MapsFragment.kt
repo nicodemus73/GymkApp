@@ -2,12 +2,15 @@ package gymkapp.main
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -35,7 +38,7 @@ class MapsFragment : Fragment() {
 
   private val classTag = javaClass.simpleName //TODO: borrar cuando acabemos
 
-  private val mapsModel: MapsFragmentModel by activityViewModels()
+  private val mapsModel: MapsFragmentModel by activityViewModels() //TODO era necesario activityScope?
   private val loginModel: LoginViewModel by activityViewModels()
   private lateinit var map: GoogleMap
 
@@ -57,10 +60,10 @@ class MapsFragment : Fragment() {
     private const val enabledColorHexString = "#FFFFFF"
   }
 
-  //TODO Flujo de permisos y settings
+  //TODO Flujo de settings
   //TODO llamada a la fucion para obtener puntos cercanos
   //TODO Cambiar el loginToken por el singleton del usuario en el loginViewModel
-  //TODO Considerar utilizar un viewmodel para guardar estados del mapa o un savedinstancestate
+  //TODO Considerar utilizar un savedinstancestate
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -111,6 +114,10 @@ class MapsFragment : Fragment() {
       (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.awaitMap() ?: return
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     map.uiSettings.isMyLocationButtonEnabled = false
+    checkIfPermissionsGranted()
+  }
+
+  private fun checkIfPermissionsGranted() {
 
     if (ContextCompat.checkSelfPermission(
         requireContext(),
@@ -140,7 +147,21 @@ class MapsFragment : Fragment() {
     )
       .setAction("Settings") {
         Log.d(classTag, "Moviendose a settings") //TODO
+        try {
+          startActivityForResult(
+            Intent(
+              Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+              Uri.fromParts("package", activity?.packageName, null)
+            ), PERMISSION_SETTINGS_REQ_CODE
+          )
+        } catch (e: Exception) {
+          Log.d(classTag, "Error al intentar ir a Settings")
+        }
       }.show()
+  }
+
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    if (requestCode == PERMISSION_SETTINGS_REQ_CODE) checkIfPermissionsGranted()
   }
 
   private fun showReminderPermission() {
@@ -173,22 +194,24 @@ class MapsFragment : Fragment() {
 
   private fun doAfterLocationGranted() {
 
-    map.isMyLocationEnabled = true
-    bind.locationButton.show()
-    bind.locationButton.setOnClickListener{ mapsModel.switchFollowing() }
+    locationLayer(enable = true)
+    bind.locationButton.setOnClickListener { mapsModel.switchFollowing() }
 
     mapsModel.followingStatus.observe(viewLifecycleOwner, Observer {
-      when(it){
+      when (it) {
         MapsFragmentModel.FollowingStatus.FOLLOWING -> {
-          fusedLocationClient.requestLocationUpdates(mapsModel.locationRequest,mapsModel.locationCallback,
-            Looper.getMainLooper())
+          fusedLocationClient.requestLocationUpdates(
+            mapsModel.locationRequest, mapsModel.locationCallback,
+            Looper.getMainLooper()
+          )
           bind.locationButton.imageTintList = enabledColor
         }
         MapsFragmentModel.FollowingStatus.DISABLED -> {
           fusedLocationClient.removeLocationUpdates(mapsModel.locationCallback)
           bind.locationButton.imageTintList = disabledColor
         }
-        else -> {}
+        else -> {
+        }
       }
     })
 
@@ -196,13 +219,24 @@ class MapsFragment : Fragment() {
       if (it != null) {
         Log.d(classTag, "Actualizando la loc -> ${it.toLatLng()}")
         if (isFirstLoc) {
-          mapsModel.startFollowing()
           isFirstLoc = false
           it.zoomCamera(animate = false)
         } else it.zoomCamera()
       }
     })
     checkSettings()
+  }
+
+  private fun locationLayer(enable: Boolean) {
+
+    map.isMyLocationEnabled = enable
+    if (enable) {
+      bind.locationButton.visibility = View.VISIBLE //Antes hide/show
+      mapsModel.startFollowing()
+    } else {
+      bind.locationButton.visibility = View.GONE
+      mapsModel.stopFollowing()
+    }
   }
 
   /**
@@ -216,21 +250,21 @@ class MapsFragment : Fragment() {
     val task = client.checkLocationSettings(builder.build())
     task.addOnSuccessListener {
 
-      Log.d(classTag, "check settings SUCCESSFUL")
+      Log.d(classTag, "check settings SUCCESSFUL") //TODO borrar
     }
 
     task.addOnFailureListener {
       Log.d(classTag, "check settings FAILED")
-      map.isMyLocationEnabled = false
-      bind.locationButton.hide()
-      mapsModel.stopFollowing()
-      Snackbar.make(bind.root,"Enable location settings to see near Gymkhanas",Snackbar.LENGTH_INDEFINITE)
-        .setAction("Enable"){
-          Log.d(classTag,"Activando opciones")
+      locationLayer(enable = false)
+      Snackbar.make(
+        bind.root,
+        "Enable location settings to see near Gymkhanas",
+        Snackbar.LENGTH_INDEFINITE
+      )
+        .setAction("Enable") {
+          Log.d(classTag, "Activando opciones") //TODO
 
-          map.isMyLocationEnabled = true
-          bind.locationButton.show()
-          mapsModel.startFollowing()
+          locationLayer(enable = true)
         }.show()
     }
   }
