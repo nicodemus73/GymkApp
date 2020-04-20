@@ -3,6 +3,10 @@ package gymkapp.main
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Camera
+import android.graphics.Color
+import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
@@ -12,7 +16,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -43,6 +46,19 @@ class MapsFragment : Fragment() {
   private var _bind: MapsBinding? = null
   private val bind: MapsBinding inline get() = _bind!!
 
+  private val enabledColor by lazy {
+    ColorStateList.valueOf(Color.parseColor(enabledColorHexString))
+  }
+  private val disabledColor by lazy {
+    ColorStateList.valueOf(Color.parseColor(disabledColorHexString))
+  }
+  private var isFirstLoc = true
+
+  private companion object {
+    private const val disabledColorHexString = "#211A51"
+    private const val enabledColorHexString = "#FFFFFF"
+  }
+
   //TODO Flujo de permisos y settings
   //TODO llamada a la fucion para obtener puntos cercanos
   //TODO Cambiar el loginToken por el singleton del usuario en el loginViewModel
@@ -60,11 +76,11 @@ class MapsFragment : Fragment() {
   @MapsExperimentalFeature
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    initialChecks(view)
+    initialChecks()
   }
 
   @MapsExperimentalFeature
-  private fun initialChecks(view: View) {
+  private fun initialChecks() {
 
     val navController = findNavController()
 
@@ -86,12 +102,12 @@ class MapsFragment : Fragment() {
       if (it == UNAUTHENTICATED) {
         Log.d(classTag, "No autenticado, yendo a la pantalla login")
         navController.navigate(MapsFragmentDirections.toLoginFTUE())
-      } else if (it == AUTHENTICATED) lifecycleScope.launch { startMaps(view) }
+      } else if (it == AUTHENTICATED) lifecycleScope.launch { startMaps() }
     })
   }
 
   @MapsExperimentalFeature
-  private suspend fun startMaps(view: View) {
+  private suspend fun startMaps() {
 
     map =
       (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.awaitMap() ?: return
@@ -104,24 +120,30 @@ class MapsFragment : Fragment() {
       )== PackageManager.PERMISSION_GRANTED)
     {
       doAfterLocationGranted()
-    }
-    //Log.d(classTag,mapsModel.isFirstTime.value!!.toString())
-    when{
-      mapsModel.isFirstTime -> requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
-      shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> showReminderPermission()
-      else -> showSettingsShortcut()
+    } else {
+
+      when{
+        mapsModel.isFirstTime -> requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> showReminderPermission()
+        else -> showSettingsShortcut()
+      }
     }
   }
 
   private fun showSettingsShortcut(){
-    Log.d(classTag,"Ahora mostraria el banner: SETTINGS")
+
+    Snackbar.make(bind.root,"We need location permissions to show you near Gymkhanas",Snackbar.LENGTH_INDEFINITE)
+      .setAction("Settings"){
+        Log.d(classTag,"Moviendose a settings")
+      }.show()
   }
 
   private fun showReminderPermission(){
 
-    Log.d(classTag,"Aqui mostraria el banner para poder volver a pedir permiso")
-    Snackbar.make(bind.root,"Location is required to show near gymkhanas",Snackbar.LENGTH_LONG).show()
-    //requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+    Snackbar.make(bind.root,"We need location permission to show you near Gymkhanas",Snackbar.LENGTH_INDEFINITE)
+      .setAction("Enable"){
+        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+      }.show()
   }
 
   override fun onRequestPermissionsResult(
@@ -144,20 +166,21 @@ class MapsFragment : Fragment() {
 
     map.isMyLocationEnabled = true
     bind.locationButton.show()
+    bind.locationButton.imageTintList = if(mapsModel.isFollowingUser) enabledColor else disabledColor
     bind.locationButton.setOnClickListener {
 
-      mapsModel.currentLoc?.run {
-
-        //TODO añadir algo de padding o aumentar el radio en x metros
-        map.animateCamera(
-          CameraUpdateFactory.newLatLngBounds(
-            this.toLatLng().createBounds(
-              DEFAULT_VIEW_RADIUS
-            ), 0
-          )
-        )
-      }
+      mapsModel.isFollowingUser = !mapsModel.isFollowingUser
+      bind.locationButton.imageTintList = if(mapsModel.isFollowingUser) enabledColor else disabledColor
     }
+    mapsModel.currentLoc.observe(viewLifecycleOwner, Observer {
+      if(it!=null){
+        if(isFirstLoc) {
+          isFirstLoc = false
+          it.zoomCamera(animate = false)
+        }
+        else it.zoomCamera()
+      }
+    })
     checkSettings()
   }
 
@@ -185,6 +208,13 @@ class MapsFragment : Fragment() {
       Log.d(classTag, "check settings FAILED")
       //TODO a lo mejor no mostrar la ultima localizacion si esto falla
     }
+  }
+
+  private fun Location.zoomCamera(animate: Boolean = true){
+
+    val cameraUpdate = CameraUpdateFactory.newLatLngBounds(toLatLng().createBounds(DEFAULT_VIEW_RADIUS),0)
+    if(animate) map.animateCamera(cameraUpdate)
+    else map.moveCamera(cameraUpdate)
   }
 
   override fun onPause() {

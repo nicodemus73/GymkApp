@@ -21,7 +21,7 @@ class MapsFragmentModel : ViewModel(){
   val locationRequest: LocationRequest by lazy {
     LocationRequest().apply {
       interval = 10_000
-      fastestInterval = 1_000
+      fastestInterval = 2_000
       priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
   }
@@ -29,17 +29,12 @@ class MapsFragmentModel : ViewModel(){
   val locationCallback by lazy {
     object: LocationCallback(){
       override fun onLocationResult(locRes: LocationResult?) {
-
-        Log.d(
-          classTag,
-          "Recibiendo actualizacion Lat Long: ${currentLoc?.latitude},${currentLoc?.longitude} -> ${locRes?.lastLocation?.latitude}, ${locRes?.lastLocation?.longitude}"
-        )
-        currentLoc = locRes?.lastLocation
+        currentLoc.value = locRes?.lastLocation
       }
     }
   }
 
   var isFirstTime = true
-
-  var currentLoc : Location? = null
+  var isFollowingUser = true
+  var currentLoc = MutableLiveData<Location?>(null)
 }
