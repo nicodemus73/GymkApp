@@ -200,7 +200,7 @@ class MapsFragment : Fragment() {
           isFirstLoc = false
           it.zoomCamera(animate = false)
         } else it.zoomCamera()
-      } 
+      }
     })
     checkSettings()
   }
