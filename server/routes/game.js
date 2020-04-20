@@ -3,10 +3,10 @@ const router = express.Router();
 const Game = require('../bbdd/GameSchema');
 const Map = require('../bbdd/MapSchema');
 const Point = require('../bbdd/PointSchema');
+const User = require('../bbdd/UserSchema');
 const jwt = require('jsonwebtoken');
-const verifyToken = require('../functMiddle/VerifyToken');
-const Usuario = require('../bbdd/UserSchema');
 const distance = require('turf-distance');
+const parseTime = require('../auxiliary/parseTime')
 
 router.get('/', async (req, res) => {
 
@@ -136,7 +136,7 @@ router.post('/', async (req, res) => {
 
 //Add game to the user falta mirar si ja existex etc etc
 //
-router.post('/add_game', verifyToken, async (req, res) => {
+router.post('/add_game', async (req, res) => {
     try {
 
         const myquery = { _id: req.usernameId._id };
@@ -152,7 +152,7 @@ router.post('/add_game', verifyToken, async (req, res) => {
                 points: req.body.points
             }
         };
-        const resultat = await Usuario.updateOne(req.usernameId_id, { $addToSet: newvalues }, function (err, res) {
+        const resultat = await User.updateOne(req.usernameId_id, { $addToSet: newvalues }, function (err, res) {
             if (err) res.json(err.message);
             //console.log("1 document updated");
 
@@ -165,22 +165,4 @@ router.post('/add_game', verifyToken, async (req, res) => {
 
 module.exports = router;
 
-function parseTime(milliseconds) {
-    //Get hours from milliseconds
-    var hours = milliseconds / (1000 * 60 * 60);
-    var absoluteHours = Math.floor(hours);
-    var h = absoluteHours > 9 ? absoluteHours : '0' + absoluteHours;
-
-    //Get remainder from hours and convert to minutes
-    var minutes = (hours - absoluteHours) * 60;
-    var absoluteMinutes = Math.floor(minutes);
-    var m = absoluteMinutes > 9 ? absoluteMinutes : '0' + absoluteMinutes;
-
-    //Get remainder from minutes and convert to seconds
-    var seconds = (minutes - absoluteMinutes) * 60;
-    var absoluteSeconds = Math.floor(seconds);
-    var s = absoluteSeconds > 9 ? absoluteSeconds : '0' + absoluteSeconds;
-
-    return h + 'h' + m + 'm' + s + 's';
-}
 

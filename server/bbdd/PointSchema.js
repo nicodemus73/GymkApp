@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const idValidator = require('mongoose-id-validator');
-const location = require('./GeoJSON');
+const location = require('../auxiliary/geoJSON');
 const Schema = mongoose.Schema;
 
 const PointSchema = new Schema({

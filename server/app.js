@@ -25,7 +25,7 @@ app.use(express.json());
 app.use('/user', require('./routes/user'));
 
 // Middlewares II
-app.use(require('./functMiddle/VerifyToken'));
+app.use(require('./middlewares/verifyToken'));
 
 // Routes II
 app.use('/', require('./routes/home'));

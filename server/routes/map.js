@@ -6,15 +6,7 @@ const Point = require('../bbdd/PointSchema');
 router.get('/', (req, res) => { //get all maps summary info
 
     try {
-        if (req.body._id) { // ID received: send one map.
-            Map.findById(req.body._id, { "name": 1, "metadata": 1, "firstLocation": 1 }).exec(function (err, map) {
-                if (err) res.status(400).json({ "error": err.message });
-                else if (map == null)
-                    res.status(404).json({ "error": 'Map does not exist' });
-                else res.status(200).json(map);
-            })
-        }
-        else if (req.body.location && req.body.radius) { // Send all nearby maps.
+        if (req.body.location && req.body.radius) { // Send all nearby maps.
             Map.find({
                 firstLocation: {
                     $near: {
@@ -33,12 +25,27 @@ router.get('/', (req, res) => { //get all maps summary info
     }
 });
 
+router.get('/:id', (req, res) => { //get all maps summary info
+
+    try {
+        Map.findById(req.params.id, { "name": 1, "metadata": 1, "firstLocation": 1 }).exec(function (err, map) {
+            if (err) res.status(400).json({ "error": err.message });
+            else if (map == null)
+                res.status(404).json({ "error": 'Map does not exist' });
+            else res.status(200).json(map);
+        })
+
+    } catch (err) {
+        res.status(500).json({ "error": err.message });
+    }
+});
+
 router.post('/', async (req, res) => {
 
     try {
         if (req.body.points.length < 2) throw new Error('400Map needs at least two points');
 
-        const point = Point.findById(req.body.points[0], async function (err, point) {
+        Point.findById(req.body.points[0], async function (err, point) {
             if (err) res.status(400).json({ "error": err.message });
             else if (point == null)
                 res.status(404).json({ "error": 'First point is not valid.' });

@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../bbdd/UserSchema');
-const { registerValidation, loginValidation } = require('../bbdd/Validation');
+const { registerValidation, loginValidation } = require('../auxiliary/validation');
 
 router.get('/', async (req, res) => {
     try {
