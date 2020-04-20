@@ -35,6 +35,7 @@ class MapsFragmentModel : ViewModel(){
   val locationCallback by lazy {
     object: LocationCallback(){
       override fun onLocationResult(locRes: LocationResult?) {
+        if(locRes==null)Log.d(classTag,"locres nulo")
         currentLoc.value = locRes?.lastLocation
       }
     }

@@ -139,7 +139,7 @@ class MapsFragment : Fragment() {
       Snackbar.LENGTH_INDEFINITE
     )
       .setAction("Settings") {
-        Log.d(classTag, "Moviendose a settings")
+        Log.d(classTag, "Moviendose a settings") //TODO
       }.show()
   }
 
@@ -200,7 +200,7 @@ class MapsFragment : Fragment() {
           isFirstLoc = false
           it.zoomCamera(animate = false)
         } else it.zoomCamera()
-      }
+      } 
     })
     checkSettings()
   }
@@ -221,7 +221,17 @@ class MapsFragment : Fragment() {
 
     task.addOnFailureListener {
       Log.d(classTag, "check settings FAILED")
-      //TODO a lo mejor no mostrar la ultima localizacion si esto falla
+      map.isMyLocationEnabled = false
+      bind.locationButton.hide()
+      mapsModel.stopFollowing()
+      Snackbar.make(bind.root,"Enable location settings to see near Gymkhanas",Snackbar.LENGTH_INDEFINITE)
+        .setAction("Enable"){
+          Log.d(classTag,"Activando opciones")
+
+          map.isMyLocationEnabled = true
+          bind.locationButton.show()
+          mapsModel.startFollowing()
+        }.show()
     }
   }
 
