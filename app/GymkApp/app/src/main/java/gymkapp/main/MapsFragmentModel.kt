@@ -35,6 +35,6 @@ class MapsFragmentModel : ViewModel(){
   }
 
   var isFirstTime = true
-  var isFollowingUser = true
+  var isFollowingUser = false
   var currentLoc = MutableLiveData<Location?>(null)
 }

@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.Camera
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
@@ -41,7 +40,6 @@ class MapsFragment : Fragment() {
   private lateinit var map: GoogleMap
 
   private lateinit var fusedLocationClient: FusedLocationProviderClient
-  private var recievingLocUpdates = false
 
   private var _bind: MapsBinding? = null
   private val bind: MapsBinding inline get() = _bind!!
@@ -114,34 +112,45 @@ class MapsFragment : Fragment() {
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     map.uiSettings.isMyLocationButtonEnabled = false
 
-    if(ContextCompat.checkSelfPermission(
+    if (ContextCompat.checkSelfPermission(
         requireContext(),
         Manifest.permission.ACCESS_FINE_LOCATION
-      )== PackageManager.PERMISSION_GRANTED)
-    {
+      ) == PackageManager.PERMISSION_GRANTED
+    ) {
       doAfterLocationGranted()
     } else {
 
-      when{
-        mapsModel.isFirstTime -> requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+      when {
+        mapsModel.isFirstTime -> requestPermissions(
+          arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+          LOCATION_REQUEST_CODE
+        )
         shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> showReminderPermission()
         else -> showSettingsShortcut()
       }
     }
   }
 
-  private fun showSettingsShortcut(){
+  private fun showSettingsShortcut() {
 
-    Snackbar.make(bind.root,"We need location permissions to show you near Gymkhanas",Snackbar.LENGTH_INDEFINITE)
-      .setAction("Settings"){
-        Log.d(classTag,"Moviendose a settings")
+    Snackbar.make(
+      bind.root,
+      "We need location permissions to show you near Gymkhanas",
+      Snackbar.LENGTH_INDEFINITE
+    )
+      .setAction("Settings") {
+        Log.d(classTag, "Moviendose a settings")
       }.show()
   }
 
-  private fun showReminderPermission(){
+  private fun showReminderPermission() {
 
-    Snackbar.make(bind.root,"We need location permission to show you near Gymkhanas",Snackbar.LENGTH_INDEFINITE)
-      .setAction("Enable"){
+    Snackbar.make(
+      bind.root,
+      "We need location permission to show you near Gymkhanas",
+      Snackbar.LENGTH_INDEFINITE
+    )
+      .setAction("Enable") {
         requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
       }.show()
   }
@@ -152,7 +161,7 @@ class MapsFragment : Fragment() {
     grantResults: IntArray
   ) {
 
-    if(requestCode == LOCATION_REQUEST_CODE && grantResults.isNotEmpty()){
+    if (requestCode == LOCATION_REQUEST_CODE && grantResults.isNotEmpty()) {
       when {
         grantResults[0] == PackageManager.PERMISSION_GRANTED -> doAfterLocationGranted()
         shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> showReminderPermission()
@@ -166,19 +175,19 @@ class MapsFragment : Fragment() {
 
     map.isMyLocationEnabled = true
     bind.locationButton.show()
-    bind.locationButton.imageTintList = if(mapsModel.isFollowingUser) enabledColor else disabledColor
     bind.locationButton.setOnClickListener {
 
-      mapsModel.isFollowingUser = !mapsModel.isFollowingUser
-      bind.locationButton.imageTintList = if(mapsModel.isFollowingUser) enabledColor else disabledColor
+      switchFollowingUserOrSet()
+      bind.locationButton.imageTintList =
+        if (mapsModel.isFollowingUser) enabledColor else disabledColor
     }
     mapsModel.currentLoc.observe(viewLifecycleOwner, Observer {
-      if(it!=null){
-        if(isFirstLoc) {
+      if (it != null) {
+        Log.d(classTag, "Actualizando la loc -> ${it.toLatLng()}")
+        if (isFirstLoc) {
           isFirstLoc = false
           it.zoomCamera(animate = false)
-        }
-        else it.zoomCamera()
+        } else it.zoomCamera()
       }
     })
     checkSettings()
@@ -196,12 +205,9 @@ class MapsFragment : Fragment() {
     task.addOnSuccessListener {
 
       Log.d(classTag, "check settings SUCCESSFUL")
-      recievingLocUpdates = true //TODO mover o quitar
-      fusedLocationClient.requestLocationUpdates(
-        mapsModel.locationRequest,
-        mapsModel.locationCallback,
-        Looper.getMainLooper()
-      )
+      switchFollowingUserOrSet()
+      bind.locationButton.imageTintList =
+        if (mapsModel.isFollowingUser) enabledColor else disabledColor
     }
 
     task.addOnFailureListener {
@@ -210,19 +216,36 @@ class MapsFragment : Fragment() {
     }
   }
 
-  private fun Location.zoomCamera(animate: Boolean = true){
+  /**
+   * Empieza o paara de seguir al usuario (para las actualizaciones)
+   * El comportamiento por defecto es alternar
+   */
+  private fun switchFollowingUserOrSet(follow: Boolean = !mapsModel.isFollowingUser) {
 
-    val cameraUpdate = CameraUpdateFactory.newLatLngBounds(toLatLng().createBounds(DEFAULT_VIEW_RADIUS),0)
-    if(animate) map.animateCamera(cameraUpdate)
+    mapsModel.isFollowingUser = follow
+    if(follow) fusedLocationClient.requestLocationUpdates(
+      mapsModel.locationRequest, mapsModel.locationCallback,
+      Looper.getMainLooper()
+    )
+    else fusedLocationClient.removeLocationUpdates(mapsModel.locationCallback)
+  }
+
+  private fun Location.zoomCamera(animate: Boolean = true) {
+
+    val cameraUpdate =
+      CameraUpdateFactory.newLatLngBounds(toLatLng().createBounds(DEFAULT_VIEW_RADIUS), 0)
+    if (animate) map.animateCamera(cameraUpdate)
     else map.moveCamera(cameraUpdate)
   }
 
   override fun onPause() {
     super.onPause()
-    if (recievingLocUpdates) {
-      fusedLocationClient.removeLocationUpdates(mapsModel.locationCallback)
-      recievingLocUpdates = false
-    }
+    if (mapsModel.isFollowingUser) switchFollowingUserOrSet(follow = false)
+  }
+
+  override fun onResume() {
+    super.onResume()
+    if(::fusedLocationClient.isInitialized) switchFollowingUserOrSet(follow = true)
   }
 
   override fun onDestroyView() {
