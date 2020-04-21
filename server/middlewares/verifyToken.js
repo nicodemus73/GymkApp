@@ -18,7 +18,7 @@ module.exports = function verifyToken(req, res, next) {
                     "ID": verified._id
                 });
             else {
-                console.log(verified._id);
+                console.log('You provived a token with user _id: ', verified._id);
                 req.usernameId = verified;
                 next();
             }
