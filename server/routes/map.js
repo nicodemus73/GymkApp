@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Map = require('../bbdd/MapSchema');
 const Point = require('../bbdd/PointSchema');
+const utils = require('../auxiliary/utils');
+const postPoint = require('../auxiliary/postPoint');
 
 router.get('/', (req, res) => { //get all maps summary info
 
@@ -43,14 +45,23 @@ router.get('/:id', (req, res) => { //get all maps summary info
 router.post('/', async (req, res) => {
 
     try {
+        var pointsId = [];
         if (req.body.points.length < 2) throw new Error('400Map needs at least two points');
 
-        Point.findById(req.body.points[0], async function (err, point) {
+        for (var i = 0; i < req.body.points.length; i++) {
+            if (!utils.validateId(req.body.points[i]._id)) {
+                const { code, result } = await postPoint(req, req.body.points[i]);
+                if (code != 200) throw new Error(code + result.error);
+                req.body.points[i]._id = result._id;
+            }
+            pointsId.push(req.body.points[i]._id);
+        }
+
+        Point.findById(req.body.points[0]._id, async function (err, point) {
             if (err) res.status(400).json({ "error": err.message });
             else if (point == null)
                 res.status(404).json({ "error": 'First point is not valid.' });
             else {
-
                 const map = new Map({
                     name: req.body.name,
                     owner: req.usernameId._id,
@@ -58,7 +69,7 @@ router.post('/', async (req, res) => {
                         author: req.body.metadata.author,
                         description: req.body.metadata.description,
                     },
-                    points: req.body.points,
+                    points: pointsId,
                     firstLocation: point.location
                 });
                 await map.save(function (err, savedMap) {

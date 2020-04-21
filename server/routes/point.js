@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Point = require('../bbdd/PointSchema');
+const postPoint = require('../auxiliary/postPoint');
 
 router.get('/', (req, res) => { //get all maps summary info
 
@@ -38,6 +39,15 @@ router.get('/:id', (req, res) => { //get all maps summary info
     }
 });
 
-router.post('/', (req, res) => postPoint(req, req.body, res));
+router.post('/', async (req, res) => {
+
+    try {
+        const { code, result } = await postPoint(req, req.body);
+        res.status(code).json(result);
+
+    } catch (err) {
+        res.status(500).json({ "error": err.message });
+    }
+});
 
 module.exports = router;

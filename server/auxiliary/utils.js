@@ -1,4 +1,4 @@
-module.exports = function parseTime(milliseconds) {
+function parseTime(milliseconds) {
     //Get hours from milliseconds
     var hours = milliseconds / (1000 * 60 * 60);
     var absoluteHours = Math.floor(hours);
@@ -16,3 +16,10 @@ module.exports = function parseTime(milliseconds) {
 
     return h + 'h' + m + 'm' + s + 's';
 }
+
+function validateId(id) {
+    return new RegExp("^[0-9a-fA-F]{24}$").test(id);
+}
+
+module.exports.parseTime = parseTime;
+module.exports.validateId = validateId;

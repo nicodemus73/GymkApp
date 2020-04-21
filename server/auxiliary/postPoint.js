@@ -1,6 +1,8 @@
 const Point = require('../bbdd/PointSchema');
 
-module.exports = async function postPoint(req, body, res) {
+module.exports = async function postPoint(req, body) {
+
+    var code, res;
     try {
         const point = new Point({
             name: body.name,
@@ -11,15 +13,23 @@ module.exports = async function postPoint(req, body, res) {
             location: body.location
         });
 
-        await point.save(function (err, savedPoint) {
-            if (err) {
-                if (err.message.substring(0, 6) == 'E11000')
-                    res.status(409).json({ "error": "Point already exists." });
-                else res.status(400).json({ "error": err.message });
-            }
-            else res.status(200).json(savedPoint);
-        });
+        const savedPoint = await point.save();
+
+        code = 200;
+        res = savedPoint;
+
+        return { code: code, result: res };
+
     } catch (err) {
-        res.status(500).json({ "error": err.message });
+
+        if (err.message.substring(0, 6) == 'E11000') {
+            code = 409;
+            res = {"error":'Point already exists.'};
+        }
+        else {
+            code = 400;
+            res = { "error": err.message };
+        }
+        return { code: code, result: res };
     }
 }

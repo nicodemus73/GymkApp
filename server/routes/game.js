@@ -6,7 +6,7 @@ const Point = require('../bbdd/PointSchema');
 const User = require('../bbdd/UserSchema');
 const jwt = require('jsonwebtoken');
 const distance = require('turf-distance');
-const parseTime = require('../auxiliary/parseTime')
+const parseTime = require('../auxiliary/utils');
 
 router.get('/', async (req, res) => {
 
