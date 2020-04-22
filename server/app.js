@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const http = require('http');
-const https = require('http');
+const https = require('https');
 const path = require('path');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv').config('.env');
@@ -42,17 +42,16 @@ app.set('httpPort', process.env.HTTPPORT || 3001);
 app.set('httpsPort', process.env.HTTPSPORT || 3002);
 
 // HTTPS
-var privateKey  = fs.readFileSync('certificates/privateKey.key', 'utf8');
-var certificate = fs.readFileSync('certificates/certificate.crt', 'utf8');
+var privateKey  = fs.readFileSync('certificates/privateKey.key');
+var certificate = fs.readFileSync('certificates/certificate.crt');
 var credentials = {key: privateKey, cert: certificate};
 
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
-
 // Stating the server
+const httpServer = http.createServer(app);
 httpServer.listen(app.get('httpPort'), () => {
     console.log(`HTTP server on port ${app.get('httpPort')}`);
 });
+const httpsServer = https.createServer(credentials, app);
 httpsServer.listen(app.get('httpsPort'), () => {
     console.log(`HTTPS server on port ${app.get('httpsPort')}`);
 });
