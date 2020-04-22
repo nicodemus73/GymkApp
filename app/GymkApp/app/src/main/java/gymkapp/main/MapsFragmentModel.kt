@@ -4,6 +4,7 @@ import android.location.Location
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -29,19 +30,27 @@ class MapsFragmentModel : ViewModel(){
       interval = 10_000
       fastestInterval = 2_000
       priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
+    } //TODO smallestDisplacement - distancia minima para avisar de cambios
   }
 
   val locationCallback by lazy {
     object: LocationCallback(){
       override fun onLocationResult(locRes: LocationResult?) {
-        if(locRes==null)Log.d(classTag,"locres nulo")
         currentLoc.value = locRes?.lastLocation
+      }
+
+      override fun onLocationAvailability(availability: LocationAvailability?) {
+        //Log.d(classTag, "disponible: ${availability!!.isLocationAvailable}")
+        if(!availability!!.isLocationAvailable){
+          Log.d(classTag,"Localizacion no disponible")
+          locationSettingStatus.value = LocationSettingsStatus.DISABLED
+        } else locationSettingStatus.value = LocationSettingsStatus.ENABLED
       }
     }
   }
 
-  var isFirstTime = true
+  var isFirstTimePermissionFlow = true
+  val locationSettingStatus = MutableLiveData(LocationSettingsStatus.UNKNOWN)
   val followingStatus = MutableLiveData(FollowingStatus.UNKNOWN)
   val currentLoc = MutableLiveData<Location?>(null)
 

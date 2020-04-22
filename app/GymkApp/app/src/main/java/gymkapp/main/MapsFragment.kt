@@ -128,7 +128,7 @@ class MapsFragment : Fragment() {
     } else {
 
       when {
-        mapsModel.isFirstTime -> requestPermissions(
+        mapsModel.isFirstTimePermissionFlow -> requestPermissions(
           arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
           LOCATION_REQUEST_CODE
         )
@@ -188,8 +188,23 @@ class MapsFragment : Fragment() {
         shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> showReminderPermission()
         else -> showSettingsShortcut()
       }
-      mapsModel.isFirstTime = false
+      mapsModel.isFirstTimePermissionFlow = false
     }
+  }
+
+  private fun showLocationSettingsResolution(){
+
+    locationLayer(enable = false)
+    Snackbar.make(
+      bind.root,
+      "Enable location settings to see near Gymkhanas",
+      Snackbar.LENGTH_INDEFINITE
+    )
+      .setAction("Enable") {
+        Log.d(classTag, "Activando opciones") //TODO
+
+        locationLayer(enable = true)
+      }.show()
   }
 
   private fun doAfterLocationGranted() {
@@ -224,7 +239,14 @@ class MapsFragment : Fragment() {
         } else it.zoomCamera()
       }
     })
-    checkSettings()
+
+    mapsModel.locationSettingStatus.observe(viewLifecycleOwner, Observer {
+      when(it){
+        MapsFragmentModel.LocationSettingsStatus.DISABLED -> showLocationSettingsResolution()
+        MapsFragmentModel.LocationSettingsStatus.UNKNOWN -> checkSettings()
+        else -> {}
+      }
+    })
   }
 
   private fun locationLayer(enable: Boolean) {
@@ -255,17 +277,7 @@ class MapsFragment : Fragment() {
 
     task.addOnFailureListener {
       Log.d(classTag, "check settings FAILED")
-      locationLayer(enable = false)
-      Snackbar.make(
-        bind.root,
-        "Enable location settings to see near Gymkhanas",
-        Snackbar.LENGTH_INDEFINITE
-      )
-        .setAction("Enable") {
-          Log.d(classTag, "Activando opciones") //TODO
-
-          locationLayer(enable = true)
-        }.show()
+      showLocationSettingsResolution()
     }
   }
 
