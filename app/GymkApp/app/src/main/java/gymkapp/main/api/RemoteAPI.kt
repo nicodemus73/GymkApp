@@ -50,7 +50,6 @@ object RemoteAPI {
   suspend fun login(user: String, password: String): Pair<Boolean, String> {
 
     val tag = javaClass.simpleName
-    //Arreglo temporal, si tenemos que añadir mas excepciones tendriamos que hacerlo un poco mas limpio. Podriamos omitir lo de la VPN para la entrega.
     Log.d(tag, "el usuario es $user, la contraseña es $password")
     val response = try {
       scalarAPICalls.login(

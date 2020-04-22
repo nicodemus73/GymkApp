@@ -262,7 +262,7 @@ class MapsFragment : Fragment() {
   }
 
   /**
-   * Comprueba si el usuario tiene activada la localizacion
+   * Comprueba si el usuario tiene activada la localizacion (Ajustes)
    */
   private fun checkSettings() {
 
