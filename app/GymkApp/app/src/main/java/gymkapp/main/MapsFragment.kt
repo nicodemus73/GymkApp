@@ -36,6 +36,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitMap
 import gymkapp.main.LoginViewModel.AuthenticationState.*
+import gymkapp.main.MapsFragmentModel.FollowingStatus as FolStat
+import gymkapp.main.MapsFragmentModel.LocationSettingsStatus as LocSetStat
 import gymkapp.main.databinding.MapsBinding
 import kotlinx.coroutines.launch
 
@@ -235,14 +237,14 @@ class MapsFragment : Fragment() {
 
     mapsModel.followingStatus.observe(viewLifecycleOwner, Observer {
       when (it) {
-        MapsFragmentModel.FollowingStatus.FOLLOWING -> {
+        FolStat.FOLLOWING -> {
           fusedLocationClient.requestLocationUpdates(
             mapsModel.locationRequest, mapsModel.locationCallback,
             Looper.getMainLooper()
           )
           bind.locationButton.imageTintList = enabledColor
         }
-        MapsFragmentModel.FollowingStatus.DISABLED -> {
+        FolStat.DISABLED -> {
           fusedLocationClient.removeLocationUpdates(mapsModel.locationCallback)
           bind.locationButton.imageTintList = disabledColor
         }
@@ -263,12 +265,12 @@ class MapsFragment : Fragment() {
 
     mapsModel.locationSettingStatus.observe(viewLifecycleOwner, Observer {
       when(it){
-        MapsFragmentModel.LocationSettingsStatus.CHECKING -> {
+        LocSetStat.CHECKING -> {
           locationLayer(enable = false)
           checkSettings()
         }
-        MapsFragmentModel.LocationSettingsStatus.ENABLED -> locationLayer(enable = true)
-        else -> {}
+        LocSetStat.ENABLED -> locationLayer(enable = true)
+        else -> checkSettings() //TODO Ultimo cambio añadido, considerar cambiar...
       }
     })
   }
@@ -322,7 +324,9 @@ class MapsFragment : Fragment() {
 
   override fun onResume() {
     super.onResume()
-    mapsModel.startFollowing()
+    if(mapsModel.locationSettingStatus.value==LocSetStat.ENABLED && mapsModel.followingStatus.value == FolStat.DISABLED){
+        mapsModel.startFollowing()
+    }
   }
 
   override fun onDestroyView() {

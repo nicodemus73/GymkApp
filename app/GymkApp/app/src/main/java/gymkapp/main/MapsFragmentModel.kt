@@ -36,11 +36,13 @@ class MapsFragmentModel : ViewModel(){
   val locationCallback by lazy {
     object: LocationCallback(){
       override fun onLocationResult(locRes: LocationResult?) {
+        Log.d(classTag,"Actualizando valor")
         currentLoc.value = locRes?.lastLocation
+        isFirstTimeLocationRequest = false
       }
 
       override fun onLocationAvailability(availability: LocationAvailability?) {
-        if(!availability!!.isLocationAvailable){
+        if(!isFirstTimeLocationRequest && !availability!!.isLocationAvailable){
           Log.d(classTag,"Localizacion no disponible, comprobando...")
           locationSettingStatus.value = LocationSettingsStatus.CHECKING
         }
@@ -49,6 +51,7 @@ class MapsFragmentModel : ViewModel(){
   }
 
   var isFirstTimePermissionFlow = true
+  var isFirstTimeLocationRequest = true
   val locationSettingStatus = MutableLiveData(LocationSettingsStatus.CHECKING)
   val followingStatus = MutableLiveData(FollowingStatus.UNKNOWN)
   val currentLoc = MutableLiveData<Location?>(null)
