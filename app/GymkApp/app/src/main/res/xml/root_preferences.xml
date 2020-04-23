@@ -6,7 +6,7 @@
     <PreferenceCategory android:title="Settings">
 
         <SwitchPreferenceCompat
-            app:key="sync"
+            app:key="nightModeSetting"
             app:title="Night Mode" />
         <Preference
             android:id="@+id/changePassword"
@@ -14,8 +14,10 @@
             app:title="Change Password" />
         <Preference
             android:id="@+id/logOut"
-            android:key="logOut1"
-            android:title="Log Out" />
+            android:key="logOutSetting"
+            android:title="Log Out"
+            android:visibility="visible"
+            tools:visibility="visible" />
     </PreferenceCategory>
 
 </PreferenceScreen>

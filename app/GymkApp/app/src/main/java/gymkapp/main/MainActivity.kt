@@ -39,5 +39,7 @@ class MainActivity : AppCompatActivity() {
       Observer {
         bind.bottomNavigationView.visibility = if (it == AUTHENTICATED) View.VISIBLE else View.GONE
       })
-  }
+
+
+    }
 }
