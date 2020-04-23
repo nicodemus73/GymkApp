@@ -203,7 +203,7 @@ class MapsFragment : Fragment() {
       .setAction("Enable") {
         Log.d(classTag, "Activando opciones") //TODO
 
-        locationLayer(enable = true)
+        //locationLayer(enable = true)
       }.show()
   }
 
@@ -268,6 +268,7 @@ class MapsFragment : Fragment() {
 
     val builder = LocationSettingsRequest.Builder()
       .addLocationRequest(mapsModel.locationRequest)
+      //.setAlwaysShow(true) TODO
     val client = LocationServices.getSettingsClient(requireContext())
     val task = client.checkLocationSettings(builder.build())
     task.addOnSuccessListener {
