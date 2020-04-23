@@ -54,15 +54,6 @@
             app:popUpToInclusive="true" />
     </navigation>
     <fragment
-        android:id="@+id/settingsFragment"
-        android:name="gymkapp.main.SettingsFragment"
-        android:label="settings"
-        tools:layout="@layout/settings" >
-        <action
-            android:id="@+id/toNewSettings"
-            app:destination="@id/settingsFragment2" />
-    </fragment>
-    <fragment
         android:id="@+id/socialFragment"
         android:name="gymkapp.main.SocialFragment"
         android:label="social"
@@ -77,7 +68,7 @@
         app:popUpTo="@id/mapsFragment"
         app:popUpToInclusive="true" />
     <fragment
-        android:id="@+id/settingsFragment2"
-        android:name="gymkapp.main.SettingsFragment2"
-        android:label="SettingsFragment2" />
+        android:id="@+id/settingsFragment"
+        android:name="gymkapp.main.SettingsFragment"
+        android:label="settings" />
 </navigation>
