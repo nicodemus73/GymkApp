@@ -45,6 +45,9 @@ class SettingsFragment : Fragment() {
       navController.navigate(SettingsFragmentDirections.toLoginFTUE())
       loginModel.logout()
     }
+    bind.newSettings.setOnClickListener {
+      navController.navigate(SettingsFragmentDirections.toNewSettings())
+    }
   }
 
   override fun onDestroyView() {
