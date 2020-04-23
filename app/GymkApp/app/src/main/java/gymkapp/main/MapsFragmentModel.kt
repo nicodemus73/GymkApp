@@ -13,9 +13,9 @@ class MapsFragmentModel : ViewModel(){
 
   enum class LocationSettingsStatus {
     ENABLED,
-    DISABLED,
-    UNKNOWN
-  }
+    CHECKING,
+    DISABLED
+  }//TODO añadir disabled?
 
   enum class FollowingStatus {
     UNKNOWN,
@@ -40,17 +40,16 @@ class MapsFragmentModel : ViewModel(){
       }
 
       override fun onLocationAvailability(availability: LocationAvailability?) {
-        //Log.d(classTag, "disponible: ${availability!!.isLocationAvailable}")
         if(!availability!!.isLocationAvailable){
-          Log.d(classTag,"Localizacion no disponible")
-          locationSettingStatus.value = LocationSettingsStatus.DISABLED
-        } else locationSettingStatus.value = LocationSettingsStatus.ENABLED
+          Log.d(classTag,"Localizacion no disponible, comprobando...")
+          locationSettingStatus.value = LocationSettingsStatus.CHECKING
+        }
       }
     }
   }
 
   var isFirstTimePermissionFlow = true
-  val locationSettingStatus = MutableLiveData(LocationSettingsStatus.UNKNOWN)
+  val locationSettingStatus = MutableLiveData(LocationSettingsStatus.CHECKING)
   val followingStatus = MutableLiveData(FollowingStatus.UNKNOWN)
   val currentLoc = MutableLiveData<Location?>(null)
 
@@ -68,5 +67,13 @@ class MapsFragmentModel : ViewModel(){
       return
     }
     followingStatus.value = if(followingStatus.value == FollowingStatus.FOLLOWING)FollowingStatus.DISABLED else FollowingStatus.FOLLOWING
+  }
+
+  fun confirmLocationSettingsEnabled(){
+    locationSettingStatus.value = LocationSettingsStatus.ENABLED
+  }
+
+  fun confirmLocationSettingsDenied(){
+    locationSettingStatus.value = LocationSettingsStatus.DISABLED
   }
 }
