@@ -50,7 +50,7 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@id/welcomeFragment"
+            app:popUpTo="@id/FTUE_login"
             app:popUpToInclusive="true" />
     </navigation>
     <fragment
@@ -65,7 +65,7 @@
         app:exitAnim="@anim/nav_default_exit_anim"
         app:popEnterAnim="@anim/nav_default_pop_enter_anim"
         app:popExitAnim="@anim/nav_default_pop_exit_anim"
-        app:popUpTo="@id/settingsFragment"
+        app:popUpTo="@id/main_graph"
         app:popUpToInclusive="true" />
     <fragment
         android:id="@+id/settingsFragment"
