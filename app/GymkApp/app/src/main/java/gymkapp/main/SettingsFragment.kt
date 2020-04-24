@@ -2,6 +2,7 @@ package gymkapp.main
 
 import android.content.Context
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.content.edit
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -22,42 +23,65 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     val category = PreferenceCategory(context).apply {
       title = "Settings"
-    }//TODO añadir directamente
+    }
+
+    //TODO estilos switches
+    //TODO añadir iconos
+    val followSystemNightMode = SwitchPreferenceCompat(context).apply {
+      key = "followSystemNightMode"
+      title = "Apply System Theme"
+    }
+
     val nightModePref = SwitchPreferenceCompat(context).apply {
       key = "nightModeSetting"
-      title = "Night Mode"
+      title = "Enable Dark Theme"
     }
+
+
+    followSystemNightMode.setOnPreferenceChangeListener { _, _ ->
+
+      if (followSystemNightMode.isChecked) {
+        setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM)
+        nightModePref.isEnabled = false
+      }
+      else {
+        followSystemNightMode.isEnabled = false
+        nightModePref.isEnabled = true
+      }
+      true
+    }
+
+    nightModePref.setOnPreferenceChangeListener { _, _ ->
+
+      if (nightModePref.isChecked) setDefaultNightMode(MODE_NIGHT_YES)
+      else setDefaultNightMode(MODE_NIGHT_NO)
+      true
+    }
+
     val changePasswordPref = Preference(context).apply {
-      key = "changePasswordSetting"
       title = "Change Password"
     }
 
     val logOutPref = Preference(context).apply {
-      key = "logOutSetting"
       title = "Log Out"
-      isVisible = true //TODO probar
-    }
-
-    /*
-    preferenceLogOut?.setOnPreferenceClickListener {
-      activity?.getPreferences(Context.MODE_PRIVATE)?.edit {
-        remove(R.string.TokenKey.toString())
+      isPersistent = false
+      setOnPreferenceClickListener {
+        requireActivity().getPreferences(Context.MODE_PRIVATE)?.edit {
+          remove(R.string.TokenKey.toString())
+        }
+        navController.navigate(SettingsFragmentDirections.toLoginFTUE())
+        loginModel.logout()
+        true
       }
-      navController.navigate(SettingsFragmentDirections.toLoginFTUE())
-      loginModel.logout()
-      true
     }
 
-    preferenceNightMode?.setOnPreferenceClickListener {
-
-      true
-    }*/
-
-    with(screen){
+    with(screen) {
       addPreference(category)
+      addPreference(followSystemNightMode)
       addPreference(nightModePref)
       addPreference(changePasswordPref)
       addPreference(logOutPref)
     }
+    preferenceScreen = screen
   }
 }
