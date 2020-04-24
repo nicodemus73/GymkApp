@@ -2,23 +2,33 @@ package gymkapp.main.api
 
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
+import gymkapp.main.api.RemoteAPI.listNearMaps
+import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import java.lang.Exception
+import retrofit2.http.*
 
- object RemoteAPI {
+object RemoteAPI {
 
     private const val baseUrl = "http://10.4.41.144:3001"
 
     private data class UserInfo(val username: String, val password: String)
     private data class ErrorMessage(val error: String)
-    private data class infoMapsNear(val metadata: String, val _id: String, val name: String, val firstLocation: String)
-   private data class NearPoint(val location: Int, val radius: Int) //GeoJSONPoint)
+   //private data class NearPoint(val location: GeoJSONPoint, val radius: Int) //GeoJSONPoint
+   data class Map(
+     var metadata: Metadata,
+     @SerializedName("_id")
+     var id: Int,
+     var name: String,
+     var firstLocation: MutableList<Point>
+   )
+
+   data class Metadata(var author: String, var description: String)
+   data class Point(val id: Int, val name: String, val location: GeoJSONPoint)
+   data class GeoJSONPoint(val type: String = "Point", val coordinates: List<Double>)
     //private data class UserId(val user_id: String) - No le veo uso a esta respuesta
 
     //TODO Agrupar las llamadas (Diferentes intercaces por tipo de llamada)
@@ -36,22 +46,38 @@ import java.lang.Exception
       @POST("/user/register")
       suspend fun register(@Body userinfo: UserInfo): Response<String>
 
-      @GET("/map/")
-      suspend fun listNearMaps(@Body userinfo: List<infoMapsNear>): Response<String>
+        @GET("/map")
+        suspend fun listNearMaps(
+            @Query("location") location: GeoJSONPoint,
+            @Query("radius") radio: Int
+        ): Response<Array<Map>>// nearpoint: NearPoint): Response<Array<Map>>//Response<List<String>>// //recibo una lista de Map
+
 
       companion object Factory {
 
-        fun create(): ScalarResponseCalls = Retrofit.Builder()
+        fun create(/*token: String*/): ScalarResponseCalls = Retrofit.Builder()
           .addConverterFactory(ScalarsConverterFactory.create())
           .addConverterFactory(GsonConverterFactory.create())
           .baseUrl(baseUrl)
+          .client(createClient())//que passa quan no es necessita token ex login register?? CREC que res ja que no comproba el token alla
           .build()
           .create(ScalarResponseCalls::class.java)
+
+          fun createClient(/*token: String*/):OkHttpClient {
+              var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTkwNTA3NTQ2ZWIyYzA1YTQxZTRlNWYiLCJpYXQiOjE1ODY1MTYxMDN9.Tx2kqrfQMLGQGClpCQxujoe6zWnnxy7TSe219kzRBsQ"//getToken()
+              println(token)
+              return OkHttpClient.Builder().addInterceptor{chain ->
+                  val builder= chain.request().newBuilder()
+                  builder.addHeader("Authorization", token)
+                  val request = builder.build()
+                  chain.proceed(request)
+              }.build()
+          }
       }
     }
 
     private val scalarAPICalls =
-      ScalarResponseCalls.create()
+      ScalarResponseCalls.create(/*token: String*/)
 
     suspend fun login(user: String, password: String): Pair<Boolean, String> {
 
@@ -102,26 +128,40 @@ import java.lang.Exception
       return Pair(failure,message)
     }
 
-   /*suspend fun listNearMaps(location: geojson, radio: int): Pair<Boolean, String> {
-      val response = try { scalarAPICalls.listNearMaps(
-        NearPoint(
-          location = location,
-          redius = radio
-        )
-      ) } catch (e: Exception){ return Pair(true, "Can't connect to the server")}
-      var failure = !response.isSuccessful //(response.code()!= 200)
-      val message = try {
-        if (failure) Gson().fromJson(response.errorBody()?.charStream()?.readText(),
-          ErrorMessage::class.java).error
-        else {
-          //guardar els mapes propers
+   //suspend fun listNearMaps(location: GeoJSONPoint, radio: Int): Pair<Pair<Boolean, String>, Array<Map> >{ //afegir els maps dins d'una llista, (demanar al server el numero de maps?)
+   suspend fun listNearMaps(location: GeoJSONPoint, radio: Int): Pair<Pair<Boolean, String>, Array<Map> >{
+     //al inci el vull en null
+       var NearMap = arrayOf<Map>()
+         val response = try { scalarAPICalls.listNearMaps(location, radio
+         )
+         } catch (e: Exception){
+             println(e.message)
+             return Pair(Pair(true, "Can't connect to the server"), NearMap)}
+       println("url: " + response.raw().request().url())
+         var failure = !response.isSuccessful //(response.code()!= 200)
+         //var hi = ArrayMap(aux = Gson().toJson(response.body()))
+         val message = try {
+             println("llegint message")
+             if (failure) Gson().fromJson(response.errorBody()?.charStream()?.readText(),
+                 ErrorMessage::class.java).error
+             else {
+                 //guardar els mapes propers
+                 NearMap = Gson().fromJson(response.body().toString(), Array<Map>::class.java)
+                 "no hay error"
+             }
+         } catch (e: Exception){
+             failure = true
+             "Unexpected error while trying to load near maps"
+         }
+       println("La llamada ha salido ${if(failure)"mal" else "bien"} y el mensaje es $message")
+       NearMap.forEach(::println)
+         return Pair(Pair(failure,message), NearMap)
+     }
 
-        }
-      } catch (e: Exception){
-        failure = true
-        "Unexpected error while trying to load near maps"
-      }
-      return Pair(failure,message)
-   }
-    */
-  }
+ }
+/*suspend fun main (){
+    val enviar = RemoteAPI.GeoJSONPoint("Point", listOf(2.170040, 41.386991))
+    val radius = 300
+    println("abans d'entrar")
+    listNearMaps(enviar, radius)
+}*/
