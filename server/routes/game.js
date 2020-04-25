@@ -8,10 +8,10 @@ const jwt = require('jsonwebtoken');
 const distance = require('turf-distance');
 const utils = require('../auxiliary/utils');
 
-router.get('/user/:id', async (req, res) => {
+router.get('/my', async (req, res) => {
 
     try {
-        Game.find({ user: req.params.id }, function (err, games) {
+        Game.find({ user: req.usernameId._id }, function (err, games) {
             if (err) res.status(400).json({ "error": err.message });
             else if (games.length == 0)
                 res.status(404).json({ "error": 'User has played no games.' });
