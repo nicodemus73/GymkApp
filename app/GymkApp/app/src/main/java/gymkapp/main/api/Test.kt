@@ -2,7 +2,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 
-data class Map(
+private data class Map(
   var metadata: Metadata,
   @SerializedName("_id")
   var id: Int,
@@ -10,12 +10,18 @@ data class Map(
   var firstLocation: Point
 )
 
-data class Metadata(var author: String, var description: String)
-data class Point(val id: Int, val name: String, val location: GeoJSONPoint)
-data class GeoJSONPoint(val type: String = "Point", val coordinates: List<Double>)
-
+private data class Metadata(var author: String, var description: String)
+private data class Point(val id: Int, val name: String, val location: GeoJSONPoint)
+private data class GeoJSONPoint(val type: String = "Point", val coordinates: List<Double>)
+private data class UserInfo(val username : String, val password: String)
+private data class ErrorMessage(val message: String)
 
 fun main() {
+
+  println("---------------------- LOGIN -------------------------")
+  println(GsonBuilder().setPrettyPrinting().create().toJson(UserInfo("User","Password")))
+  println(Gson().fromJson("""{"auth":"123"}""".trimIndent(),ErrorMessage::class.java))
+  println("---------------------- MAPAS --------------------------")
   println(
     GsonBuilder().setPrettyPrinting().create().toJson(
       arrayOf(
