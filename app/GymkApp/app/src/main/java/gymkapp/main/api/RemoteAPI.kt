@@ -22,17 +22,18 @@ object RemoteAPI {
   private data class ErrorMessage(val error: String)
 
   //TODO mover
-  data class Map(
-    var metadata: Metadata,
-    @SerializedName("_id")
-    var id: Int,
-    var name: String,
-    var firstLocation: MutableList<Point>
-  )
-
   data class Metadata(var author: String, var description: String)
-  data class Point(val id: Int, val name: String, val location: GeoJSONPoint)
-  data class GeoJSONPoint(val type: String = "Point", val coordinates: List<Double>)
+    data class Map(
+        var metadata: Metadata,
+        @SerializedName("_id")
+        var id: String,
+        var name: String,
+        var firstLocation: GeoJSONPoint//MutableList<GeoJSONPoint>
+    )
+
+
+    data class Point(val id: String, val name: String, val location: GeoJSONPoint)
+    data class GeoJSONPoint(var type: String/* = "Point"*/, var coordinates: List<Double>)
 
   //Los Log.d pueden filtrarse con ((Login|Welcome|Settings|Register|Maps|Social)(Model|ViewModel|Fragment)|MainActivity|RemoteAPI) como regex
   //TODO Clase Interceptor (OkHttp interceptor) permite añadir una header a cada request
@@ -58,11 +59,15 @@ object RemoteAPI {
 
   private interface MapsCallsClient {
 
-    @GET("/map")
-    suspend fun listNearMaps(
-      @Query("location") location: GeoJSONPoint,
-      @Query("radius") radio: Int
-    ): Response<Array<Map>>
+     @GET("/map")
+        suspend fun listNearMaps(
+            @Query("lon") long: Double,
+            @Query("lat") lat: Double,
+            @Query("radius") radius: Int
+        ): Response<Array<Map>>//  //recibo una lista de Map
+
+        @GET("/map/{id}")
+        suspend fun infoMap(@Path("id") id:String ):Response<Map>
 
     companion object Factory {
 
@@ -169,6 +174,7 @@ object RemoteAPI {
       return Pair("Can't Connect to the server", null)
     }
 
+    suspend fun register(user: String, password: String): Pair<Boolean, String> {
     //Tratar errores y la respuesta
     Log.d(classTag, "url: " + response.raw().request().url())
 
