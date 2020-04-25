@@ -21,14 +21,14 @@ class LoginViewModel : ViewModel() {
   //Propiedad observable que representa el estado actual de la sesion
   val authenticationState = MutableLiveData(AuthenticationState.INVALID_AUTHENTICATION)
 
-  var user: User? = null
+  var user: String? = null //TODO
     private set
   var errorMessage = ""
     private set
 
   fun authenticate(token: String?) {
 
-    authenticationState.value = token?.let { User(token); AuthenticationState.AUTHENTICATED }
+    authenticationState.value = token?.let { user = it; AuthenticationState.AUTHENTICATED }
       ?: AuthenticationState.UNAUTHENTICATED
   }
 

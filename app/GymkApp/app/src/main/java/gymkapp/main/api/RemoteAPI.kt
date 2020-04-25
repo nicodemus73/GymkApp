@@ -1,6 +1,7 @@
 package gymkapp.main.api
 
 import android.util.Log
+import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import gymkapp.main.BASE_URL
@@ -9,10 +10,7 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 object RemoteAPI {
 
@@ -23,17 +21,15 @@ object RemoteAPI {
 
   //TODO mover
   data class Metadata(var author: String, var description: String)
-    data class Map(
-        var metadata: Metadata,
-        @SerializedName("_id")
-        var id: String,
-        var name: String,
-        var firstLocation: GeoJSONPoint//MutableList<GeoJSONPoint>
-    )
+  data class Map(
+    var metadata: Metadata,
+    @SerializedName("_id")
+    var id: String,
+    var name: String,
+    var firstLocation: GeoJSONPoint//MutableList<GeoJSONPoint>
+  )
 
-
-    data class Point(val id: String, val name: String, val location: GeoJSONPoint)
-    data class GeoJSONPoint(var type: String/* = "Point"*/, var coordinates: List<Double>)
+  data class GeoJSONPoint(var type: String/* = "Point"*/, var coordinates: List<Double>)
 
   //Los Log.d pueden filtrarse con ((Login|Welcome|Settings|Register|Maps|Social)(Model|ViewModel|Fragment)|MainActivity|RemoteAPI) como regex
   //TODO Clase Interceptor (OkHttp interceptor) permite añadir una header a cada request
@@ -59,15 +55,15 @@ object RemoteAPI {
 
   private interface MapsCallsClient {
 
-     @GET("/map")
-        suspend fun listNearMaps(
-            @Query("lon") long: Double,
-            @Query("lat") lat: Double,
-            @Query("radius") radius: Int
-        ): Response<Array<Map>>//  //recibo una lista de Map
+    @GET("/map")
+    suspend fun listNearMaps(
+      @Query("lon") long: Double,
+      @Query("lat") lat: Double,
+      @Query("radius") radius: Int
+    ): Response<Array<Map>>//  //recibo una lista de Map
 
-        @GET("/map/{id}")
-        suspend fun infoMap(@Path("id") id:String ):Response<Map>
+    @GET("/map/{id}")
+    suspend fun infoMap(@Path("id") id: String): Response<Map>
 
     companion object Factory {
 
@@ -97,7 +93,8 @@ object RemoteAPI {
     mapsCalls = MapsCallsClient.create(token)
   }
 
-  private fun parseError(errorBody : ResponseBody) = Gson().fromJson(errorBody.charStream().readText(),ErrorMessage::class.java).error
+  private fun parseError(errorBody: ResponseBody) =
+    Gson().fromJson(errorBody.charStream().readText(), ErrorMessage::class.java).error
 
   suspend fun login(user: String, password: String): Pair<Boolean, String> {
 
@@ -152,7 +149,7 @@ object RemoteAPI {
    * Si no, first contiene el mensaje de error y second es nulo
    */
   suspend fun listNearMaps(
-    location: GeoJSONPoint,
+    center: LatLng,
     radio: Int
   ): Pair<String?, Array<Map>?> {
 
@@ -167,24 +164,58 @@ object RemoteAPI {
     //Asegurar la conexion
     val response = try {
       mapsCalls.listNearMaps(
-        location, radio
+        long = center.longitude,
+        lat = center.latitude,
+        radius = radio
       )
     } catch (e: Exception) {
-      Log.d(classTag, e.message.toString())
+      Log.d(classTag, "${e.message}")
       return Pair("Can't Connect to the server", null)
     }
 
-    suspend fun register(user: String, password: String): Pair<Boolean, String> {
     //Tratar errores y la respuesta
     Log.d(classTag, "url: " + response.raw().request().url())
 
-    var map: Array<Map>? = null
+    var maps: Array<Map>? = null
     val message = try {
-      if(response.isSuccessful){
+      if (response.isSuccessful) {
+        maps = response.body()!!
+        null
+      } else parseError(response.errorBody()!!)
+    } catch (e: Exception) {
+      "Error inesperado"
+    }
+    return Pair(message, maps)
+  }
+
+
+  suspend fun infoMap(Id: String): Pair<String?, Map?> {
+
+    val response = try {
+      mapsCalls.infoMap(id = Id)
+    } catch (e: Exception) {
+      Log.d(classTag, "error")
+      Log.d(classTag, "${e.message}")
+      return Pair("Can't connect to the server", null)
+    }
+
+    Log.d(classTag, "url: " + response.raw().request().url())
+    var map: Map? = null
+    val message = try {
+      Log.d(classTag, "llegint message")
+      if (!response.isSuccessful) parseError(response.errorBody()!!)
+      else {
         map = response.body()!!
         null
-      } else  parseError(response.errorBody()!!)
-    } catch (e: Exception) { "Error inesperado" }
-    return Pair(message,map)
+      }
+    } catch (e: Exception) {
+      Log.d(classTag, "${e.message}")
+      "Unexpected error while trying to load near maps"
+    }
+    Log.d(
+      classTag,
+      "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}"
+    )
+    return Pair(message, map)
   }
 }
