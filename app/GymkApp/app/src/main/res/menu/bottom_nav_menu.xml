@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/mapsFragment"
+        android:contentDescription="@string/MenuMap"
+        android:icon="@drawable/map_item_icon"
+        android:title="@string/MenuMap" />
+    <item
+        android:id="@+id/socialFragment"
+        android:contentDescription="@string/MenuSocialNet"
+        android:icon="@drawable/world_icon"
+        android:title="@string/MenuSocialNet" />
+    <item
+        android:id="@+id/settingsFragment"
+        android:contentDescription="@string/MenuConf"
+        android:icon="@drawable/settings_icon"
+        android:title="@string/MenuConf" />
+</menu>

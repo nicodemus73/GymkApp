@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">GymkApp</string>
+    <string name="prompt_password">Password</string>
+    <string name="buttonToLogin">Log In</string>
+    <string name="prompt_username">Username</string>
+    <string name="LogoDescription">This is the application logo</string>
+    <string name="AppTitle">GymkApp</string>
+    <string name="RegisterLink">Register</string>
+    <string name="RegisterText">Not a member yet?</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
+    <string name="LogoFlagDescription">This is the flag icon</string>
+    <string name="TokenKey">LoginToken</string>
+    <string name="logoutText">Log out</string>
+    <string name="MenuMap">Map</string>
+    <string name="MenuSocialNet">Social</string>
+    <string name="MenuConf">Settings</string>
+</resources>

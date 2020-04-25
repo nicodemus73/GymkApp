@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/mapsFragment">
+
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="gymkapp.main.MapsFragment"
+        android:label="maps"
+        tools:layout="@layout/maps" />
+    <navigation
+        android:id="@+id/FTUE_login"
+        app:startDestination="@id/welcomeFragment">
+        <fragment
+            android:id="@+id/loginFragment"
+            android:name="gymkapp.main.login.LoginFragment"
+            android:label="login"
+            tools:layout="@layout/login" />
+        <fragment
+            android:id="@+id/welcomeFragment"
+            android:name="gymkapp.main.login.WelcomeFragment"
+            android:label="welcome"
+            tools:layout="@layout/welcome">
+            <action
+                android:id="@+id/toRegister"
+                app:destination="@id/registerFragment"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            <action
+                android:id="@+id/toLogin"
+                app:destination="@id/loginFragment"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        </fragment>
+        <fragment
+            android:id="@+id/registerFragment"
+            android:name="gymkapp.main.login.RegisterFragment"
+            android:label="register"
+            tools:layout="@layout/register" />
+        <action
+            android:id="@+id/toMainGraph"
+            app:destination="@id/mapsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true" />
+    </navigation>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="gymkapp.main.SettingsFragment"
+        android:label="settings"
+        tools:layout="@layout/settings" />
+    <fragment
+        android:id="@+id/socialFragment"
+        android:name="gymkapp.main.SocialFragment"
+        android:label="social"
+        tools:layout="@layout/social" />
+    <action
+        android:id="@+id/toLoginFTUE"
+        app:destination="@id/FTUE_login"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:exitAnim="@anim/nav_default_exit_anim"
+        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@anim/nav_default_pop_exit_anim"
+        app:popUpTo="@id/mapsFragment"
+        app:popUpToInclusive="true" />
+</navigation>
