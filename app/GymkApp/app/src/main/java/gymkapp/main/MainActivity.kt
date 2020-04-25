@@ -10,8 +10,9 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
-import gymkapp.main.LoginViewModel.AuthenticationState.*
+import gymkapp.main.viewmodel.LoginViewModel.AuthenticationState.*
 import gymkapp.main.databinding.BottomNavBinding
+import gymkapp.main.viewmodel.LoginViewModel
 
 class MainActivity : AppCompatActivity() {
 

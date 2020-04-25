@@ -1,7 +1,9 @@
-package gymkapp.main
+package gymkapp.main.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import gymkapp.main.USER_MAX_LENGTH
+import gymkapp.main.USER_MIN_LENGTH
 import gymkapp.main.api.RemoteAPI
 
 /**
@@ -18,7 +20,6 @@ class LoginViewModel : ViewModel() {
   //Propiedad observable que representa el estado actual de la sesion
   val authenticationState = MutableLiveData(AuthenticationState.INVALID_AUTHENTICATION)
 
-  //valor en memoria del loginToken (Podriamos querer observarlo? No creo...)
   var loginToken: String? = null
     private set
   var errorMessage = ""
@@ -36,20 +37,24 @@ class LoginViewModel : ViewModel() {
     if (failure) loginFailed(message)
     else {
       loginToken = message
-      authenticationState.value = AuthenticationState.AUTHENTICATED
+      authenticationState.value =
+        AuthenticationState.AUTHENTICATED
     }
   }
 
   private fun loginFailed(message: String) {
     errorMessage = message
-    authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
-    authenticationState.value = AuthenticationState.UNAUTHENTICATED
+    authenticationState.value =
+      AuthenticationState.INVALID_AUTHENTICATION
+    authenticationState.value =
+      AuthenticationState.UNAUTHENTICATED
   }
 
   fun logout() {
 
     loginToken = null
-    authenticationState.value = AuthenticationState.UNAUTHENTICATED
+    authenticationState.value =
+      AuthenticationState.UNAUTHENTICATED
   }
 
   companion object {

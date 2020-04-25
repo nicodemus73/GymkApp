@@ -1,4 +1,4 @@
-package gymkapp.main
+package gymkapp.main.ui.map
 
 import android.Manifest
 import android.content.Context
@@ -35,10 +35,13 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitMap
-import gymkapp.main.LoginViewModel.AuthenticationState.*
-import gymkapp.main.MapsFragmentModel.FollowingStatus as FolStat
-import gymkapp.main.MapsFragmentModel.LocationSettingsStatus as LocSetStat
+import gymkapp.main.*
+import gymkapp.main.viewmodel.LoginViewModel.AuthenticationState.*
+import gymkapp.main.viewmodel.map.MapsFragmentModel.FollowingStatus as FolStat
+import gymkapp.main.viewmodel.map.MapsFragmentModel.LocationSettingsStatus as LocSetStat
 import gymkapp.main.databinding.MapsBinding
+import gymkapp.main.viewmodel.LoginViewModel
+import gymkapp.main.viewmodel.map.MapsFragmentModel
 import kotlinx.coroutines.launch
 
 class MapsFragment : Fragment() {
@@ -193,7 +196,9 @@ class MapsFragment : Fragment() {
       Snackbar.LENGTH_INDEFINITE
     )
       .setAction("Enable") {
-        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+          LOCATION_REQUEST_CODE
+        )
       }.show()
   }
 

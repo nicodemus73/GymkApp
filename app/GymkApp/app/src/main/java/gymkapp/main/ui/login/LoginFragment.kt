@@ -1,4 +1,4 @@
-package gymkapp.main.login
+package gymkapp.main.ui.login
 
 import android.content.Context
 import android.os.Bundle
@@ -16,9 +16,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import gymkapp.main.FTUELoginDirections
-import gymkapp.main.LoginViewModel
+import gymkapp.main.viewmodel.LoginViewModel
 import gymkapp.main.R
 import gymkapp.main.databinding.LoginBinding
+import gymkapp.main.viewmodel.login.LoginFragmentModel
 import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {

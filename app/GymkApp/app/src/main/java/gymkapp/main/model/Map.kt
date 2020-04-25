@@ -1,7 +1,10 @@
-package gymkapp.main
+package gymkapp.main.model
+
+import com.google.gson.annotations.SerializedName
 
 data class Map(
   val metadata: Metadata,
+  @SerializedName("_id")
   var id: Int,
   val name: String,
   val points: MutableList<Point>

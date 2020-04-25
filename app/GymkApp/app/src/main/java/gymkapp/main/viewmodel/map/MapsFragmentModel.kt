@@ -1,4 +1,4 @@
-package gymkapp.main
+package gymkapp.main.viewmodel.map
 
 import android.location.Location
 import android.util.Log
@@ -16,7 +16,7 @@ class MapsFragmentModel : ViewModel(){
     ENABLED,
     CHECKING,
     DISABLED
-  }//TODO añadir disabled?
+  }
 
   enum class FollowingStatus {
     UNKNOWN,
@@ -37,7 +37,6 @@ class MapsFragmentModel : ViewModel(){
   val locationCallback by lazy {
     object: LocationCallback(){
       override fun onLocationResult(locRes: LocationResult?) {
-        Log.d(classTag,"Actualizando valor")
         currentLoc.value = locRes?.lastLocation
         isFirstTimeLocationRequest = false
       }
@@ -45,7 +44,8 @@ class MapsFragmentModel : ViewModel(){
       override fun onLocationAvailability(availability: LocationAvailability?) {
         if(!isFirstTimeLocationRequest && !availability!!.isLocationAvailable){
           Log.d(classTag,"Localizacion no disponible, comprobando...")
-          locationSettingStatus.value = LocationSettingsStatus.CHECKING
+          locationSettingStatus.value =
+            LocationSettingsStatus.CHECKING
         }
       }
     }
@@ -58,27 +58,31 @@ class MapsFragmentModel : ViewModel(){
   val currentLoc = MutableLiveData<Location?>(null)
 
   fun startFollowing(){
-    followingStatus.value = FollowingStatus.FOLLOWING
+    followingStatus.value =
+      FollowingStatus.FOLLOWING
   }
 
   fun stopFollowing(){
-    followingStatus.value = FollowingStatus.DISABLED
+    followingStatus.value =
+      FollowingStatus.DISABLED
   }
 
   fun switchFollowing(){
-    if (followingStatus.value==FollowingStatus.UNKNOWN){
+    if (followingStatus.value== FollowingStatus.UNKNOWN){
       Log.d(classTag,"Operacion incompatible")
       return
     }
-    followingStatus.value = if(followingStatus.value == FollowingStatus.FOLLOWING)FollowingStatus.DISABLED else FollowingStatus.FOLLOWING
+    followingStatus.value = if(followingStatus.value == FollowingStatus.FOLLOWING) FollowingStatus.DISABLED else FollowingStatus.FOLLOWING
   }
 
   fun confirmLocationSettingsEnabled(){
-    locationSettingStatus.value = LocationSettingsStatus.ENABLED
+    locationSettingStatus.value =
+      LocationSettingsStatus.ENABLED
   }
 
   fun confirmLocationSettingsDenied(){
-    locationSettingStatus.value = LocationSettingsStatus.DISABLED
+    locationSettingStatus.value =
+      LocationSettingsStatus.DISABLED
   }
 
   /**
