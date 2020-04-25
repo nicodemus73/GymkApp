@@ -82,7 +82,7 @@ class LoginFragment : Fragment() {
 
           Log.d(javaClass.simpleName, "Autenticado, guardando y pasando al grafico principal")
           activity?.getPreferences(Context.MODE_PRIVATE)
-            ?.edit { putString(R.string.TokenKey.toString(), viewModel.loginToken) }
+            ?.edit { putString(R.string.TokenKey.toString(), viewModel.user) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {

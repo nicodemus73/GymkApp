@@ -182,9 +182,3 @@ object RemoteAPI {
     return Pair(message,map)
   }
 }
-/*suspend fun main (){
-    val enviar = RemoteAPI.GeoJSONPoint("Point", listOf(2.170040, 41.386991))
-    val radius = 300
-    println("abans d'entrar")
-    listNearMaps(enviar, radius)
-}*/

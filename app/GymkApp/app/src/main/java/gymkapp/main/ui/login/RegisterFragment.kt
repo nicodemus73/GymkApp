@@ -85,7 +85,7 @@ class RegisterFragment : Fragment() {
 
           Log.d(javaClass.simpleName, "Autenticado, guardando y moviendose al grafico principal")
           activity?.getPreferences(Context.MODE_PRIVATE)
-            ?.edit { putString(R.string.TokenKey.toString(), loginViewModel.loginToken) }
+            ?.edit { putString(R.string.TokenKey.toString(), loginViewModel.user) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         //Improbable que ocurra ya que el registro deberia haber ido bien

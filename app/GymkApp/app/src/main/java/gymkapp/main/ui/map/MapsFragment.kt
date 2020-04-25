@@ -274,7 +274,7 @@ class MapsFragment : Fragment() {
           checkSettings()
         }
         LocSetStat.ENABLED -> locationLayer(enable = true)
-        else -> checkSettings() //TODO Ultimo cambio añadido, considerar cambiar...
+        else -> checkSettings()
       }
     })
   }
@@ -298,7 +298,6 @@ class MapsFragment : Fragment() {
 
     val builder = LocationSettingsRequest.Builder()
       .addLocationRequest(mapsModel.locationRequest)
-      //.setAlwaysShow(true) TODO
     val client = LocationServices.getSettingsClient(requireContext())
     val task = client.checkLocationSettings(builder.build())
     task.addOnSuccessListener {

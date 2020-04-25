@@ -12,6 +12,7 @@ import gymkapp.main.api.RemoteAPI
 
 class MapsFragmentModel : ViewModel(){
 
+  //TODO cambiar nombre cuando sepa si es activityViewModel o solo ViewModel
   enum class LocationSettingsStatus {
     ENABLED,
     CHECKING,

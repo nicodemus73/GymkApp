@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import gymkapp.main.USER_MAX_LENGTH
 import gymkapp.main.USER_MIN_LENGTH
 import gymkapp.main.api.RemoteAPI
+import gymkapp.main.model.User
 
 /**
  * Clase para gestionar el estado de sesión del usuario
@@ -20,14 +21,14 @@ class LoginViewModel : ViewModel() {
   //Propiedad observable que representa el estado actual de la sesion
   val authenticationState = MutableLiveData(AuthenticationState.INVALID_AUTHENTICATION)
 
-  var loginToken: String? = null
+  var user: User? = null
     private set
   var errorMessage = ""
     private set
 
   fun authenticate(token: String?) {
 
-    authenticationState.value = token?.let { loginToken = it; AuthenticationState.AUTHENTICATED }
+    authenticationState.value = token?.let { User(token); AuthenticationState.AUTHENTICATED }
       ?: AuthenticationState.UNAUTHENTICATED
   }
 
@@ -36,7 +37,7 @@ class LoginViewModel : ViewModel() {
     val (failure, message) = RemoteAPI.login(user, password)
     if (failure) loginFailed(message)
     else {
-      loginToken = message
+      this.user = message
       authenticationState.value =
         AuthenticationState.AUTHENTICATED
     }
@@ -52,7 +53,7 @@ class LoginViewModel : ViewModel() {
 
   fun logout() {
 
-    loginToken = null
+    user = null
     authenticationState.value =
       AuthenticationState.UNAUTHENTICATED
   }
