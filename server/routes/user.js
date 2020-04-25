@@ -1,51 +1,91 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const Task = require('../bbdd/Task'); //per poder utilitzar la bbdd
+const User = require('../bbdd/UserSchema');
+const { registerValidation, loginValidation } = require('../auxiliary/validation');
 
-router.get('/', (req, res) => {
-    res.send("This is the user route");
-});
-
-router.post('/add', async(req, res) => { //guardar es un exemple, a millorar
-
-    const task = new Task({
-        title: req.body.title,
-        author: req.body.author,
-        description: req.body.description
-    });
+router.get('/', async (req, res) => {
     try {
-        const savedUser = await task.save();
-        console.log(task);
-        console.log(req.body.title);
-        res.json(savedUser);
-    } catch(err) {
-        res.json({ message: err});
+        await User.find({}, function (err, users) {
+            if (err) return res.status(500).json({ "error": err.message });//Internal Server Error
+            res.status(200).json(users);
+        })
+    } catch (err) {
+        res.status(500).json({ "error": err.message });//Internal Server Error
     }
 });
 
-router.post('/add2', async(req, res) => { 
+
+router.post('/register', async (req, res) => {
 
     try {
-       // console.log(req.body);
-        res.json(req.body);
-    } catch(err) {
-        res.json({ "message": err});
-    }
-});
+        //validar antes de crear el usuario
+        const { err } = registerValidation(req.body);
+        if (err) return res.status(400).json({ "error": err.details[0].message });
 
-router.post('/add3', async(req, res) => { 
+        //validar que username sigui unic
+        const usernameExist = await User.findOne({ username: req.body.username });
+        if (usernameExist) return res.status(409).json({ "error": "Username already exists" }); //conflict
 
-    try {
-        const task = new Task({
+        //hashear la password 
+        const salt = await bcrypt.genSalt();
+        const hashpsswd = await bcrypt.hash(req.body.password, salt);
+
+        //crea l'usuari
+        const usern = new User({
             username: req.body.username,
-            password: req.body.password,
+            password: hashpsswd,//req.body.password,
+            //firstname: req.body.firstname,
+            //lastname: req.body.lastname,
         });
-        const savedUser = await task.save();
-        res.json(savedUser);
-    } catch(err) {
-        res.json({ "message": err.message});
+        const savedUser = await usern.save(10);
+        res.status(200).end();//.json({userid: usern._id}); //ok
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ "error": err.message }); //bad request
     }
+});
+
+
+router.post('/login', async (req, res) => {
+    try {
+
+        //validacion antes del login
+        const { err } = loginValidation(req.body);
+        if (err) return res.status(400).json({ "error": err.details[0].message }); //Bad request
+
+        //el usuario ha de existir
+        const username = await User.findOne({ username: req.body.username });
+        if (!username) return res.status(404).json({ "error": "Incorrect Username or Password" }); //Not Found  no existe el usuario
+
+        const validPasswd = await bcrypt.compare(req.body.password, username.password);
+        if (!validPasswd) return res.status(404).json({ "error": "Incorrect Username or Password" }); //not found
+
+        //crear y asignar token al usuario
+        const token = jwt.sign({ _id: username._id }, process.env.TOKEN_KEY);
+        res.status(200).header('Authorization', token).end();//.json({"token": token});
+        //res.send('Logged in!');
+    } catch (err) {
+        res.status(500).json({ "error": err.message });
+    }
+
+});
+
+//delete by _id (usuaris de moment) No s'hauria de borrar, donar de baixa
+router.post('/delete/:id', async function (req, res) {
+
+    User.findByIdAndDelete(req.params.id)
+        .exec()
+        .then(doc => {
+            //console.log(doc);
+            if (!doc) { return res.status(404).json({ "error": "Document not found" }).end(); }
+            return res.status(200).json({ "message": "File deleted" }).end();
+        })
+        .catch(error =>
+            res.status(400).json({ message: error }));
+
 });
 
 module.exports = router;

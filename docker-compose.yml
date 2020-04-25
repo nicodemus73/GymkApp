@@ -1,0 +1,26 @@
+version: "3"
+services:
+  app:
+    restart: always
+    image: gimkapp/gymkapp:latest
+    ports: 
+      - 3001:3001
+    depends_on: 
+      - mongodb
+    networks:
+      app_net:
+        ipv4_address: 172.16.16.3
+  mongodb:
+    image: mongo
+    ports: 
+      - 27017:27017
+    networks:
+      app_net:
+        ipv4_address: 172.16.16.2
+networks:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.16.0/24"
+

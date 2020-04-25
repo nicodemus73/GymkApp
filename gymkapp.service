@@ -1,0 +1,12 @@
+[Unit]
+Description=GymkApp
+After=network.target
+StartLimitIntervalSec=0[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=alumne
+ExecStart=/usr/bin/node /home/alumne/deploy/server/app.js 
+
+[Install]
+WantedBy=multi-user.target
