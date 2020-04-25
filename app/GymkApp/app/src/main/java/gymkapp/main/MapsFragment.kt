@@ -67,7 +67,6 @@ class MapsFragment : Fragment() {
     private const val enabledColorHexString = "#FFFFFF"
   }
 
-  //TODO Flujo de settings
   //TODO llamada a la fucion para obtener puntos cercanos
   //TODO Cambiar el loginToken por el singleton del usuario en el loginViewModel
   //TODO Considerar utilizar un savedinstancestate

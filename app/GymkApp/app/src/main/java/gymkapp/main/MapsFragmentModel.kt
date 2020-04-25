@@ -8,6 +8,7 @@ import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import gymkapp.main.api.RemoteAPI
 
 class MapsFragmentModel : ViewModel(){
 
@@ -78,5 +79,12 @@ class MapsFragmentModel : ViewModel(){
 
   fun confirmLocationSettingsDenied(){
     locationSettingStatus.value = LocationSettingsStatus.DISABLED
+  }
+
+  /**
+   * Crea el cliente de llamadas a la API por la parte de mapas antes de empezar a realizar llamadas a la API
+   */
+  fun createPrivateMapsApiClient(loginToken: String){
+    RemoteAPI.createMapsCallsClient(loginToken)
   }
 }
