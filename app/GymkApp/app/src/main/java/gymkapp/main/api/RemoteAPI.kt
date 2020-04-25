@@ -2,8 +2,10 @@ package gymkapp.main.api
 
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import gymkapp.main.api.RemoteAPI.infoMap
+import gymkapp.main.api.RemoteAPI.listNearMaps
 import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -17,7 +19,6 @@ object RemoteAPI {
 
     private data class UserInfo(val username: String, val password: String)
     private data class ErrorMessage(val error: String)
-    //private data class NearPoint(val location: GeoJSONPoint, val radius: Int) //GeoJSONPoint
     data class Metadata(var author: String, var description: String)
     data class Map(
         var metadata: Metadata,
@@ -30,7 +31,6 @@ object RemoteAPI {
 
     data class Point(val id: String, val name: String, val location: GeoJSONPoint)
     data class GeoJSONPoint(var type: String/* = "Point"*/, var coordinates: List<Double>)
-    //private data class UserId(val user_id: String) - No le veo uso a esta respuesta
 
     //TODO Agrupar las llamadas (Diferentes intercaces por tipo de llamada)
     //TODO Clase Interceptor (OkHttp interceptor) permite añadir una header a cada request
@@ -54,8 +54,8 @@ object RemoteAPI {
             @Query("radius") radius: Int
         ): Response<Array<Map>>//  //recibo una lista de Map
 
-        @GET("/map" +"/5ea2e44069770d5b5eab2e1d")//{id}")
-        suspend fun infoMap(/*@Path("id") id:String */):Response<Map>
+        @GET("/map/{id}")
+        suspend fun infoMap(@Path("id") id:String ):Response<Map>
 
 
         companion object Factory {
@@ -149,7 +149,7 @@ object RemoteAPI {
     }
 
     //suspend fun listNearMaps(location: GeoJSONPoint, radio: Int): Pair<Pair<Boolean, String>, Array<Map> >{ //afegir els maps dins d'una llista, (demanar al server el numero de maps?)
-    suspend fun listNearMaps(lon: Double, lat: Double, radius: Int): Pair<Pair<Boolean, String>, Array<Map>> {
+    suspend fun listNearMaps(lon: Double, lat: Double, radius: Int): Pair<Pair<Boolean, String>, Array<Map>?> {
         //al inci el vull en null
         var NearMap = arrayOf<Map>()
         val response = try {
@@ -182,19 +182,17 @@ object RemoteAPI {
             "Unexpected error while trying to load near maps"
         }
         println("La llamada ha salido ${if (failure) "mal" else "bien"} y el mensaje es $message")
-        NearMap.forEach(::println)
-        return Pair(Pair(failure, message), NearMap)
+        response.body()?.forEach(::println)
+        return Pair(Pair(failure, message), response.body())
     }
-     suspend fun infoMap (/*Id: String*/) : /*Pair<*/Pair<Boolean, Any>/*, Map>*/ {
+     suspend fun infoMap (Id: String) : Pair<Pair<Boolean, String>, Map?> {
           var information: Map? = null
-          //var information: Map
           val response = try {
-              //println(Id)
-              scalarAPICalls.infoMap()
+              scalarAPICalls.infoMap(id = Id)
           } catch (e: Exception) {
               println("error")
               println(e.message)
-              return /*Pair(*/Pair(true, "Can't connect to the server")/*, information)*/
+              return Pair(Pair(true, "Can't connect to the server"), information)
           }
           println("url: " + response.raw().request().url())
           var failure = !response.isSuccessful //(response.code()!= 200)
@@ -205,9 +203,6 @@ object RemoteAPI {
                   ErrorMessage::class.java
               ).error
               else {
-                  //guardar els mapes propers
-                 println( Gson().toJson(response.body()))
-                   information = Gson().fromJson(response.body().toString(), Map::class.java)
                   "no hay error"
               }
           } catch (e: Exception) {
@@ -216,19 +211,21 @@ object RemoteAPI {
               "Unexpected error while trying to load near maps"
           }
           println("La llamada ha salido ${if (failure) "mal" else "bien"} y el mensaje es $message")
-          println(information)
-          return /*Pair(*/Pair(failure, message)/*, information)*/
+         println(response.body())
+          return Pair(Pair(failure, message), response.body())
       }
 
 
 }
 suspend fun main (){
     //val enviar = RemoteAPI.GeoJSONPoint("Point", listOf(2.170040,41.386991))
-    /*var lon = 2.170040
+    var lon = 2.170040
     var lat = 41.386991
-    val radius = 300*/
+    val radius = 300
     println("abans d'entrar")
-    infoMap()
-    //listNearMaps(lon, lat, radius)
-    //val Id = "5ea2e44069770d5b5eab2e1d"
+    var tryy ="5ea2e44069770d5b5eab2e1d"
+   infoMap(tryy)
+
+   // listNearMaps(lon, lat, radius)
+
 }
