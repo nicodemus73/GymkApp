@@ -42,8 +42,8 @@ app.set('httpPort', process.env.HTTPPORT || 3001);
 app.set('httpsPort', process.env.HTTPSPORT || 3002);
 
 // HTTPS
-var privateKey  = fs.readFileSync('certificates/privateKey.key');
-var certificate = fs.readFileSync('certificates/certificate.crt');
+var privateKey  = fs.readFileSync('certificates/device.key');
+var certificate = fs.readFileSync('certificates/device.crt');
 var credentials = {key: privateKey, cert: certificate};
 
 // Stating the server
