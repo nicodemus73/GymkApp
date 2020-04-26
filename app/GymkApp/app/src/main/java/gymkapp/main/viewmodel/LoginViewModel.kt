@@ -21,23 +21,23 @@ class LoginViewModel : ViewModel() {
   //Propiedad observable que representa el estado actual de la sesion
   val authenticationState = MutableLiveData(AuthenticationState.INVALID_AUTHENTICATION)
 
-  var user: String? = null //TODO
+  var user: User? = null
     private set
   var errorMessage = ""
     private set
 
   fun authenticate(token: String?) {
 
-    authenticationState.value = token?.let { user = it; AuthenticationState.AUTHENTICATED }
+    authenticationState.value = token?.let { user = User(id = token); AuthenticationState.AUTHENTICATED }
       ?: AuthenticationState.UNAUTHENTICATED
   }
 
-  suspend fun login(user: String, password: String) {
+  suspend fun login(username: String, password: String) {
 
-    val (failure, message) = RemoteAPI.login(user, password)
+    val (failure, message) = RemoteAPI.login(username, password)
     if (failure) loginFailed(message)
     else {
-      this.user = message
+      user = User(message)
       authenticationState.value =
         AuthenticationState.AUTHENTICATED
     }

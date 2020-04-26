@@ -19,9 +19,8 @@ object RemoteAPI {
   private data class UserInfo(val username: String, val password: String)
   private data class ErrorMessage(val error: String)
 
-  //TODO mover
-  data class Metadata(var author: String, var description: String)
-  data class Map(
+  //TODO mover y RENOMBRAR + renombrar otras variables relacionadas (map,maps) y todo lo relacionado con mapas que no sea un mapa...
+  data class ALGO_QUE_NO_ES_UN_MAPA(
     var metadata: Metadata,
     @SerializedName("_id")
     var id: String,
@@ -29,7 +28,8 @@ object RemoteAPI {
     var firstLocation: GeoJSONPoint//MutableList<GeoJSONPoint>
   )
 
-  data class GeoJSONPoint(var type: String/* = "Point"*/, var coordinates: List<Double>)
+  data class Metadata(var author: String, var description: String)
+  data class GeoJSONPoint(var type: String = "Point", var coordinates: List<Double>)
 
   //Los Log.d pueden filtrarse con ((Login|Welcome|Settings|Register|Maps|Social)(Model|ViewModel|Fragment)|MainActivity|RemoteAPI) como regex
   //TODO Clase Interceptor (OkHttp interceptor) permite añadir una header a cada request
@@ -60,10 +60,10 @@ object RemoteAPI {
       @Query("lon") long: Double,
       @Query("lat") lat: Double,
       @Query("radius") radius: Int
-    ): Response<Array<Map>>//  //recibo una lista de Map
+    ): Response<Array<ALGO_QUE_NO_ES_UN_MAPA>>//  //recibo una lista de Map
 
     @GET("/map/{id}")
-    suspend fun infoMap(@Path("id") id: String): Response<Map>
+    suspend fun infoMap(@Path("id") id: String): Response<ALGO_QUE_NO_ES_UN_MAPA>
 
     companion object Factory {
 
@@ -151,7 +151,7 @@ object RemoteAPI {
   suspend fun listNearMaps(
     center: LatLng,
     radio: Int
-  ): Pair<String?, Array<Map>?> {
+  ): Pair<String?, Array<ALGO_QUE_NO_ES_UN_MAPA>?> {
 
     //Asegurar que el cliente se ha inicializado
     if (!::mapsCalls.isInitialized) return Pair("Error interno", null).also {
@@ -176,7 +176,7 @@ object RemoteAPI {
     //Tratar errores y la respuesta
     Log.d(classTag, "url: " + response.raw().request().url())
 
-    var maps: Array<Map>? = null
+    var maps: Array<ALGO_QUE_NO_ES_UN_MAPA>? = null
     val message = try {
       if (response.isSuccessful) {
         maps = response.body()!!
@@ -189,7 +189,7 @@ object RemoteAPI {
   }
 
 
-  suspend fun infoMap(Id: String): Pair<String?, Map?> {
+  suspend fun infoMap(Id: String): Pair<String?, ALGO_QUE_NO_ES_UN_MAPA?> {
 
     val response = try {
       mapsCalls.infoMap(id = Id)
@@ -200,7 +200,7 @@ object RemoteAPI {
     }
 
     Log.d(classTag, "url: " + response.raw().request().url())
-    var map: Map? = null
+    var map: ALGO_QUE_NO_ES_UN_MAPA? = null
     val message = try {
       Log.d(classTag, "llegint message")
       if (!response.isSuccessful) parseError(response.errorBody()!!)
