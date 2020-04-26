@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import gymkapp.main.BASE_URL
+import gymkapp.main.DEFAULT_VIEW_RADIUS
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -16,10 +17,11 @@ object RemoteAPI {
 
   private val classTag = javaClass.simpleName
 
+  //DATOS ENVIADOS
   private data class UserInfo(val username: String, val password: String)
+  //DATOS RECIBIDOS
   private data class ErrorMessage(val error: String)
-
-  //TODO mover y RENOMBRAR + renombrar otras variables relacionadas (map,maps) y todo lo relacionado con mapas que no sea un mapa...
+  //TODO (mover y) RENOMBRAR + renombrar otras variables relacionadas (map,maps) y todo lo relacionado con mapas que no sea un mapa...
   data class ALGO_QUE_NO_ES_UN_MAPA(
     var metadata: Metadata,
     @SerializedName("_id")
@@ -150,7 +152,7 @@ object RemoteAPI {
    */
   suspend fun listNearMaps(
     center: LatLng,
-    radio: Int
+    radio: Int = DEFAULT_VIEW_RADIUS
   ): Pair<String?, Array<ALGO_QUE_NO_ES_UN_MAPA>?> {
 
     //Asegurar que el cliente se ha inicializado

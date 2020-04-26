@@ -32,9 +32,15 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
+import com.google.maps.android.data.geojson.GeoJsonFeature
+import com.google.maps.android.data.geojson.GeoJsonLayer
+import com.google.maps.android.data.geojson.GeoJsonPoint
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitMap
+import com.google.maps.android.ktx.utils.component1
+import com.google.maps.android.ktx.utils.component2
 import gymkapp.main.*
 import gymkapp.main.viewmodel.LoginViewModel.AuthenticationState.*
 import gymkapp.main.viewmodel.map.MapsFragmentModel.FollowingStatus as FolStat
@@ -43,6 +49,7 @@ import gymkapp.main.databinding.MapsBinding
 import gymkapp.main.viewmodel.LoginViewModel
 import gymkapp.main.viewmodel.map.MapsFragmentModel
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 class MapsFragment : Fragment() {
 
@@ -171,17 +178,16 @@ class MapsFragment : Fragment() {
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-    when(requestCode){
+    when (requestCode) {
       PERMISSION_SETTINGS_REQ_CODE -> checkIfPermissionsGranted()
       LOCATION_SETTINGS_REQ_CODE -> {
 
         val lm = requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
-        if(LocationManagerCompat.isLocationEnabled(lm)) {
-          Log.d(classTag,"Activando localizacion")
+        if (LocationManagerCompat.isLocationEnabled(lm)) {
+          Log.d(classTag, "Activando localizacion")
           mapsModel.confirmLocationSettingsEnabled()
-        }
-        else {
-          Log.d(classTag,"Desactivando localizacion")
+        } else {
+          Log.d(classTag, "Desactivando localizacion")
           mapsModel.confirmLocationSettingsDenied()
         }
       }
@@ -196,7 +202,8 @@ class MapsFragment : Fragment() {
       Snackbar.LENGTH_INDEFINITE
     )
       .setAction("Enable") {
-        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+        requestPermissions(
+          arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
           LOCATION_REQUEST_CODE
         )
       }.show()
@@ -218,19 +225,23 @@ class MapsFragment : Fragment() {
     }
   }
 
-  private fun showLocationSettingsResolution(e: Exception){
+  private fun showLocationSettingsResolution(e: Exception) {
 
-    if(e is ResolvableApiException){
+    if (e is ResolvableApiException) {
       Snackbar.make(
         bind.root,
         "Enable location settings to see near Gymkhanas",
         Snackbar.LENGTH_INDEFINITE
       )
         .setAction("Enable") {
-          try{
-            startIntentSenderForResult(e.resolution.intentSender,
-              LOCATION_SETTINGS_REQ_CODE,null,0,0,0,null) //Horrible implementacion por parte de Google...
-          } catch (e: IntentSender.SendIntentException){Log.d(classTag,"Error inesperado")}//TODO borrar
+          try {
+            startIntentSenderForResult(
+              e.resolution.intentSender,
+              LOCATION_SETTINGS_REQ_CODE, null, 0, 0, 0, null
+            ) //Horrible implementacion por parte de Google...
+          } catch (e: IntentSender.SendIntentException) {
+            Log.d(classTag, "Error inesperado")
+          }//TODO borrar
         }.show()
     }
   }
@@ -263,12 +274,13 @@ class MapsFragment : Fragment() {
         if (isFirstLoc) {
           isFirstLoc = false
           it.zoomCamera(animate = false)
+          drawGeoJsonPoint(it.toLatLng())
         } else it.zoomCamera()
       }
     })
 
     mapsModel.locationSettingStatus.observe(viewLifecycleOwner, Observer {
-      when(it){
+      when (it) {
         LocSetStat.CHECKING -> {
           locationLayer(enable = false)
           checkSettings()
@@ -320,6 +332,23 @@ class MapsFragment : Fragment() {
     else map.moveCamera(cameraUpdate)
   }
 
+  /**
+   * Testing
+   */
+  private fun drawGeoJsonPoint(point: LatLng) {
+    val (lat,long) = point
+    with(GeoJsonLayer(map, JSONObject())) {
+      addFeature(
+        GeoJsonFeature(
+          GeoJsonPoint(LatLng(lat+0.01,long+0.01)),
+          "Origin",
+          hashMapOf(),
+          null)
+      )
+      addLayerToMap()
+    }
+  }
+
   override fun onPause() {
     super.onPause()
     mapsModel.stopFollowing()
@@ -327,8 +356,8 @@ class MapsFragment : Fragment() {
 
   override fun onResume() {
     super.onResume()
-    if(mapsModel.locationSettingStatus.value==LocSetStat.ENABLED && mapsModel.followingStatus.value == FolStat.DISABLED){
-        mapsModel.startFollowing()
+    if (mapsModel.locationSettingStatus.value == LocSetStat.ENABLED && mapsModel.followingStatus.value == FolStat.DISABLED) {
+      mapsModel.startFollowing()
     }
   }
 
