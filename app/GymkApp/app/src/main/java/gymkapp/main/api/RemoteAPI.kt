@@ -112,7 +112,8 @@ object RemoteAPI {
         )
       )
     } catch (e: Exception) {
-      Log.d(classTag, "${e.message}")
+      //Log.d(classTag, "${e.stackTrace}")
+      e.printStackTrace()
       return Pair(true, "Can't connect to the server")
     }
 
