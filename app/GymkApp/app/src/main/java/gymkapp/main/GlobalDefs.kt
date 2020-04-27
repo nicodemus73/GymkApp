@@ -11,7 +11,7 @@ const val LOCATION_SETTINGS_REQ_CODE = 445
 const val LOCATION_REQUEST_CODE = 556
 const val DEFAULT_VIEW_RADIUS = 500 //Radio a utilizar para ver los puntos cercanos
 //Server
-const val BASE_URL = "http://10.4.41.144:3001"
+const val BASE_URL = "https://10.4.41.144:3002"
 
 //Login & Register validation
 const val USER_MIN_LENGTH = 3

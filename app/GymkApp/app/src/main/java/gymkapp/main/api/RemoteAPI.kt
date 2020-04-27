@@ -12,6 +12,15 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+import java.io.BufferedInputStream
+import java.io.InputStream
+import java.security.KeyStore
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 object RemoteAPI {
 
@@ -50,9 +59,43 @@ object RemoteAPI {
       fun create(): AuthenticationCallsClient = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
+        .client(createClient())
         .build()
         .create(AuthenticationCallsClient::class.java)
+
+      fun createClient(): OkHttpClient = OkHttpClient.Builder().apply {
+        val (sslSF,x509tm) = testingHttps()
+        sslSocketFactory(sslSF,x509tm)
+      }.build()
     }
+  }
+
+  lateinit var inputStreamCA: InputStream
+
+  private fun testingHttps(): Pair<SSLSocketFactory,X509TrustManager> {
+    //Load CAs from InputStream
+    val cf = CertificateFactory.getInstance("X.509")
+    val caInput = BufferedInputStream(inputStreamCA)
+    val ca = caInput.use {
+      cf.generateCertificate(it) as X509Certificate
+    }
+
+    //Create Keystore containing trusted CAs
+    Log.d(classTag,"ca=${ca.subjectDN}")
+    val keyStore = KeyStore.getInstance(KeyStore.getDefaultType()).apply {
+      load(null,null)
+      setCertificateEntry("ca",ca)
+    }
+    //Create TrustManager
+    val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()).apply {
+      init(keyStore)
+    }
+    //SSLContext que usa el TrustManager
+    val context = SSLContext.getInstance("TLS").apply {
+      init(null,tmf.trustManagers,null)
+    }
+    //Devolver los dos objetos que interesan
+    return Pair(context.socketFactory,tmf.trustManagers[0] as X509TrustManager)
   }
 
   private interface MapsCallsClient {
@@ -88,7 +131,7 @@ object RemoteAPI {
     }
   }
 
-  private val authCalls = AuthenticationCallsClient.create()
+  private val authCalls by lazy { AuthenticationCallsClient.create() }
   private lateinit var mapsCalls: MapsCallsClient
 
   fun createMapsCallsClient(token: String) {
