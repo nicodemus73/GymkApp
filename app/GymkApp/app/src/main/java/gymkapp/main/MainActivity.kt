@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import gymkapp.main.api.RemoteAPI
+import gymkapp.main.api.inputStreamCA
 import gymkapp.main.viewmodel.LoginViewModel.AuthenticationState.*
 import gymkapp.main.databinding.BottomNavBinding
 import gymkapp.main.viewmodel.LoginViewModel
@@ -46,6 +47,6 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun initCertificate(){
-    RemoteAPI.inputStreamCA = resources.openRawResource(R.raw.root_ca)
+    inputStreamCA = resources.openRawResource(R.raw.root_ca)
   }
 }
