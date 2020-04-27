@@ -10,8 +10,6 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
-import gymkapp.main.api.RemoteAPI
-import gymkapp.main.api.inputStreamCA
 import gymkapp.main.viewmodel.LoginViewModel.AuthenticationState.*
 import gymkapp.main.databinding.BottomNavBinding
 import gymkapp.main.viewmodel.LoginViewModel
@@ -43,10 +41,5 @@ class MainActivity : AppCompatActivity() {
         bind.bottomNavigationView.visibility = if (it == AUTHENTICATED) View.VISIBLE else View.GONE
       }
     )
-    initCertificate()
-  }
-
-  private fun initCertificate(){
-    inputStreamCA = resources.openRawResource(R.raw.root_ca)
   }
 }

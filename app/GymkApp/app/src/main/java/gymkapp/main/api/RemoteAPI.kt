@@ -6,7 +6,6 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import gymkapp.main.BASE_URL
 import gymkapp.main.DEFAULT_VIEW_RADIUS
-import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -21,22 +20,19 @@ object RemoteAPI {
   private data class UserInfo(val username: String, val password: String)
 
   //DATOS RECIBIDOS
-  private data class ErrorMessage(val error: String)
-
   //TODO (mover y) RENOMBRAR + renombrar otras variables relacionadas (map,maps) y todo lo relacionado con mapas que no sea un mapa...
   data class ALGO_QUE_NO_ES_UN_MAPA(
     var metadata: Metadata,
     @SerializedName("_id")
     var id: String,
     var name: String,
-    var firstLocation: GeoJSONPoint//MutableList<GeoJSONPoint>
+    var firstLocation: GeoJSONPoint
   )
-
+  private data class ErrorMessage(val error: String)
   data class Metadata(var author: String, var description: String)
   data class GeoJSONPoint(var type: String = "Point", var coordinates: List<Double>)
 
-  //Los Log.d pueden filtrarse con ((Login|Welcome|Settings|Register|Maps|Social)(Model|ViewModel|Fragment)|MainActivity|RemoteAPI) como regex
-  //TODO Clase Interceptor (OkHttp interceptor) permite añadir una header a cada request
+  //Los Log.d pueden filtrarse con ((Login|Welcome|Settings|Register|Maps|Social)(Model|ViewModel|Fragment)|MainActivity|RemoteAPI|MapsCallsClient)
   //TODO borrar escalares del gradle si no los utilizamos
   private interface AuthenticationCallsClient {
 
@@ -52,51 +48,16 @@ object RemoteAPI {
       fun create(): AuthenticationCallsClient = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
-        .client(createSecureClient())
+        .client(secureClientBuilder.build())
         .build()
         .create(AuthenticationCallsClient::class.java)
     }
   }
 
-  private interface MapsCallsClient {
-
-    @GET("/map")
-    suspend fun listNearMaps(
-      @Query("lon") long: Double,
-      @Query("lat") lat: Double,
-      @Query("radius") radius: Int
-    ): Response<Array<ALGO_QUE_NO_ES_UN_MAPA>>//  //recibo una lista de Map
-
-    @GET("/map/{id}")
-    suspend fun infoMap(@Path("id") id: String): Response<ALGO_QUE_NO_ES_UN_MAPA>
-
-    companion object Factory {
-
-      fun create(token: String): MapsCallsClient = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(BASE_URL)
-        .client(createClient(token))
-        .build()
-        .create(MapsCallsClient::class.java)
-
-      private fun createClient(token: String) = OkHttpClient.Builder()
-        .addInterceptor { chain ->
-          chain.proceed(
-            chain.request()
-              .newBuilder()
-              .addHeader("Authorization", token)
-              .build()
-          )
-        }.build().also { Log.d(classTag, token) }
-    }
-  }
-
-  private val authCalls by lazy { AuthenticationCallsClient.create() }
+  private val authCalls = AuthenticationCallsClient.create()
   private lateinit var mapsCalls: MapsCallsClient
 
-  fun createMapsCallsClient(token: String) {
-    mapsCalls = MapsCallsClient.create(token)
-  }
+  fun initMapsCallsClient(token: String){ mapsCalls = MapsCallsClient.create(token) }
 
   private fun parseError(errorBody: ResponseBody) =
     Gson().fromJson(errorBody.charStream().readText(), ErrorMessage::class.java).error
@@ -193,7 +154,6 @@ object RemoteAPI {
     }
     return Pair(message, maps)
   }
-
 
   suspend fun infoMap(Id: String): Pair<String?, ALGO_QUE_NO_ES_UN_MAPA?> {
 

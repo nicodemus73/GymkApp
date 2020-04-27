@@ -90,6 +90,6 @@ class MapsFragmentModel : ViewModel(){
    * Crea el cliente de llamadas a la API por la parte de mapas antes de empezar a realizar llamadas a la API
    */
   fun createPrivateMapsApiClient(loginToken: String){
-    RemoteAPI.createMapsCallsClient(loginToken)
+    RemoteAPI.initMapsCallsClient(loginToken)
   }
 }

@@ -1,23 +1,8 @@
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.GsonBuilder
-import com.google.gson.annotations.SerializedName
 import com.google.maps.android.data.geojson.GeoJsonFeature
 import com.google.maps.android.data.geojson.GeoJsonLayer
 import com.google.maps.android.data.geojson.GeoJsonPoint
-
-/*private data class Map(
-  var metadata: Metadata,
-  @SerializedName("_id")
-  var id: Int,
-  var name: String,
-  var firstLocation: Point
-)
-
-private data class Metadata(var author: String, var description: String)
-private data class Point(val id: Int, val name: String, val location: GeoJSONPoint)
-private data class GeoJSONPoint(val type: String = "Point", val coordinates: List<Double>)
-private data class UserInfo(val username : String, val password: String)
-private data class ErrorMessage(val message: String)*/
 
 fun main() {
 
