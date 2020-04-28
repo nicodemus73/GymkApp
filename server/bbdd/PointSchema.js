@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 const PointSchema = new Schema({
     name: {
-        type: String, required: true, unique: true,
+        type: String, required: true,
         minlength: process.env.POINT_NAME_MIN_LENGTH,
         maxlength: process.env.POINT_NAME_MAX_LENGTH
     },
