@@ -3,6 +3,7 @@ import com.google.gson.GsonBuilder
 import com.google.maps.android.data.geojson.GeoJsonFeature
 import com.google.maps.android.data.geojson.GeoJsonLayer
 import com.google.maps.android.data.geojson.GeoJsonPoint
+import gymkapp.main.api.RemoteAPI
 
 fun main() {
 
@@ -23,4 +24,7 @@ fun main() {
     title = "Hello"
     snippet = "I am a draggable marker"
   }
+  //PRIMERO!!
+  //RemoteAPI.initMapsCallsClient("aefnjoafheanso")
+  //RemoteAPI.listNearMaps(...)
 }

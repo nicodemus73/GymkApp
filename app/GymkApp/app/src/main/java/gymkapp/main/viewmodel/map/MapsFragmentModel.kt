@@ -57,6 +57,7 @@ class MapsFragmentModel : ViewModel(){
   val locationSettingStatus = MutableLiveData(LocationSettingsStatus.CHECKING)
   val followingStatus = MutableLiveData(FollowingStatus.UNKNOWN)
   val currentLoc = MutableLiveData<Location?>(null)
+  //val gameState = MutableLiveData<GameState>(GameState.CHECKING)
 
   fun startFollowing(){
     followingStatus.value =

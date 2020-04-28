@@ -258,6 +258,7 @@ class MapsFragment : Fragment() {
             Looper.getMainLooper()
           )
           bind.locationButton.imageTintList = enabledColor
+          //TODO Cambiar el estado del juego a STARTED
         }
         FolStat.DISABLED -> {
           fusedLocationClient.removeLocationUpdates(mapsModel.locationCallback)
@@ -275,7 +276,13 @@ class MapsFragment : Fragment() {
           isFirstLoc = false
           it.zoomCamera(animate = false)
           drawGeoJsonPoint(it.toLatLng())
-        } else it.zoomCamera()
+        } else {
+          //TODO Llamar para comprobar si se esta en el siguiente punto
+          //if(mapsModel.gameState.value==GameState.STARTED){
+          //  if(mapsModel.llamadaVerifyPunto) mapsModel.changeValueGameStateToPointAchieved()
+          //
+          it.zoomCamera()
+        }
       }
     })
 
@@ -289,6 +296,22 @@ class MapsFragment : Fragment() {
         else -> checkSettings()
       }
     })
+
+    /*
+    TODO
+    mapsModel.locationSettingStatus.observe(viewLifecycleOwner, Observer {
+      when (it) {
+        GameStates.CHECKING -> {
+          ...
+        }
+        GameSates.STARTED -> ....
+        GameStates.POINT_ACHIEVED -> {
+          Snackbar.make....
+          mapsModel.llamadaCambiarValorStarted()
+        }
+        else -> {}
+      }
+    })*/
   }
 
   private fun locationLayer(enable: Boolean) {
