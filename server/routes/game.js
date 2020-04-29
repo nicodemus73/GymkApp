@@ -60,7 +60,7 @@ router.post('/demo/new', async (req, res) => {
         //const map = await Map.findById(req.params.id); // so we can dereference point 0
 
         Map.findOne({}, {}, { sort: { 'date': -1 } }, async function (err, map) {
-            if (err) res.status(400).json({ "error": err.message });
+            if (err) res.status(400).json({ "error": err.message, "message": null, "location": null, "time": null });
             else {
                 //if (map == null) throw new Error('404Map does not exist'); // protect against nonexistant maps
                 /*if (distance(req.body.location, map.firstLocation) * 1000 > process.env.ONFOOT_START_DIST)
@@ -76,13 +76,14 @@ router.post('/demo/new', async (req, res) => {
                 });
 
                 await game.save(async function (err, savedGame) {
-                    if (err) res.status(400).json({ "error": err.message });
+                    if (err) res.status(400).json({ "error": err.message, "message": null, "location": null, "time": null });
                     else {
                         const point = await Point.findById(map.points[0]); // we suppose points are well maintained
                         res.status(200).json({
                             "message": point.description,
                             "location": point.location,
-                            "time": null
+                            "time": null,
+                            "error": null
                         });
                     }
                 });
@@ -90,8 +91,8 @@ router.post('/demo/new', async (req, res) => {
         });
     } catch (err) {
         if (!isNaN(err.message.substring(0, 3))) // Check if it is a custom thrown error.
-            res.status(err.message.substring(0, 3)).json({ "error": err.message.substring(3, 1e10000) }); // 1e10000 = infinite
-        else res.status(500).json({ "error": err.message });
+            res.status(err.message.substring(0, 3)).json({ "error": err.message.substring(3, 1e10000), "message": null, "location": null, "time": null }); // 1e10000 = infinite
+        else res.status(500).json({ "error": err.message, "message": null, "location": null, "time": null });
     }
 });
 
@@ -102,8 +103,8 @@ router.post('/demo', async (req, res) => {
         //const game = await Game.findById(req.params.id);
 
         Game.findOne({}, {}, { sort: { 'startDate': -1 } }, async function (err, game) {
-            if (err) res.status(400).json({ "error": err.message });
-            else if (game.status != 'inProgress') res.status(400).json({ "error": 'Game is not in progress' });
+            if (err) res.status(400).json({ "error": err.message, "message": null, "location": null, "time": null });
+            else if (game.status != 'inProgress') res.status(400).json({ "error": 'Game is not in progress', "message": null, "location": null, "time": null });
             else {
 
                 //if (game == null) throw new Error('404Game does not exist');
@@ -126,7 +127,8 @@ router.post('/demo', async (req, res) => {
                         res.status(200).json({
                             "message": game.status,
                             "location": null,
-                            "time": utils.parseTime(new Date(game.endDate - game.startDate))
+                            "time": utils.parseTime(new Date(game.endDate - game.startDate)),
+                            "error": null
                         })
                     }
                     else { // this is not the last point validation: send next.
@@ -136,12 +138,13 @@ router.post('/demo', async (req, res) => {
                         res.status(200).json({
                             "message": point.description,
                             "location": point.location,
-                            "time": null
+                            "time": null,
+                            "error": null
                         });
                     }
                 }
                 else {
-                    res.status(400).json({ "error": "Point is not completed yet" });
+                    res.status(400).json({ "error": "Point is not completed yet", "message": null, "location": null, "time": null });
                     game.progress[game.progress.length - 1].tries++;
                 }
                 await game.save();
@@ -149,8 +152,8 @@ router.post('/demo', async (req, res) => {
         });
     } catch (err) {
         if (!isNaN(err.message.substring(0, 3))) // Check if it is a custom thrown error.
-            res.status(err.message.substring(0, 3)).json({ "error": err.message.substring(3, 1e10000) }); // 1e10000 = infinite
-        else res.status(500).json({ "error": err.message });
+            res.status(err.message.substring(0, 3)).json({ "error": err.message.substring(3, 1e10000), "message": null, "location": null, "time": null }); // 1e10000 = infinite
+        else res.status(500).json({ "error": err.message, "message": null, "location": null, "time": null });
     }
 });
 
