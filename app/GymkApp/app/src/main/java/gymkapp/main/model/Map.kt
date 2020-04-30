@@ -19,7 +19,8 @@ data class Point (var location: GeoJSONPoint)
 data class Stage(
   var message: String,
   var location: GeoJSONPoint,
-  var time: String
+  var time: String,
+  var error: String
 )
 
 

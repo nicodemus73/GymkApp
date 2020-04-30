@@ -282,12 +282,21 @@ class MapsFragment : Fragment() {
                     drawGeoJsonPoint(it.toLatLng())
                 } else {
                     //TODO Llamar para comprobar si se esta en el siguiente punto
-                        if (mapsModel.gameState.value == GameStat.UNKNOWN ) {
+                    when {
+                        mapsModel.gameState.value == GameStat.UNKNOWN ->{
                             mapsModel.checkingGame()
                             lifecycleScope.launch {
                               mapsModel.createPrivateMapsApiClient(loginModel.user!!.id)
                               mapsModel.llamadaObtenerFirstPoint()
                             }
+                        }
+                        mapsModel.pointState.value == PointStat.CHECKING -> {
+                            //mapsModel.CallPoint()
+                            lifecycleScope.launch {
+                                mapsModel.llamadaVerifyPunto()
+                            }
+                        }
+
                     }
 
                     it.zoomCamera()
@@ -313,13 +322,11 @@ class MapsFragment : Fragment() {
                     mapsModel.pointState.observe(viewLifecycleOwner, Observer {
                       when (it) {
                         PointStat.POINT_ACHIEVED -> {
-                          Snackbar.make(
-                            bind.root,
-                            "${mapsModel.stage!!.message}",
-                            Snackbar.LENGTH_INDEFINITE
-                          ).show()
+                            Snackbar.make(bind.root, mapsModel.stage!!.message, Snackbar.LENGTH_INDEFINITE).show()
                         }
-                        PointStat.CHECKING -> { }
+                        PointStat.CHECKING -> {
+
+                        }
                         else -> {}
                       }
 

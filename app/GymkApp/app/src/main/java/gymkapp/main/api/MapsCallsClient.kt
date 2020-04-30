@@ -3,6 +3,7 @@ package gymkapp.main.api
 import android.util.Log
 import gymkapp.main.BASE_URL
 import gymkapp.main.api.RemoteAPI.firstPointInfoOfAMap
+import gymkapp.main.model.Point
 import gymkapp.main.model.Stage
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -28,7 +29,7 @@ interface MapsCallsClient {
   suspend fun obtainStartMap():Response<Stage>
 
   @POST("/game/demo")
-  suspend fun obtainNextStageMap(@Body location: RemoteAPI.Point):Response<Stage>
+  suspend fun obtainNextStageMap(@Body location: Point):Response<Stage>
 
 
 

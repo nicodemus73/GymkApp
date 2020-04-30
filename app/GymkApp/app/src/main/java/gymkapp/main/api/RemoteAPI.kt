@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import gymkapp.main.BASE_URL
 import gymkapp.main.DEFAULT_VIEW_RADIUS
+import gymkapp.main.model.Point
 import gymkapp.main.model.Stage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -35,7 +36,7 @@ object RemoteAPI {
   private data class ErrorMessage(val error: String)
   data class Metadata(var author: String, var description: String)
   data class GeoJSONPoint(var type: String = "Point", var coordinates: List<Double>)
-  data class Point (var location: GeoJSONPoint)
+//  data class Point (var location: GeoJSONPoint)
 
  /* data class Stage(
     var message: String,

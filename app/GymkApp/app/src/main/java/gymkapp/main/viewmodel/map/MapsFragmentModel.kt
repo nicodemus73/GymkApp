@@ -9,7 +9,10 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import gymkapp.main.api.RemoteAPI
+import gymkapp.main.model.GeoJSONPoint
+import gymkapp.main.model.Point
 import gymkapp.main.model.Stage
+import gymkapp.main.toLatLng
 
 class MapsFragmentModel : ViewModel(){
 
@@ -29,12 +32,14 @@ class MapsFragmentModel : ViewModel(){
     enum class GameStatus {
         UNKNOWN,
         CHECKING,
-        STARTED,
-        FINISHED
+        STARTED, //El juego esta activo puede ser cualquier punto del mapa
+        FINISHED //mostrar resultado final y tiempo
     }
 
     enum class PointStatus {
+        UNKNOWN,
         CHECKING,
+        SERVERCALL,
         POINT_ACHIEVED
     }
 
@@ -71,14 +76,21 @@ class MapsFragmentModel : ViewModel(){
   val locationSettingStatus = MutableLiveData(LocationSettingsStatus.CHECKING)
   val followingStatus = MutableLiveData(FollowingStatus.UNKNOWN)
   val currentLoc = MutableLiveData<Location?>(null)
-  val gameState = MutableLiveData(GameStatus.UNKNOWN)
-    val pointState = MutableLiveData(PointStatus.CHECKING)
+  val gameState = MutableLiveData(GameStatus.STARTED)
+    val pointState = MutableLiveData(PointStatus.POINT_ACHIEVED)
 
      var stage: Stage? = null
 
   fun checkingGame(){
     gameState.value =
       GameStatus.CHECKING
+  }
+
+  fun checkingPoint() {
+    pointState.value = PointStatus.CHECKING
+  }
+  fun serverPointCallPoint() {
+    pointState.value = PointStatus.SERVERCALL
   }
 
   fun startFollowing(){
@@ -108,17 +120,29 @@ class MapsFragmentModel : ViewModel(){
     locationSettingStatus.value =
       LocationSettingsStatus.DISABLED
   }
+  /**
+   * funcion para inciar el juego estes donde estes
+   * te da el primer punto donde dirigirse
+   * no verifica
+   */
     suspend fun llamadaObtenerFirstPoint() {
 
-        var (message, aux) = RemoteAPI.obtainStartMap()
+        val (message, aux) = RemoteAPI.obtainStartMap() //cambiar a startgamemap
         stage = aux
         gameState.value = GameStatus.STARTED
         pointState.value = PointStatus.POINT_ACHIEVED //obtengo el primer punto
     }
 
-    suspend fun llamadaVerifyPunto (): Boolean {
-       //gameState.value = GameStatus.STARTED
-        return true
+    suspend fun llamadaVerifyPunto () {
+
+        val point = Point(GeoJSONPoint(coordinates =  listOf(currentLoc.value!!.longitude, currentLoc.value!!.latitude ) ))
+        val (message, aux) = RemoteAPI.obtainNextStageMap(point)
+        if (aux?.error != null) {
+          stage = aux
+          pointState.value = PointStatus.POINT_ACHIEVED
+        }else
+          checkingPoint()
+
     }
 
   /**
