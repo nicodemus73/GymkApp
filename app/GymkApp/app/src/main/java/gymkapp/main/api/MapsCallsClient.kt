@@ -3,7 +3,7 @@ package gymkapp.main.api
 import android.util.Log
 import gymkapp.main.BASE_URL
 import gymkapp.main.api.RemoteAPI.firstPointInfoOfAMap
-import gymkapp.main.api.RemoteAPI.Stage
+import gymkapp.main.model.Stage
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

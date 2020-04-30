@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import gymkapp.main.BASE_URL
 import gymkapp.main.DEFAULT_VIEW_RADIUS
+import gymkapp.main.model.Stage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
@@ -36,11 +37,11 @@ object RemoteAPI {
   data class GeoJSONPoint(var type: String = "Point", var coordinates: List<Double>)
   data class Point (var location: GeoJSONPoint)
 
-  data class Stage(
+ /* data class Stage(
     var message: String,
     var location: GeoJSONPoint,
     var time: String
-  )
+  )*/
 
   //Los Log.d pueden filtrarse con ((Login|Welcome|Settings|Register|Maps|Social)(Model|ViewModel|Fragment)|MainActivity|RemoteAPI|MapsCallsClient)
   //TODO borrar escalares del gradle si no los utilizamos
@@ -143,7 +144,7 @@ object RemoteAPI {
       "Unexpected error while trying to load the starting point"
     }
   println("First Point")
-  println(GsonBuilder().setPrettyPrinting().create().toJson(newStage))
+  println("$classTag ${GsonBuilder().setPrettyPrinting().create().toJson(newStage)}")
     //Log.d( classTag, "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}" )
     return Pair(message, newStage)
   }
@@ -248,19 +249,3 @@ object RemoteAPI {
   }
 }
 
-//execcució de la gymcana de demo, per incrementar el temps ficar delay
-/*suspend fun main () {
-  println("hola")
-  RemoteAPI.initMapsCallsClient("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTkwNTA3NTQ2ZWIyYzA1YTQxZTRlNWYiLCJpYXQiOjE1ODY1MTYxMDN9.Tx2kqrfQMLGQGClpCQxujoe6zWnnxy7TSe219kzRBsQ")
-  RemoteAPI.obtainStartMap()
-  println("Segon punt:")
-  RemoteAPI.obtainNextStageMap(RemoteAPI.Point(RemoteAPI.GeoJSONPoint("Point", listOf(2.17004, 41.386991))))
-  println("Tercer punt:")
-  RemoteAPI.obtainNextStageMap(RemoteAPI.Point(RemoteAPI.GeoJSONPoint("Point", listOf(2.175234, 41.387444))))
- // delay(1000)
-  println("Quart punt:")
-  RemoteAPI.obtainNextStageMap(RemoteAPI.Point(RemoteAPI.GeoJSONPoint("Point", listOf(2.180651, 41.391053))))
-  println("Cinque punt:")
-  RemoteAPI.obtainNextStageMap(RemoteAPI.Point(RemoteAPI.GeoJSONPoint("Point", listOf(2.186557, 41.389618))))
-  println("final")
-}*/

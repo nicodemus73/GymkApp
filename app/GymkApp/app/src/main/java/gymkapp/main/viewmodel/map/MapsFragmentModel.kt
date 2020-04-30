@@ -9,6 +9,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import gymkapp.main.api.RemoteAPI
+import gymkapp.main.model.Stage
 
 class MapsFragmentModel : ViewModel(){
 
@@ -25,7 +26,20 @@ class MapsFragmentModel : ViewModel(){
     DISABLED
   }
 
-  private val classTag = javaClass.simpleName //TODO: borrar cuando acabemos
+    enum class GameStatus {
+        UNKNOWN,
+        CHECKING,
+        STARTED,
+        FINISHED
+    }
+
+    enum class PointStatus {
+        CHECKING,
+        POINT_ACHIEVED
+    }
+
+
+    private val classTag = javaClass.simpleName //TODO: borrar cuando acabemos
 
   val locationRequest: LocationRequest by lazy {
     LocationRequest().apply {
@@ -57,7 +71,15 @@ class MapsFragmentModel : ViewModel(){
   val locationSettingStatus = MutableLiveData(LocationSettingsStatus.CHECKING)
   val followingStatus = MutableLiveData(FollowingStatus.UNKNOWN)
   val currentLoc = MutableLiveData<Location?>(null)
-  //val gameState = MutableLiveData<GameState>(GameState.CHECKING)
+  val gameState = MutableLiveData(GameStatus.UNKNOWN)
+    val pointState = MutableLiveData(PointStatus.CHECKING)
+
+     var stage: Stage? = null
+
+  fun checkingGame(){
+    gameState.value =
+      GameStatus.CHECKING
+  }
 
   fun startFollowing(){
     followingStatus.value =
@@ -86,6 +108,18 @@ class MapsFragmentModel : ViewModel(){
     locationSettingStatus.value =
       LocationSettingsStatus.DISABLED
   }
+    suspend fun llamadaObtenerFirstPoint() {
+
+        var (message, aux) = RemoteAPI.obtainStartMap()
+        stage = aux
+        gameState.value = GameStatus.STARTED
+        pointState.value = PointStatus.POINT_ACHIEVED //obtengo el primer punto
+    }
+
+    suspend fun llamadaVerifyPunto (): Boolean {
+       //gameState.value = GameStatus.STARTED
+        return true
+    }
 
   /**
    * Crea el cliente de llamadas a la API por la parte de mapas antes de empezar a realizar llamadas a la API
