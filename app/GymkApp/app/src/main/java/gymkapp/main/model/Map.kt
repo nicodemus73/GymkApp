@@ -11,5 +11,15 @@ data class Map(
 )
 
 data class Metadata(var author: String, var description: String)
-data class Point(val id: Int, val name: String, val location: GeoJSONPoint)
-data class GeoJSONPoint(val type: String = "Point", val coordinates: List<Int>)
+data class GeoJSONPoint(var type: String = "Point", var coordinates: List<Double>)
+//per cridar /game/demo -> obtainNextStageMap se li ha de passar un Point
+data class Point (var location: GeoJSONPoint)
+
+//Stage es el resultat de cridar /game/demo/new -> obtainStartMap() o /game/demo -> obtainNextStageMap
+data class Stage(
+  var message: String,
+  var location: GeoJSONPoint,
+  var time: String
+)
+
+
