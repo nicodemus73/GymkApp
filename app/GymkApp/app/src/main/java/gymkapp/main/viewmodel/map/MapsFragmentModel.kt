@@ -12,9 +12,8 @@ import gymkapp.main.api.RemoteAPI
 import gymkapp.main.model.GeoJSONPoint
 import gymkapp.main.model.Point
 import gymkapp.main.model.Stage
-import gymkapp.main.toLatLng
 
-class MapsFragmentModel : ViewModel(){
+class MapsFragmentModel : ViewModel() {
 
   //TODO cambiar nombre cuando sepa si es activityViewModel o solo ViewModel
   enum class LocationSettingsStatus {
@@ -29,22 +28,19 @@ class MapsFragmentModel : ViewModel(){
     DISABLED
   }
 
-    enum class GameStatus {
-        UNKNOWN,
-        CHECKING,
-        STARTED, //El juego esta activo puede ser cualquier punto del mapa
-        FINISHED //mostrar resultado final y tiempo
-    }
+  enum class GameStatus {
+    DISABLED,
+    STARTED,
+    FINISHED //mostrar resultado final y tiempo
+  }
 
-    enum class PointStatus {
-        UNKNOWN,
-        CHECKING,
-        SERVERCALL,
-        POINT_ACHIEVED
-    }
+  enum class PointStatus {
+    CHECKING,
+    POINT_ACHIEVED
+  }
 
 
-    private val classTag = javaClass.simpleName //TODO: borrar cuando acabemos
+  private val classTag = javaClass.simpleName //TODO: borrar cuando acabemos
 
   val locationRequest: LocationRequest by lazy {
     LocationRequest().apply {
@@ -55,15 +51,15 @@ class MapsFragmentModel : ViewModel(){
   }
 
   val locationCallback by lazy {
-    object: LocationCallback(){
+    object : LocationCallback() {
       override fun onLocationResult(locRes: LocationResult?) {
         currentLoc.value = locRes?.lastLocation
         isFirstTimeLocationRequest = false
       }
 
       override fun onLocationAvailability(availability: LocationAvailability?) {
-        if(!isFirstTimeLocationRequest && !availability!!.isLocationAvailable){
-          Log.d(classTag,"Localizacion no disponible, comprobando...")
+        if (!isFirstTimeLocationRequest && !availability!!.isLocationAvailable) {
+          Log.d(classTag, "Localizacion no disponible, comprobando...")
           locationSettingStatus.value =
             LocationSettingsStatus.CHECKING
         }
@@ -76,79 +72,82 @@ class MapsFragmentModel : ViewModel(){
   val locationSettingStatus = MutableLiveData(LocationSettingsStatus.CHECKING)
   val followingStatus = MutableLiveData(FollowingStatus.UNKNOWN)
   val currentLoc = MutableLiveData<Location?>(null)
-  val gameState = MutableLiveData(GameStatus.STARTED)
-    val pointState = MutableLiveData(PointStatus.POINT_ACHIEVED)
+  val gameState = MutableLiveData(GameStatus.DISABLED)
+  val pointState = MutableLiveData(PointStatus.CHECKING)
 
-     var stage: Stage? = null
+  var stage: Stage? = null
 
-  fun checkingGame(){
-    gameState.value =
-      GameStatus.CHECKING
+  suspend fun startGame() {
+
+    val (_, aux) = RemoteAPI.obtainStartMap()
+    aux?.let {
+
+      stage = it
+      gameState.value = GameStatus.STARTED
+    }
   }
 
-  fun checkingPoint() {
+  fun forceVerification() {
+    pointState.value = PointStatus.POINT_ACHIEVED
+  }
+
+  fun startChecking(){
     pointState.value = PointStatus.CHECKING
   }
-  fun serverPointCallPoint() {
-    pointState.value = PointStatus.SERVERCALL
+
+  suspend fun verifyCurrentLocation() {
+
+    val (_, aux) = RemoteAPI.obtainNextStageMap(
+      Point(
+        GeoJSONPoint(
+          coordinates = listOf(
+            currentLoc.value!!.longitude,
+            currentLoc.value!!.latitude
+          )
+        )
+      )
+    )
+
+    aux?.let {
+      stage = aux
+      pointState.value = PointStatus.POINT_ACHIEVED
+    }
+    //aux?.error? TODO??
   }
 
-  fun startFollowing(){
+  fun startFollowing() {
     followingStatus.value =
       FollowingStatus.FOLLOWING
   }
 
-  fun stopFollowing(){
+  fun stopFollowing() {
     followingStatus.value =
       FollowingStatus.DISABLED
   }
 
-  fun switchFollowing(){
-    if (followingStatus.value== FollowingStatus.UNKNOWN){
-      Log.d(classTag,"Operacion incompatible")
+  fun switchFollowing() {
+    if (followingStatus.value == FollowingStatus.UNKNOWN) {
+      Log.d(classTag, "Operacion incompatible")
       return
     }
-    followingStatus.value = if(followingStatus.value == FollowingStatus.FOLLOWING) FollowingStatus.DISABLED else FollowingStatus.FOLLOWING
+    followingStatus.value =
+      if (followingStatus.value == FollowingStatus.FOLLOWING) FollowingStatus.DISABLED else FollowingStatus.FOLLOWING
   }
 
-  fun confirmLocationSettingsEnabled(){
+  fun confirmLocationSettingsEnabled() {
     locationSettingStatus.value =
       LocationSettingsStatus.ENABLED
   }
 
-  fun confirmLocationSettingsDenied(){
+  fun confirmLocationSettingsDenied() {
     locationSettingStatus.value =
       LocationSettingsStatus.DISABLED
   }
-  /**
-   * funcion para inciar el juego estes donde estes
-   * te da el primer punto donde dirigirse
-   * no verifica
-   */
-    suspend fun llamadaObtenerFirstPoint() {
-
-        val (message, aux) = RemoteAPI.obtainStartMap() //cambiar a startgamemap
-        stage = aux
-        gameState.value = GameStatus.STARTED
-        pointState.value = PointStatus.POINT_ACHIEVED //obtengo el primer punto
-    }
-
-    suspend fun llamadaVerifyPunto () {
-
-        val point = Point(GeoJSONPoint(coordinates =  listOf(currentLoc.value!!.longitude, currentLoc.value!!.latitude ) ))
-        val (message, aux) = RemoteAPI.obtainNextStageMap(point)
-        if (aux?.error != null) {
-          stage = aux
-          pointState.value = PointStatus.POINT_ACHIEVED
-        }else
-          checkingPoint()
-
-    }
 
   /**
    * Crea el cliente de llamadas a la API por la parte de mapas antes de empezar a realizar llamadas a la API
    */
-  fun createPrivateMapsApiClient(loginToken: String){
+  fun createPrivateMapsApiClient(loginToken: String) {
     RemoteAPI.initMapsCallsClient(loginToken)
   }
 }
