@@ -2,6 +2,7 @@ package gymkapp.main
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.content.edit
 import androidx.fragment.app.activityViewModels
@@ -17,7 +18,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
   override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
 
-    val navController = findNavController()
+    val classTag = javaClass.simpleName
+
+    //val navController = findNavController()
     val context = preferenceManager.context
     val screen = preferenceManager.createPreferenceScreen(context)
 
@@ -38,23 +41,29 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
 
-    followSystemNightMode.setOnPreferenceChangeListener { _, _ ->
-
-      if (followSystemNightMode.isChecked) {
-        setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM)
-        nightModePref.isEnabled = false
-      }
-      else {
-        followSystemNightMode.isEnabled = false
-        nightModePref.isEnabled = true
+    followSystemNightMode.setOnPreferenceChangeListener { _, isChecked ->
+      when (isChecked) {
+        is Boolean -> when {
+          isChecked -> {
+            Log.d(classTag,"SYSTEM MODE, chequeandose")
+            setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM)
+            nightModePref.isEnabled = false
+          }
+          else -> {
+            Log.d(classTag,"SYSTEM MODE, deschequeandose")
+            nightModePref.isEnabled = true
+            setDefaultNightMode(if(nightModePref.isChecked) MODE_NIGHT_YES else MODE_NIGHT_NO)
+          }
+        }
       }
       true
     }
 
     nightModePref.setOnPreferenceChangeListener { _, _ ->
 
-      if (nightModePref.isChecked) setDefaultNightMode(MODE_NIGHT_YES)
-      else setDefaultNightMode(MODE_NIGHT_NO)
+      Log.d(classTag, "Forzando ${if (nightModePref.isChecked) "modo noche" else "modo dia"}")
+      //if (nightModePref.isChecked) setDefaultNightMode(MODE_NIGHT_YES)
+      //else setDefaultNightMode(MODE_NIGHT_NO)
       true
     }
 
@@ -69,7 +78,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         requireActivity().getPreferences(Context.MODE_PRIVATE)?.edit {
           remove(R.string.TokenKey.toString())
         }
-        navController.navigate(SettingsFragmentDirections.toLoginFTUE())
+        //navController.navigate(SettingsFragmentDirections.toLoginFTUE())
         loginModel.logout()
         true
       }
