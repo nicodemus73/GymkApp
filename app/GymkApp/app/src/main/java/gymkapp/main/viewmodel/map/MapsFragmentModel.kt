@@ -9,8 +9,11 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import gymkapp.main.api.RemoteAPI
+import gymkapp.main.model.GeoJSONPoint
+import gymkapp.main.model.Point
+import gymkapp.main.model.Stage
 
-class MapsFragmentModel : ViewModel(){
+class MapsFragmentModel : ViewModel() {
 
   //TODO cambiar nombre cuando sepa si es activityViewModel o solo ViewModel
   enum class LocationSettingsStatus {
@@ -25,6 +28,18 @@ class MapsFragmentModel : ViewModel(){
     DISABLED
   }
 
+  enum class GameStatus {
+    DISABLED,
+    STARTED,
+    FINISHED //mostrar resultado final y tiempo
+  }
+
+  enum class PointStatus {
+    CHECKING,
+    POINT_ACHIEVED
+  }
+
+
   private val classTag = javaClass.simpleName //TODO: borrar cuando acabemos
 
   val locationRequest: LocationRequest by lazy {
@@ -36,15 +51,15 @@ class MapsFragmentModel : ViewModel(){
   }
 
   val locationCallback by lazy {
-    object: LocationCallback(){
+    object : LocationCallback() {
       override fun onLocationResult(locRes: LocationResult?) {
         currentLoc.value = locRes?.lastLocation
         isFirstTimeLocationRequest = false
       }
 
       override fun onLocationAvailability(availability: LocationAvailability?) {
-        if(!isFirstTimeLocationRequest && !availability!!.isLocationAvailable){
-          Log.d(classTag,"Localizacion no disponible, comprobando...")
+        if (!isFirstTimeLocationRequest && !availability!!.isLocationAvailable) {
+          Log.d(classTag, "Localizacion no disponible, comprobando...")
           locationSettingStatus.value =
             LocationSettingsStatus.CHECKING
         }
@@ -57,32 +72,74 @@ class MapsFragmentModel : ViewModel(){
   val locationSettingStatus = MutableLiveData(LocationSettingsStatus.CHECKING)
   val followingStatus = MutableLiveData(FollowingStatus.UNKNOWN)
   val currentLoc = MutableLiveData<Location?>(null)
-  //val gameState = MutableLiveData<GameState>(GameState.CHECKING)
+  val gameState = MutableLiveData(GameStatus.DISABLED)
+  val pointState = MutableLiveData(PointStatus.CHECKING)
 
-  fun startFollowing(){
+  var stage: Stage? = null
+
+  suspend fun startGame() {
+
+    val (_, aux) = RemoteAPI.obtainStartMap()
+    aux?.let {
+
+      stage = it
+      gameState.value = GameStatus.STARTED
+    }
+  }
+
+  fun forceVerification() {
+    pointState.value = PointStatus.POINT_ACHIEVED
+  }
+
+  fun startChecking(){
+    pointState.value = PointStatus.CHECKING
+  }
+
+  suspend fun verifyCurrentLocation() {
+
+    val (_, aux) = RemoteAPI.obtainNextStageMap(
+      Point(
+        GeoJSONPoint(
+          coordinates = listOf(
+            currentLoc.value!!.longitude,
+            currentLoc.value!!.latitude
+          )
+        )
+      )
+    )
+
+    aux?.let {
+      stage = aux
+      pointState.value = PointStatus.POINT_ACHIEVED
+    }
+    //aux?.error? TODO??
+  }
+
+  fun startFollowing() {
     followingStatus.value =
       FollowingStatus.FOLLOWING
   }
 
-  fun stopFollowing(){
+  fun stopFollowing() {
     followingStatus.value =
       FollowingStatus.DISABLED
   }
 
-  fun switchFollowing(){
-    if (followingStatus.value== FollowingStatus.UNKNOWN){
-      Log.d(classTag,"Operacion incompatible")
+  fun switchFollowing() {
+    if (followingStatus.value == FollowingStatus.UNKNOWN) {
+      Log.d(classTag, "Operacion incompatible")
       return
     }
-    followingStatus.value = if(followingStatus.value == FollowingStatus.FOLLOWING) FollowingStatus.DISABLED else FollowingStatus.FOLLOWING
+    followingStatus.value =
+      if (followingStatus.value == FollowingStatus.FOLLOWING) FollowingStatus.DISABLED else FollowingStatus.FOLLOWING
   }
 
-  fun confirmLocationSettingsEnabled(){
+  fun confirmLocationSettingsEnabled() {
     locationSettingStatus.value =
       LocationSettingsStatus.ENABLED
   }
 
-  fun confirmLocationSettingsDenied(){
+  fun confirmLocationSettingsDenied() {
     locationSettingStatus.value =
       LocationSettingsStatus.DISABLED
   }
@@ -90,7 +147,7 @@ class MapsFragmentModel : ViewModel(){
   /**
    * Crea el cliente de llamadas a la API por la parte de mapas antes de empezar a realizar llamadas a la API
    */
-  fun createPrivateMapsApiClient(loginToken: String){
+  fun createPrivateMapsApiClient(loginToken: String) {
     RemoteAPI.initMapsCallsClient(loginToken)
   }
 }

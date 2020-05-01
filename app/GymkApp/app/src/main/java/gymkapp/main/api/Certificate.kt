@@ -28,7 +28,7 @@ private fun generateKeyStore(): Pair<SSLSocketFactory, X509TrustManager> {
   }
 
   //Create Keystore containing trusted CAs
-  Log.d(tag, "ca=${ca.subjectDN}")
+//  Log.d(tag, "ca=${ca.subjectDN}")
   val keyStore = KeyStore.getInstance(KeyStore.getDefaultType()).apply {
     load(null, null)
     setCertificateEntry("ca", ca)

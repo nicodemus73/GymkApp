@@ -2,25 +2,36 @@ package gymkapp.main.api
 
 import android.util.Log
 import gymkapp.main.BASE_URL
-import gymkapp.main.api.RemoteAPI.ALGO_QUE_NO_ES_UN_MAPA
+import gymkapp.main.api.RemoteAPI.firstPointInfoOfAMap
+import gymkapp.main.model.Point
+import gymkapp.main.model.Stage
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface MapsCallsClient {
 
-  @GET("/map")
+  //funcion que devuelve el primer punto de los mapas cercanos dado unas cordenadas y un radio
+  @GET("/map/propers")
   suspend fun listNearMaps(
     @Query("lon") long: Double,
     @Query("lat") lat: Double,
     @Query("radius") radius: Int
-  ): Response<Array<ALGO_QUE_NO_ES_UN_MAPA>>//  //recibo una lista de Map
+  ): Response<Array<firstPointInfoOfAMap>>//  //recibo una lista de Map
 
+  //función que devuelve información sobre el mapa
   @GET("/map/{id}")
-  suspend fun infoMap(@Path("id") id: String): Response<ALGO_QUE_NO_ES_UN_MAPA>
+  suspend fun infoMap(@Path("id") id: String): Response<firstPointInfoOfAMap>
+
+  //función que te devuelve un mapa con un array de puntos (el de la demo)
+  @POST("/game/demo/new")
+  suspend fun obtainStartMap():Response<Stage>
+
+  @POST("/game/demo")
+  suspend fun obtainNextStageMap(@Body location: Point):Response<Stage>
+
+
 
   companion object Factory {
 
@@ -39,6 +50,6 @@ interface MapsCallsClient {
             .addHeader("Authorization", token)
             .build()
         )
-      }.build().also { Log.d(MapsCallsClient::class.java.simpleName, token) }
+      }.build()//.also { Log.d(MapsCallsClient::class.java.simpleName, token) }
   }
 }

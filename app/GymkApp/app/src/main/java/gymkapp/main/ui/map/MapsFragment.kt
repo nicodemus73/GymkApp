@@ -42,14 +42,16 @@ import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.utils.component1
 import com.google.maps.android.ktx.utils.component2
 import gymkapp.main.*
-import gymkapp.main.viewmodel.LoginViewModel.AuthenticationState.*
-import gymkapp.main.viewmodel.map.MapsFragmentModel.FollowingStatus as FolStat
-import gymkapp.main.viewmodel.map.MapsFragmentModel.LocationSettingsStatus as LocSetStat
 import gymkapp.main.databinding.MapsBinding
 import gymkapp.main.viewmodel.LoginViewModel
+import gymkapp.main.viewmodel.LoginViewModel.AuthenticationState.*
 import gymkapp.main.viewmodel.map.MapsFragmentModel
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import gymkapp.main.viewmodel.map.MapsFragmentModel.FollowingStatus as FolStat
+import gymkapp.main.viewmodel.map.MapsFragmentModel.GameStatus as GameStat
+import gymkapp.main.viewmodel.map.MapsFragmentModel.LocationSettingsStatus as LocSetStat
+import gymkapp.main.viewmodel.map.MapsFragmentModel.PointStatus as PointStat
 
 class MapsFragment : Fragment() {
 
@@ -127,7 +129,8 @@ class MapsFragment : Fragment() {
   private suspend fun startMaps() {
 
     map =
-      (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.awaitMap() ?: return
+      (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.awaitMap()
+        ?: return
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     map.uiSettings.isMyLocationButtonEnabled = false
     checkIfPermissionsGranted()
@@ -246,6 +249,13 @@ class MapsFragment : Fragment() {
     }
   }
 
+  private fun initArtificialGame(){
+
+    mapsModel.createPrivateMapsApiClient(loginModel.user!!.id)
+    lifecycleScope.launch { mapsModel.startGame() }
+    mapsModel.forceVerification()
+  }
+
   private fun doAfterLocationGranted() {
 
     bind.locationButton.setOnClickListener { mapsModel.switchFollowing() }
@@ -258,7 +268,7 @@ class MapsFragment : Fragment() {
             Looper.getMainLooper()
           )
           bind.locationButton.imageTintList = enabledColor
-          //TODO Cambiar el estado del juego a STARTED
+          initArtificialGame()
         }
         FolStat.DISABLED -> {
           fusedLocationClient.removeLocationUpdates(mapsModel.locationCallback)
@@ -277,10 +287,17 @@ class MapsFragment : Fragment() {
           it.zoomCamera(animate = false)
           drawGeoJsonPoint(it.toLatLng())
         } else {
-          //TODO Llamar para comprobar si se esta en el siguiente punto
-          //if(mapsModel.gameState.value==GameState.STARTED){
-          //  if(mapsModel.llamadaVerifyPunto) mapsModel.changeValueGameStateToPointAchieved()
-          //
+          //TODO Sustituir por un if
+          when (mapsModel.pointState.value) {
+            PointStat.CHECKING -> {
+
+              lifecycleScope.launch {
+                mapsModel.verifyCurrentLocation()
+              }
+            }
+            else -> {}
+          }
+
           it.zoomCamera()
         }
       }
@@ -297,21 +314,33 @@ class MapsFragment : Fragment() {
       }
     })
 
-    /*
-    TODO
-    mapsModel.locationSettingStatus.observe(viewLifecycleOwner, Observer {
-      when (it) {
-        GameStates.CHECKING -> {
-          ...
+    mapsModel.gameState.observe(viewLifecycleOwner, Observer { gameStatus ->
+      when (gameStatus) {
+
+        GameStat.STARTED -> {
+
+          mapsModel.pointState.observe(viewLifecycleOwner, Observer { pointStatus ->
+            when (pointStatus) {
+
+              PointStat.POINT_ACHIEVED -> {
+                //Mostrar mensaje de la prueba actual
+                Log.d(classTag,"HE LLEGADO AL SIGUIENTE PUNTO")
+                Snackbar.make(bind.root, mapsModel.stage!!.message, Snackbar.LENGTH_INDEFINITE)
+                  .show()
+                //Empezar a comprobar el siguiente punto
+                mapsModel.startChecking()
+              }
+
+              else -> {
+              }
+            }
+          })
         }
-        GameSates.STARTED -> ....
-        GameStates.POINT_ACHIEVED -> {
-          Snackbar.make....
-          mapsModel.llamadaCambiarValorStarted()
+
+        else -> {
         }
-        else -> {}
       }
-    })*/
+    })
   }
 
   private fun locationLayer(enable: Boolean) {
@@ -359,14 +388,15 @@ class MapsFragment : Fragment() {
    * Testing
    */
   private fun drawGeoJsonPoint(point: LatLng) {
-    val (lat,long) = point
+    val (lat, long) = point
     with(GeoJsonLayer(map, JSONObject())) {
       addFeature(
         GeoJsonFeature(
-          GeoJsonPoint(LatLng(lat+0.01,long+0.01)),
+          GeoJsonPoint(LatLng(lat + 0.01, long + 0.01)),
           "Origin",
-          hashMapOf(),
-          null)
+          null,
+          null
+        )
       )
       addLayerToMap()
     }
