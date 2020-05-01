@@ -394,7 +394,7 @@ class MapsFragment : Fragment() {
         GeoJsonFeature(
           GeoJsonPoint(LatLng(lat + 0.01, long + 0.01)),
           "Origin",
-          hashMapOf(),
+          null,
           null
         )
       )
