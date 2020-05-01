@@ -158,7 +158,6 @@ object RemoteAPI {
       return Pair("Can't connect to the server", null)
     }
     Log.d(classTag, "url: " + response.raw().request().url())
-    Log.d(classTag, "url: " + response.raw().request().url())
     var newStage: Stage? = null
     val message = try {
       Log.d(classTag, "llegint message")
