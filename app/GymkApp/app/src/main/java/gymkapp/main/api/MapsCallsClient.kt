@@ -25,11 +25,10 @@ interface MapsCallsClient {
 
   //función que te devuelve un mapa con un array de puntos (el de la demo)
   @POST("/game/demo/new")
-  suspend fun obtainStartMap():Response<Stage>
+  suspend fun obtainStartMap(): Response<Stage>
 
   @POST("/game/demo")
-  suspend fun obtainNextStageMap(@Body location: Point):Response<Stage>
-
+  suspend fun obtainNextStageMap(@Body location: Point): Response<Stage>
 
 
   companion object Factory {

@@ -295,7 +295,8 @@ class MapsFragment : Fragment() {
                 mapsModel.verifyCurrentLocation()
               }
             }
-            else -> { }
+            else -> {
+            }
           }
 
           it.zoomCamera()

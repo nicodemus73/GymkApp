@@ -25,7 +25,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
   override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
 
     val classTag = javaClass.simpleName
-    Log.d(classTag,"Preerencias creadas")
+    Log.d(classTag, "Preerencias creadas")
 
     val context = preferenceManager.context
     val screen = preferenceManager.createPreferenceScreen(context)

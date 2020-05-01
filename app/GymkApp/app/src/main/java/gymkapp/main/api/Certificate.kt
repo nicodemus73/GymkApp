@@ -1,6 +1,5 @@
 package gymkapp.main.api
 
-import android.util.Log
 import okhttp3.OkHttpClient
 import okio.Buffer
 import java.security.KeyStore
@@ -45,7 +44,8 @@ private fun generateKeyStore(): Pair<SSLSocketFactory, X509TrustManager> {
   return Pair(context.socketFactory, tmf.trustManagers[0] as X509TrustManager)
 }
 
-private fun generateInputStreamCertificate() = Buffer().writeUtf8("""
+private fun generateInputStreamCertificate() = Buffer().writeUtf8(
+  """
   -----BEGIN CERTIFICATE-----
   MIIHVzCCBT+gAwIBAgIUMExSPRGhPh864kaAq8DpKHnuU3wwDQYJKoZIhvcNAQEL
   BQAwgcAxDTALBgNVBAUTBDM0NTYxEjAQBgNVBAcMCUJhcmNlbG9uYTESMBAGA1UE
@@ -88,4 +88,5 @@ private fun generateInputStreamCertificate() = Buffer().writeUtf8("""
   dxTa/QmX8Qelyompa0KUJNSd9KZDdxPLO9pvbAmzNmHRBx708Z66GuMBKvAnghNL
   NSY05i/fQnLpGz0=
   -----END CERTIFICATE-----
-""".trimIndent()).inputStream()
+""".trimIndent()
+).inputStream()
