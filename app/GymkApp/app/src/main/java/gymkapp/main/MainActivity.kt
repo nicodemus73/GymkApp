@@ -2,15 +2,17 @@ package gymkapp.main
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
-import gymkapp.main.LoginViewModel.AuthenticationState.*
+import androidx.preference.PreferenceManager
+import gymkapp.main.LoginViewModel.AuthenticationState.AUTHENTICATED
 import gymkapp.main.databinding.BottomNavBinding
 
 class MainActivity : AppCompatActivity() {
@@ -38,6 +40,19 @@ class MainActivity : AppCompatActivity() {
       this,
       Observer {
         bind.bottomNavigationView.visibility = if (it == AUTHENTICATED) View.VISIBLE else View.GONE
-      })
+      }
+    )
+
+    with(PreferenceManager.getDefaultSharedPreferences(this)) {
+      if (getBoolean(R.string.NightModeSysKey.toString(), false)) {
+        setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM)
+      } else setDefaultNightMode(
+        if (getBoolean(R.string.NightModeKey.toString(), false)) {
+          MODE_NIGHT_YES
+        } else {
+          MODE_NIGHT_NO
+        }
+      )
     }
+  }
 }
