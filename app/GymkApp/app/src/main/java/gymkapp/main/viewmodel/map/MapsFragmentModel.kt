@@ -1,4 +1,4 @@
-package gymkapp.main
+package gymkapp.main.viewmodel.map
 
 import android.location.Location
 import android.util.Log
@@ -8,13 +8,15 @@ import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import gymkapp.main.api.RemoteAPI
 
 class MapsFragmentModel : ViewModel(){
 
+  //TODO cambiar nombre cuando sepa si es activityViewModel o solo ViewModel
   enum class LocationSettingsStatus {
     ENABLED,
-    DISABLED,
-    UNKNOWN
+    CHECKING,
+    DISABLED
   }
 
   enum class FollowingStatus {
@@ -37,36 +39,58 @@ class MapsFragmentModel : ViewModel(){
     object: LocationCallback(){
       override fun onLocationResult(locRes: LocationResult?) {
         currentLoc.value = locRes?.lastLocation
+        isFirstTimeLocationRequest = false
       }
 
       override fun onLocationAvailability(availability: LocationAvailability?) {
-        //Log.d(classTag, "disponible: ${availability!!.isLocationAvailable}")
-        if(!availability!!.isLocationAvailable){
-          Log.d(classTag,"Localizacion no disponible")
-          locationSettingStatus.value = LocationSettingsStatus.DISABLED
-        } else locationSettingStatus.value = LocationSettingsStatus.ENABLED
+        if(!isFirstTimeLocationRequest && !availability!!.isLocationAvailable){
+          Log.d(classTag,"Localizacion no disponible, comprobando...")
+          locationSettingStatus.value =
+            LocationSettingsStatus.CHECKING
+        }
       }
     }
   }
 
   var isFirstTimePermissionFlow = true
-  val locationSettingStatus = MutableLiveData(LocationSettingsStatus.UNKNOWN)
+  var isFirstTimeLocationRequest = true
+  val locationSettingStatus = MutableLiveData(LocationSettingsStatus.CHECKING)
   val followingStatus = MutableLiveData(FollowingStatus.UNKNOWN)
   val currentLoc = MutableLiveData<Location?>(null)
+  //val gameState = MutableLiveData<GameState>(GameState.CHECKING)
 
   fun startFollowing(){
-    followingStatus.value = FollowingStatus.FOLLOWING
+    followingStatus.value =
+      FollowingStatus.FOLLOWING
   }
 
   fun stopFollowing(){
-    followingStatus.value = FollowingStatus.DISABLED
+    followingStatus.value =
+      FollowingStatus.DISABLED
   }
 
   fun switchFollowing(){
-    if (followingStatus.value==FollowingStatus.UNKNOWN){
+    if (followingStatus.value== FollowingStatus.UNKNOWN){
       Log.d(classTag,"Operacion incompatible")
       return
     }
-    followingStatus.value = if(followingStatus.value == FollowingStatus.FOLLOWING)FollowingStatus.DISABLED else FollowingStatus.FOLLOWING
+    followingStatus.value = if(followingStatus.value == FollowingStatus.FOLLOWING) FollowingStatus.DISABLED else FollowingStatus.FOLLOWING
+  }
+
+  fun confirmLocationSettingsEnabled(){
+    locationSettingStatus.value =
+      LocationSettingsStatus.ENABLED
+  }
+
+  fun confirmLocationSettingsDenied(){
+    locationSettingStatus.value =
+      LocationSettingsStatus.DISABLED
+  }
+
+  /**
+   * Crea el cliente de llamadas a la API por la parte de mapas antes de empezar a realizar llamadas a la API
+   */
+  fun createPrivateMapsApiClient(loginToken: String){
+    RemoteAPI.initMapsCallsClient(loginToken)
   }
 }

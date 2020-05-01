@@ -1,4 +1,4 @@
-package gymkapp.main.login
+package gymkapp.main.ui.login
 
 import android.os.Bundle
 import android.util.Log

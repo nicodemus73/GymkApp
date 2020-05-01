@@ -1,10 +1,11 @@
-package gymkapp.main
+package gymkapp.main.ui.social
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import gymkapp.main.R
 
 
 class SocialFragment : Fragment() {

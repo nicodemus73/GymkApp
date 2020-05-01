@@ -14,6 +14,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import gymkapp.main.LoginViewModel.AuthenticationState.AUTHENTICATED
 import gymkapp.main.databinding.BottomNavBinding
+import gymkapp.main.viewmodel.LoginViewModel
 
 class MainActivity : AppCompatActivity() {
 

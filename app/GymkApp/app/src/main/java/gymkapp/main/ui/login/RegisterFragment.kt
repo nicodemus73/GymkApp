@@ -1,4 +1,4 @@
-package gymkapp.main.login
+package gymkapp.main.ui.login
 
 import android.content.Context
 import android.os.Bundle
@@ -17,6 +17,9 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import gymkapp.main.*
 import gymkapp.main.databinding.RegisterBinding
+import gymkapp.main.viewmodel.LoginViewModel
+import gymkapp.main.viewmodel.login.RegisterFragmentModel
+import gymkapp.main.viewmodel.login.RegisterViewModel
 import kotlinx.coroutines.launch
 
 class RegisterFragment : Fragment() {
@@ -82,7 +85,7 @@ class RegisterFragment : Fragment() {
 
           Log.d(javaClass.simpleName, "Autenticado, guardando y moviendose al grafico principal")
           activity?.getPreferences(Context.MODE_PRIVATE)
-            ?.edit { putString(R.string.TokenKey.toString(), loginViewModel.loginToken) }
+            ?.edit { putString(R.string.TokenKey.toString(), loginViewModel.user!!.id) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         //Improbable que ocurra ya que el registro deberia haber ido bien
