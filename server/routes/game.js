@@ -8,10 +8,10 @@ const jwt = require('jsonwebtoken');
 const distance = require('turf-distance');
 const utils = require('../auxiliary/utils');
 
-router.get('/user/:id', async (req, res) => {
+router.get('/my', async (req, res) => {
 
     try {
-        Game.find({ user: req.params.id }, function (err, games) {
+        Game.find({ user: req.usernameId._id }, function (err, games) {
             if (err) res.status(400).json({ "error": err.message });
             else if (games.length == 0)
                 res.status(404).json({ "error": 'User has played no games.' });
@@ -50,6 +50,110 @@ router.get('/:id', async (req, res) => {
 
     } catch (err) {
         res.status(500).json({ "error": err.message });
+    }
+});
+
+router.post('/demo/new', async (req, res) => {
+
+    try {
+        //if (!req.body.location) throw new Error('400No location sent');
+        //const map = await Map.findById(req.params.id); // so we can dereference point 0
+
+        Map.findOne({}, {}, { sort: { 'date': -1 } }, async function (err, map) {
+            if (err) res.status(400).json({ "error": err.message, "message": null, "location": null, "time": null });
+            else {
+                //if (map == null) throw new Error('404Map does not exist'); // protect against nonexistant maps
+                /*if (distance(req.body.location, map.firstLocation) * 1000 > process.env.ONFOOT_START_DIST)
+                    throw new Error('400You are too far from start point');*/
+
+                const game = new Game({
+                    user: req.usernameId._id,
+                    map: map._id,
+                    startLocation: map.firstLocation,
+                    progress: {
+                        point: map.points[0], // point 0 dereferenced
+                    }
+                });
+
+                await game.save(async function (err, savedGame) {
+                    if (err) res.status(400).json({ "error": err.message, "message": null, "location": null, "time": null });
+                    else {
+                        const point = await Point.findById(map.points[0]); // we suppose points are well maintained
+                        res.status(200).json({
+                            "message": point.description,
+                            "location": point.location,
+                            "time": null,
+                            "error": null
+                        });
+                    }
+                });
+            }
+        });
+    } catch (err) {
+        if (!isNaN(err.message.substring(0, 3))) // Check if it is a custom thrown error.
+            res.status(err.message.substring(0, 3)).json({ "error": err.message.substring(3, 1e10000), "message": null, "location": null, "time": null }); // 1e10000 = infinite
+        else res.status(500).json({ "error": err.message, "message": null, "location": null, "time": null });
+    }
+});
+
+router.post('/demo', async (req, res) => {
+
+    try {
+        if (!req.body.location) throw new Error('400No location sent');
+        //const game = await Game.findById(req.params.id);
+
+        Game.findOne({}, {}, { sort: { 'startDate': -1 } }, async function (err, game) {
+            if (err) res.status(400).json({ "error": err.message, "message": null, "location": null, "time": null });
+            else if (game.status != 'inProgress') res.status(400).json({ "error": 'Game is not in progress', "message": null, "location": null, "time": null });
+            else {
+
+                //if (game == null) throw new Error('404Game does not exist');
+                //if (game.user != req.usernameId._id) throw new Error('400This game is not yours');
+                //if (game.status != 'inProgress') throw new Error('400Game is not in progress');
+
+                const currentPoint = await Point.findById(game.progress[game.progress.length - 1].point);
+
+                if (distance(req.body.location, currentPoint.location) * 1000 < process.env.ONFOOT_CHECK_DIST) {
+                    // point completed
+
+                    const date = new Date();
+                    game.progress[game.progress.length - 1].completedDate = date;
+                    const map = await Map.findById(game.map); // we suppose maps and points are well maintained
+
+                    if (map.points.length == game.progress.length) { // this is the last point validation
+                        console.log('Last Point');
+                        game.status = 'completed';
+                        game.endDate = date;
+                        res.status(200).json({
+                            "message": game.status,
+                            "location": null,
+                            "time": utils.parseTime(new Date(game.endDate - game.startDate)),
+                            "error": null
+                        })
+                    }
+                    else { // this is not the last point validation: send next.
+                        console.log('Not Last Point');
+                        const point = await Point.findById(map.points[game.progress.length]);
+                        game.progress.push({ point: point._id });
+                        res.status(200).json({
+                            "message": point.description,
+                            "location": point.location,
+                            "time": null,
+                            "error": null
+                        });
+                    }
+                }
+                else {
+                    res.status(400).json({ "error": "Point is not completed yet", "message": null, "location": null, "time": null });
+                    game.progress[game.progress.length - 1].tries++;
+                }
+                await game.save();
+            }
+        });
+    } catch (err) {
+        if (!isNaN(err.message.substring(0, 3))) // Check if it is a custom thrown error.
+            res.status(err.message.substring(0, 3)).json({ "error": err.message.substring(3, 1e10000), "message": null, "location": null, "time": null }); // 1e10000 = infinite
+        else res.status(500).json({ "error": err.message, "message": null, "location": null, "time": null });
     }
 });
 

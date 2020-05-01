@@ -6,12 +6,13 @@ const postPoint = require('../auxiliary/postPoint');
 router.get('/', (req, res) => { //get all maps summary info
 
     try {
-        if (req.body.location && req.body.radius) { // Send all nearby points.
+        if (Number(req.query.lon) && Number(req.query.lat) && Number(req.query.radius)) { // Send all nearby points.
+            const location = { "type": "Point", "coordinates": [Number(req.query.lon), Number(req.query.lat)] }
             Point.find({
                 location: {
                     $near: {
-                        $maxDistance: req.body.radius, // distance in meters
-                        $geometry: req.body.location
+                        $maxDistance: Number(req.query.radius), // distance in meters
+                        $geometry: location
                     }
                 }
             }, { "name": 1, "type": 1, "description": 1, "location": 1 }).find((err, points) => {

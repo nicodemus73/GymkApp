@@ -5,15 +5,16 @@ const Point = require('../bbdd/PointSchema');
 const utils = require('../auxiliary/utils');
 const postPoint = require('../auxiliary/postPoint');
 
-router.get('/', (req, res) => { //get all maps summary info
+router.get('/', (req, res) => { 
 
     try {
-        if (req.body.location && req.body.radius) { // Send all nearby maps.
+        if (Number(req.query.lon) && Number(req.query.lat) && Number(req.query.radius)) { // Send all nearby maps.
+            const location = { "type": "Point", "coordinates": [Number(req.query.lon), Number(req.query.lat)] }
             Map.find({
                 firstLocation: {
                     $near: {
-                        $maxDistance: req.body.radius, // distance in meters
-                        $geometry: req.body.location
+                        $maxDistance: Number(req.query.radius), // distance in meters
+                        $geometry: location
                     }
                 }
             }, { "name": 1, "metadata": 1, "firstLocation": 1 }).find((err, maps) => {
@@ -27,7 +28,37 @@ router.get('/', (req, res) => { //get all maps summary info
     }
 });
 
-router.get('/:id', (req, res) => { //get all maps summary info
+router.get('/my', (req, res) => {
+
+    try {
+        Map.find({ owner: req.usernameId._id }).exec(function (err, map) {
+            if (err) res.status(400).json({ "error": err.message });
+            else if (map == null)
+                res.status(404).json({ "error": 'Map does not exist' });
+            else res.status(200).json(map);
+        })
+
+    } catch (err) {
+        res.status(500).json({ "error": err.message });
+    }
+});
+
+router.get('/my/:id', (req, res) => {
+
+    try {
+        Map.find({ _id: req.params.id, owner: req.usernameId._id }).exec(function (err, map) {
+            if (err) res.status(400).json({ "error": err.message });
+            else if (map == null)
+                res.status(404).json({ "error": 'Map does not exist' });
+            else res.status(200).json(map);
+        })
+
+    } catch (err) {
+        res.status(500).json({ "error": err.message });
+    }
+});
+
+router.get('/:id', (req, res) => {
 
     try {
         Map.findById(req.params.id, { "name": 1, "metadata": 1, "firstLocation": 1 }).exec(function (err, map) {

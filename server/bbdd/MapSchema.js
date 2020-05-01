@@ -12,6 +12,7 @@ const MapSchema = new Schema({
     owner: { type: Schema.Types.ObjectId, ref: 'user', required: true },
     public: { type: Boolean, default: true },
     firstLocation: { type: location, required: true },
+    date: { type: Date, required: true, default: Date.now },
     metadata: {
         author: { type: String, maxlength: 15 },
         description: {
