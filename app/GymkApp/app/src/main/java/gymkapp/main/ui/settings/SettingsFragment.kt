@@ -4,9 +4,9 @@ import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.content.edit
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.preference.*
+import gymkapp.main.viewmodel.LoginViewModel
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
