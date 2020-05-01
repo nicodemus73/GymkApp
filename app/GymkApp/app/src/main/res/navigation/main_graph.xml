@@ -56,8 +56,7 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="gymkapp.main.ui.settings.SettingsFragment"
-        android:label="settings"
-        tools:layout="@layout/settings" />
+        android:label="settings" />
     <fragment
         android:id="@+id/socialFragment"
         android:name="gymkapp.main.ui.social.SocialFragment"
@@ -72,8 +71,4 @@
         app:popExitAnim="@anim/nav_default_pop_exit_anim"
         app:popUpTo="@id/main_graph"
         app:popUpToInclusive="true" />
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="gymkapp.main.ui.SettingsFragment"
-        android:label="settings" />
 </navigation>
