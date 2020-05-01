@@ -1,8 +1,8 @@
-package gymkapp.main.login
+package gymkapp.main.viewmodel.login
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import gymkapp.main.LoginViewModel
+import gymkapp.main.viewmodel.LoginViewModel
 
 /**
  * Clase para manejar los datos de la pantalla o vista de LOGIN

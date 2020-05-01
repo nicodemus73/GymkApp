@@ -1,22 +1,26 @@
-package gymkapp.main.login
+package gymkapp.main.ui.login
 
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.edit
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import gymkapp.main.*
+import gymkapp.main.FTUELoginDirections
+import gymkapp.main.R
 import gymkapp.main.databinding.RegisterBinding
+import gymkapp.main.viewmodel.LoginViewModel
+import gymkapp.main.viewmodel.login.RegisterFragmentModel
+import gymkapp.main.viewmodel.login.RegisterViewModel
 import kotlinx.coroutines.launch
 
 class RegisterFragment : Fragment() {
@@ -82,7 +86,7 @@ class RegisterFragment : Fragment() {
 
           Log.d(javaClass.simpleName, "Autenticado, guardando y moviendose al grafico principal")
           activity?.getPreferences(Context.MODE_PRIVATE)
-            ?.edit { putString(R.string.TokenKey.toString(), loginViewModel.loginToken) }
+            ?.edit { putString(R.string.TokenKey.toString(), loginViewModel.user!!.id) }
           navController.navigate(FTUELoginDirections.toMainGraph())
         }
         //Improbable que ocurra ya que el registro deberia haber ido bien

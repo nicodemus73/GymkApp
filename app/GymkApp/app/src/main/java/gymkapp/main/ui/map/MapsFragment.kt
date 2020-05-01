@@ -1,4 +1,4 @@
-package gymkapp.main
+package gymkapp.main.ui.map
 
 import android.Manifest
 import android.content.Context
@@ -32,14 +32,26 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
+import com.google.maps.android.data.geojson.GeoJsonFeature
+import com.google.maps.android.data.geojson.GeoJsonLayer
+import com.google.maps.android.data.geojson.GeoJsonPoint
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitMap
-import gymkapp.main.LoginViewModel.AuthenticationState.*
-import gymkapp.main.MapsFragmentModel.FollowingStatus as FolStat
-import gymkapp.main.MapsFragmentModel.LocationSettingsStatus as LocSetStat
+import com.google.maps.android.ktx.utils.component1
+import com.google.maps.android.ktx.utils.component2
+import gymkapp.main.*
 import gymkapp.main.databinding.MapsBinding
+import gymkapp.main.viewmodel.LoginViewModel
+import gymkapp.main.viewmodel.LoginViewModel.AuthenticationState.*
+import gymkapp.main.viewmodel.map.MapsFragmentModel
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import gymkapp.main.viewmodel.map.MapsFragmentModel.FollowingStatus as FolStat
+import gymkapp.main.viewmodel.map.MapsFragmentModel.GameStatus as GameStat
+import gymkapp.main.viewmodel.map.MapsFragmentModel.LocationSettingsStatus as LocSetStat
+import gymkapp.main.viewmodel.map.MapsFragmentModel.PointStatus as PointStat
 
 class MapsFragment : Fragment() {
 
@@ -117,7 +129,8 @@ class MapsFragment : Fragment() {
   private suspend fun startMaps() {
 
     map =
-      (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.awaitMap() ?: return
+      (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.awaitMap()
+        ?: return
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     map.uiSettings.isMyLocationButtonEnabled = false
     checkIfPermissionsGranted()
@@ -168,17 +181,16 @@ class MapsFragment : Fragment() {
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-    when(requestCode){
+    when (requestCode) {
       PERMISSION_SETTINGS_REQ_CODE -> checkIfPermissionsGranted()
       LOCATION_SETTINGS_REQ_CODE -> {
 
         val lm = requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
-        if(LocationManagerCompat.isLocationEnabled(lm)) {
-          Log.d(classTag,"Activando localizacion")
+        if (LocationManagerCompat.isLocationEnabled(lm)) {
+          Log.d(classTag, "Activando localizacion")
           mapsModel.confirmLocationSettingsEnabled()
-        }
-        else {
-          Log.d(classTag,"Desactivando localizacion")
+        } else {
+          Log.d(classTag, "Desactivando localizacion")
           mapsModel.confirmLocationSettingsDenied()
         }
       }
@@ -193,7 +205,10 @@ class MapsFragment : Fragment() {
       Snackbar.LENGTH_INDEFINITE
     )
       .setAction("Enable") {
-        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+        requestPermissions(
+          arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+          LOCATION_REQUEST_CODE
+        )
       }.show()
   }
 
@@ -213,21 +228,32 @@ class MapsFragment : Fragment() {
     }
   }
 
-  private fun showLocationSettingsResolution(e: Exception){
+  private fun showLocationSettingsResolution(e: Exception) {
 
-    if(e is ResolvableApiException){
+    if (e is ResolvableApiException) {
       Snackbar.make(
         bind.root,
         "Enable location settings to see near Gymkhanas",
         Snackbar.LENGTH_INDEFINITE
       )
         .setAction("Enable") {
-          try{
-            startIntentSenderForResult(e.resolution.intentSender,
-              LOCATION_SETTINGS_REQ_CODE,null,0,0,0,null) //Horrible implementacion por parte de Google...
-          } catch (e: IntentSender.SendIntentException){Log.d(classTag,"Error inesperado")}//TODO borrar
+          try {
+            startIntentSenderForResult(
+              e.resolution.intentSender,
+              LOCATION_SETTINGS_REQ_CODE, null, 0, 0, 0, null
+            ) //Horrible implementacion por parte de Google...
+          } catch (e: IntentSender.SendIntentException) {
+            Log.d(classTag, "Error inesperado")
+          }//TODO borrar
         }.show()
     }
+  }
+
+  private fun initArtificialGame() {
+
+    mapsModel.createPrivateMapsApiClient(loginModel.user!!.id)
+    lifecycleScope.launch { mapsModel.startGame() }
+    mapsModel.forceVerification()
   }
 
   private fun doAfterLocationGranted() {
@@ -242,6 +268,7 @@ class MapsFragment : Fragment() {
             Looper.getMainLooper()
           )
           bind.locationButton.imageTintList = enabledColor
+          initArtificialGame()
         }
         FolStat.DISABLED -> {
           fusedLocationClient.removeLocationUpdates(mapsModel.locationCallback)
@@ -258,18 +285,61 @@ class MapsFragment : Fragment() {
         if (isFirstLoc) {
           isFirstLoc = false
           it.zoomCamera(animate = false)
-        } else it.zoomCamera()
+          drawGeoJsonPoint(it.toLatLng())
+        } else {
+          //TODO Sustituir por un if
+          when (mapsModel.pointState.value) {
+            PointStat.CHECKING -> {
+
+              lifecycleScope.launch {
+                mapsModel.verifyCurrentLocation()
+              }
+            }
+            else -> {
+            }
+          }
+
+          it.zoomCamera()
+        }
       }
     })
 
     mapsModel.locationSettingStatus.observe(viewLifecycleOwner, Observer {
-      when(it){
+      when (it) {
         LocSetStat.CHECKING -> {
           locationLayer(enable = false)
           checkSettings()
         }
         LocSetStat.ENABLED -> locationLayer(enable = true)
-        else -> checkSettings() //TODO Ultimo cambio añadido, considerar cambiar...
+        else -> checkSettings()
+      }
+    })
+
+    mapsModel.gameState.observe(viewLifecycleOwner, Observer { gameStatus ->
+      when (gameStatus) {
+
+        GameStat.STARTED -> {
+
+          mapsModel.pointState.observe(viewLifecycleOwner, Observer { pointStatus ->
+            when (pointStatus) {
+
+              PointStat.POINT_ACHIEVED -> {
+                //Mostrar mensaje de la prueba actual
+                Log.d(classTag, "HE LLEGADO AL SIGUIENTE PUNTO")
+                Snackbar.make(bind.root, mapsModel.stage!!.message, Snackbar.LENGTH_INDEFINITE)
+                  .show()
+                //Empezar a comprobar el siguiente punto
+                mapsModel.startChecking()
+              }
+
+              else -> {
+              }
+            }
+          })
+        }
+
+        else -> {
+        }
       }
     })
   }
@@ -293,7 +363,6 @@ class MapsFragment : Fragment() {
 
     val builder = LocationSettingsRequest.Builder()
       .addLocationRequest(mapsModel.locationRequest)
-      //.setAlwaysShow(true) TODO
     val client = LocationServices.getSettingsClient(requireContext())
     val task = client.checkLocationSettings(builder.build())
     task.addOnSuccessListener {
@@ -316,6 +385,24 @@ class MapsFragment : Fragment() {
     else map.moveCamera(cameraUpdate)
   }
 
+  /**
+   * Testing
+   */
+  private fun drawGeoJsonPoint(point: LatLng) {
+    val (lat, long) = point
+    with(GeoJsonLayer(map, JSONObject())) {
+      addFeature(
+        GeoJsonFeature(
+          GeoJsonPoint(LatLng(lat + 0.01, long + 0.01)),
+          "Origin",
+          null,
+          null
+        )
+      )
+      addLayerToMap()
+    }
+  }
+
   override fun onPause() {
     super.onPause()
     mapsModel.stopFollowing()
@@ -323,8 +410,8 @@ class MapsFragment : Fragment() {
 
   override fun onResume() {
     super.onResume()
-    if(mapsModel.locationSettingStatus.value==LocSetStat.ENABLED && mapsModel.followingStatus.value == FolStat.DISABLED){
-        mapsModel.startFollowing()
+    if (mapsModel.locationSettingStatus.value == LocSetStat.ENABLED && mapsModel.followingStatus.value == FolStat.DISABLED) {
+      mapsModel.startFollowing()
     }
   }
 
