@@ -9,13 +9,12 @@ import gymkapp.main.BASE_URL
 import gymkapp.main.DEFAULT_VIEW_RADIUS
 import gymkapp.main.model.Point
 import gymkapp.main.model.Stage
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 object RemoteAPI {
 
@@ -26,23 +25,17 @@ object RemoteAPI {
 
   //DATOS RECIBIDOS
   //TODO (mover y) RENOMBRAR + renombrar otras variables relacionadas (map,maps) y todo lo relacionado con mapas que no sea un mapa...
-  data class firstPointInfoOfAMap(
+  data class FirstPointInfoOfAMap(
     var metadata: Metadata,
     @SerializedName("_id")
     var id: String,
     var name: String,
     var firstLocation: GeoJSONPoint
   )
+
   private data class ErrorMessage(val error: String)
   data class Metadata(var author: String, var description: String)
   data class GeoJSONPoint(var type: String = "Point", var coordinates: List<Double>)
-//  data class Point (var location: GeoJSONPoint)
-
- /* data class Stage(
-    var message: String,
-    var location: GeoJSONPoint,
-    var time: String
-  )*/
 
   //Los Log.d pueden filtrarse con ((Login|Welcome|Settings|Register|Maps|Social)(Model|ViewModel|Fragment)|MainActivity|RemoteAPI|MapsCallsClient)
   //TODO borrar escalares del gradle si no los utilizamos
@@ -69,14 +62,16 @@ object RemoteAPI {
   private val authCalls = AuthenticationCallsClient.create()
   private lateinit var mapsCalls: MapsCallsClient
 
-  fun initMapsCallsClient(token: String){ mapsCalls = MapsCallsClient.create(token) }
+  fun initMapsCallsClient(token: String) {
+    mapsCalls = MapsCallsClient.create(token)
+  }
 
   private fun parseError(errorBody: ResponseBody) =
     Gson().fromJson(errorBody.charStream().readText(), ErrorMessage::class.java).error
 
   suspend fun login(user: String, password: String): Pair<Boolean, String> {
 
-    //Log.d(classTag, "el usuario es $user, la contraseña es $password")
+    Log.d(classTag, "el usuario es $user, la contraseña es $password")
     val response = try {
       authCalls.login(
         UserInfo(
@@ -85,7 +80,6 @@ object RemoteAPI {
         )
       )
     } catch (e: Exception) {
-      //Log.d(classTag, "${e.stackTrace}")
       e.printStackTrace()
       return Pair(true, "Can't connect to the server")
     }
@@ -120,33 +114,36 @@ object RemoteAPI {
 
     return Pair(failure, message)
   }
-//Obtain the start point of the demo map
+
+  //Obtain the start point of the demo map
   suspend fun obtainStartMap(): Pair<String?, Stage?> {
 
     val response = try {
       mapsCalls.obtainStartMap()
     } catch (e: Exception) {
-      //Log.d(classTag, "error")
-      //Log.d(classTag, "${e.message}")
+      Log.d(classTag, "error")
+      Log.d(classTag, "${e.message}")
       return Pair("Can't connect to the server", null)
     }
-    //Log.d(classTag, "url: " + response.raw().request().url())
-    println("url: " + response.raw().request().url())
+    Log.d(classTag, "url: " + response.raw().request().url())
     var newStage: Stage? = null
     val message = try {
-      //Log.d(classTag, "llegint message")
+      Log.d(classTag, "llegint message")
       if (!response.isSuccessful) parseError(response.errorBody()!!)
       else {
         newStage = response.body()!!
         null
       }
     } catch (e: Exception) {
-      //Log.d(classTag, "${e.message}")
+      Log.d(classTag, "${e.message}")
       "Unexpected error while trying to load the starting point"
     }
-  println("First Point")
-  println("$classTag ${GsonBuilder().setPrettyPrinting().create().toJson(newStage)}")
-    //Log.d( classTag, "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}" )
+    Log.d(classTag, "First Point")
+    Log.d(classTag, "$classTag ${GsonBuilder().setPrettyPrinting().create().toJson(newStage)}")
+    Log.d(
+      classTag,
+      "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}"
+    )
     return Pair(message, newStage)
   }
 
@@ -156,30 +153,32 @@ object RemoteAPI {
     val response = try {
       mapsCalls.obtainNextStageMap(location = loc)
     } catch (e: Exception) {
-      //Log.d(classTag, "error")
-      //Log.d(classTag, "${e.message}")
+      Log.d(classTag, "error")
+      Log.d(classTag, "${e.message}")
       return Pair("Can't connect to the server", null)
     }
-    //Log.d(classTag, "url: " + response.raw().request().url())
-    println("url: " + response.raw().request().url())
+    Log.d(classTag, "url: " + response.raw().request().url())
+    Log.d(classTag, "url: " + response.raw().request().url())
     var newStage: Stage? = null
     val message = try {
-      //Log.d(classTag, "llegint message")
+      Log.d(classTag, "llegint message")
       if (!response.isSuccessful) parseError(response.errorBody()!!)
       else {
         newStage = response.body()!!
         null
       }
     } catch (e: Exception) {
-     // Log.d(classTag, "${e.message}")
+      Log.d(classTag, "${e.message}")
       "Unexpected error while trying obtain next stage"
     }
-    println(GsonBuilder().setPrettyPrinting().create().toJson(newStage))
-    //Log.d(classTag, "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}" )
+    Log.d(classTag, GsonBuilder().setPrettyPrinting().create().toJson(newStage))
+    Log.d(
+      classTag,
+      "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}"
+    )
     return Pair(message, newStage)
   }
 
-  //suspend fun listNearMaps(location: GeoJSONPoint, radio: Int): Pair<Pair<Boolean, String>, Array<Map> >{ //afegir els maps dins d'una llista, (demanar al server el numero de maps?)
   /**
    * Devuelve la lista de mapas cercanos
    * Si sale bien, first es nulo y second contiene la lista
@@ -188,11 +187,11 @@ object RemoteAPI {
   suspend fun listNearMaps(
     center: LatLng,
     radio: Int = DEFAULT_VIEW_RADIUS
-  ): Pair<String?, Array<firstPointInfoOfAMap>?> {
+  ): Pair<String?, Array<FirstPointInfoOfAMap>?> {
 
     //Asegurar que el cliente se ha inicializado
     if (!::mapsCalls.isInitialized) return Pair("Error interno", null).also {
-      //Log.d(classTag, "El cliente no se ha inicializado")
+      Log.d(classTag, "El cliente no se ha inicializado")
     }
 
     //Asegurar la conexion
@@ -203,14 +202,14 @@ object RemoteAPI {
         radius = radio
       )
     } catch (e: Exception) {
-      //Log.d(classTag, "${e.message}")
+      Log.d(classTag, "${e.message}")
       return Pair("Can't Connect to the server", null)
     }
 
     //Tratar errores y la respuesta
-    //Log.d(classTag, "url: " + response.raw().request().url())
+    Log.d(classTag, "url: " + response.raw().request().url())
 
-    var maps: Array<firstPointInfoOfAMap>? = null
+    var maps: Array<FirstPointInfoOfAMap>? = null
     val message = try {
       if (response.isSuccessful) {
         maps = response.body()!!
@@ -222,31 +221,32 @@ object RemoteAPI {
     return Pair(message, maps)
   }
 
-  suspend fun infoMap(Id: String): Pair<String?, firstPointInfoOfAMap?> {
+  suspend fun infoMap(Id: String): Pair<String?, FirstPointInfoOfAMap?> {
 
     val response = try {
       mapsCalls.infoMap(id = Id)
     } catch (e: Exception) {
-      //Log.d(classTag, "error")
-      //Log.d(classTag, "${e.message}")
+      Log.d(classTag, "${e.message}")
       return Pair("Can't connect to the server", null)
     }
 
-    //Log.d(classTag, "url: " + response.raw().request().url())
-    var map: firstPointInfoOfAMap? = null
+    Log.d(classTag, "url: " + response.raw().request().url())
+    var map: FirstPointInfoOfAMap? = null
     val message = try {
-      //Log.d(classTag, "llegint message")
+      Log.d(classTag, "llegint message")
       if (!response.isSuccessful) parseError(response.errorBody()!!)
       else {
         map = response.body()!!
         null
       }
     } catch (e: Exception) {
-      //Log.d(classTag, "${e.message}")
+      Log.d(classTag, "${e.message}")
       "Unexpected error while trying to load near maps"
     }
-   // Log.d(classTag, "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}")
+    Log.d(
+      classTag,
+      "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}"
+    )
     return Pair(message, map)
   }
 }
-

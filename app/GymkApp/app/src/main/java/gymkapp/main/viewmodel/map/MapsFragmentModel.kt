@@ -91,7 +91,7 @@ class MapsFragmentModel : ViewModel() {
     pointState.value = PointStatus.POINT_ACHIEVED
   }
 
-  fun startChecking(){
+  fun startChecking() {
     pointState.value = PointStatus.CHECKING
   }
 

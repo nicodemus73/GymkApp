@@ -249,7 +249,7 @@ class MapsFragment : Fragment() {
     }
   }
 
-  private fun initArtificialGame(){
+  private fun initArtificialGame() {
 
     mapsModel.createPrivateMapsApiClient(loginModel.user!!.id)
     lifecycleScope.launch { mapsModel.startGame() }
@@ -295,7 +295,7 @@ class MapsFragment : Fragment() {
                 mapsModel.verifyCurrentLocation()
               }
             }
-            else -> {}
+            else -> { }
           }
 
           it.zoomCamera()
@@ -324,7 +324,7 @@ class MapsFragment : Fragment() {
 
               PointStat.POINT_ACHIEVED -> {
                 //Mostrar mensaje de la prueba actual
-                Log.d(classTag,"HE LLEGADO AL SIGUIENTE PUNTO")
+                Log.d(classTag, "HE LLEGADO AL SIGUIENTE PUNTO")
                 Snackbar.make(bind.root, mapsModel.stage!!.message, Snackbar.LENGTH_INDEFINITE)
                   .show()
                 //Empezar a comprobar el siguiente punto

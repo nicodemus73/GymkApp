@@ -31,8 +31,7 @@ suspend fun main() {
 //  RemoteAPI.obtainStartMap()
 
     //execcució de la gymcana de demo, per incrementar el temps ficar delay
-        println("hola")
-        RemoteAPI.initMapsCallsClient("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTkwNTA3NTQ2ZWIyYzA1YTQxZTRlNWYiLCJpYXQiOjE1ODY1MTYxMDN9.Tx2kqrfQMLGQGClpCQxujoe6zWnnxy7TSe219kzRBsQ")
+        //RemoteAPI.initMapsCallsClient("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTkwNTA3NTQ2ZWIyYzA1YTQxZTRlNWYiLCJpYXQiOjE1ODY1MTYxMDN9.Tx2kqrfQMLGQGClpCQxujoe6zWnnxy7TSe219kzRBsQ")
      /*   RemoteAPI.obtainStartMap()
         println("Segon punt:")
         RemoteAPI.obtainNextStageMap(RemoteAPI.Point(RemoteAPI.GeoJSONPoint("Point", listOf(2.17004, 41.386991))))

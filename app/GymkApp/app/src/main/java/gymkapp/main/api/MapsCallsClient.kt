@@ -1,8 +1,7 @@
 package gymkapp.main.api
 
-import android.util.Log
 import gymkapp.main.BASE_URL
-import gymkapp.main.api.RemoteAPI.firstPointInfoOfAMap
+import gymkapp.main.api.RemoteAPI.FirstPointInfoOfAMap
 import gymkapp.main.model.Point
 import gymkapp.main.model.Stage
 import retrofit2.Response
@@ -18,11 +17,11 @@ interface MapsCallsClient {
     @Query("lon") long: Double,
     @Query("lat") lat: Double,
     @Query("radius") radius: Int
-  ): Response<Array<firstPointInfoOfAMap>>//  //recibo una lista de Map
+  ): Response<Array<FirstPointInfoOfAMap>>//  //recibo una lista de Map
 
   //función que devuelve información sobre el mapa
   @GET("/map/{id}")
-  suspend fun infoMap(@Path("id") id: String): Response<firstPointInfoOfAMap>
+  suspend fun infoMap(@Path("id") id: String): Response<FirstPointInfoOfAMap>
 
   //función que te devuelve un mapa con un array de puntos (el de la demo)
   @POST("/game/demo/new")
