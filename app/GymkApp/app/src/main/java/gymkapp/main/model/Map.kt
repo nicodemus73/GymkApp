@@ -1,27 +1,28 @@
 package gymkapp.main.model
 
-import com.google.gson.annotations.SerializedName
+import com.google.android.gms.maps.model.LatLng
 
+/**
+ * Cada mapa representa una Gymkhana diferente
+ */
 data class Map(
-  val metadata: Metadata,
-  @SerializedName("_id")
-  var id: Int,
-  val name: String,
-  val points: MutableList<Point>
+  val info: Metadata,
+  var id: Int? = null,
+  var name: String,
+  val tests: MutableList<Test> = mutableListOf()
 )
 
 data class Metadata(var author: String, var description: String)
+data class Test(var description: String, var point: LatLng)
+
+@Deprecated("No se necesita esta clase en el modelo")
 data class GeoJSONPoint(var type: String = "Point", var coordinates: List<Double>)
-
-//per cridar /game/demo -> obtainNextStageMap se li ha de passar un Point
+@Deprecated("No se necesita esta clase en el modelo")
 data class Point(var location: GeoJSONPoint)
-
-//Stage es el resultat de cridar /game/demo/new -> obtainStartMap() o /game/demo -> obtainNextStageMap
+@Deprecated("No se necesita esta clase en el modelo")
 data class Stage(
   var message: String,
   var location: GeoJSONPoint,
   var time: String,
   var error: String
 )
-
-

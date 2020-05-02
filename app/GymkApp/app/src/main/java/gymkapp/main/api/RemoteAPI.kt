@@ -38,7 +38,6 @@ object RemoteAPI {
   data class GeoJSONPoint(var type: String = "Point", var coordinates: List<Double>)
 
   //Los Log.d pueden filtrarse con ((Login|Welcome|Settings|Register|Maps|Social)(Model|ViewModel|Fragment)|MainActivity|RemoteAPI|MapsCallsClient)
-  //TODO borrar escalares del gradle si no los utilizamos
   private interface AuthenticationCallsClient {
 
     //Usar Response<String> para ver el contexto de respuesta https://github.com/square/retrofit/blob/master/CHANGELOG.md#version-260-2019-06-05
@@ -115,6 +114,7 @@ object RemoteAPI {
     return Pair(failure, message)
   }
 
+  @Deprecated("Con la nueva implementacion ya no se necesita esta funcion")
   //Obtain the start point of the demo map
   suspend fun obtainStartMap(): Pair<String?, Stage?> {
 
@@ -147,6 +147,7 @@ object RemoteAPI {
     return Pair(message, newStage)
   }
 
+  @Deprecated("Con la nueva implementacion ya no se necesita esta funcion")
   //Obtain the next step of the demo map by passing a location
   suspend fun obtainNextStageMap(loc: Point): Pair<String?, Stage?> {
 
@@ -183,7 +184,7 @@ object RemoteAPI {
    * Si sale bien, first es nulo y second contiene la lista
    * Si no, first contiene el mensaje de error y second es nulo
    */
-  suspend fun listNearMaps(
+  suspend fun listNearFirstInfoPoints(
     center: LatLng,
     radio: Int = DEFAULT_VIEW_RADIUS
   ): Pair<String?, Array<FirstPointInfoOfAMap>?> {
@@ -208,19 +209,19 @@ object RemoteAPI {
     //Tratar errores y la respuesta
     Log.d(classTag, "url: " + response.raw().request().url())
 
-    var maps: Array<FirstPointInfoOfAMap>? = null
+    var firstInfoPoints: Array<FirstPointInfoOfAMap>? = null
     val message = try {
       if (response.isSuccessful) {
-        maps = response.body()!!
+        firstInfoPoints = response.body()!!
         null
       } else parseError(response.errorBody()!!)
     } catch (e: Exception) {
       "Error inesperado"
     }
-    return Pair(message, maps)
+    return Pair(message, firstInfoPoints)
   }
 
-  suspend fun infoMap(Id: String): Pair<String?, FirstPointInfoOfAMap?> {
+  suspend fun firstPointInfoMap(Id: String): Pair<String?, FirstPointInfoOfAMap?> {
 
     val response = try {
       mapsCalls.infoMap(id = Id)
@@ -230,12 +231,12 @@ object RemoteAPI {
     }
 
     Log.d(classTag, "url: " + response.raw().request().url())
-    var map: FirstPointInfoOfAMap? = null
+    var firstPointInfo: FirstPointInfoOfAMap? = null
     val message = try {
       Log.d(classTag, "llegint message")
       if (!response.isSuccessful) parseError(response.errorBody()!!)
       else {
-        map = response.body()!!
+        firstPointInfo = response.body()!!
         null
       }
     } catch (e: Exception) {
@@ -246,6 +247,6 @@ object RemoteAPI {
       classTag,
       "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}"
     )
-    return Pair(message, map)
+    return Pair(message, firstPointInfo)
   }
 }

@@ -79,8 +79,6 @@ class MapsFragment : Fragment() {
     private const val enabledColorHexString = "#FFFFFF"
   }
 
-  //TODO llamada a la fucion para obtener puntos cercanos
-  //TODO Cambiar el loginToken por el singleton del usuario en el loginViewModel
   //TODO Considerar utilizar un savedinstancestate
 
   override fun onCreateView(
@@ -235,17 +233,16 @@ class MapsFragment : Fragment() {
         bind.root,
         "Enable location settings to see near Gymkhanas",
         Snackbar.LENGTH_INDEFINITE
-      )
-        .setAction("Enable") {
-          try {
-            startIntentSenderForResult(
-              e.resolution.intentSender,
-              LOCATION_SETTINGS_REQ_CODE, null, 0, 0, 0, null
-            ) //Horrible implementacion por parte de Google...
-          } catch (e: IntentSender.SendIntentException) {
-            Log.d(classTag, "Error inesperado")
-          }//TODO borrar
-        }.show()
+      ).setAction("Enable") {
+        try {
+          startIntentSenderForResult(
+            e.resolution.intentSender,
+            LOCATION_SETTINGS_REQ_CODE, null, 0, 0, 0, null
+          )
+        } catch (e: IntentSender.SendIntentException) {
+          Log.d(classTag, "Error inesperado")
+        }
+      }.show()
     }
   }
 
@@ -260,8 +257,8 @@ class MapsFragment : Fragment() {
 
     bind.locationButton.setOnClickListener { mapsModel.switchFollowing() }
 
-    mapsModel.followingStatus.observe(viewLifecycleOwner, Observer {
-      when (it) {
+    mapsModel.followingStatus.observe(viewLifecycleOwner, Observer { status ->
+      when (status) {
         FolStat.FOLLOWING -> {
           fusedLocationClient.requestLocationUpdates(
             mapsModel.locationRequest, mapsModel.locationCallback,
@@ -285,20 +282,10 @@ class MapsFragment : Fragment() {
         if (isFirstLoc) {
           isFirstLoc = false
           it.zoomCamera(animate = false)
+          //TODO quitar por layer y puntos cercanos
           drawGeoJsonPoint(it.toLatLng())
         } else {
-          //TODO Sustituir por un if
-          when (mapsModel.pointState.value) {
-            PointStat.CHECKING -> {
-
-              lifecycleScope.launch {
-                mapsModel.verifyCurrentLocation()
-              }
-            }
-            else -> {
-            }
-          }
-
+          if (mapsModel.pointState.value == PointStat.CHECKING) lifecycleScope.launch { mapsModel.verifyCurrentLocation() }
           it.zoomCamera()
         }
       }
@@ -317,29 +304,20 @@ class MapsFragment : Fragment() {
 
     mapsModel.gameState.observe(viewLifecycleOwner, Observer { gameStatus ->
       when (gameStatus) {
-
         GameStat.STARTED -> {
-
           mapsModel.pointState.observe(viewLifecycleOwner, Observer { pointStatus ->
-            when (pointStatus) {
-
-              PointStat.POINT_ACHIEVED -> {
-                //Mostrar mensaje de la prueba actual
-                Log.d(classTag, "HE LLEGADO AL SIGUIENTE PUNTO")
-                Snackbar.make(bind.root, mapsModel.stage!!.message, Snackbar.LENGTH_INDEFINITE)
-                  .show()
-                //Empezar a comprobar el siguiente punto
-                mapsModel.startChecking()
-              }
-
-              else -> {
-              }
+            //TODO el status podria ser un booleano
+            if(pointStatus == PointStat.POINT_ACHIEVED){
+              //Mostrar mensaje de la prueba actual
+              Log.d(classTag, "HE LLEGADO AL SIGUIENTE PUNTO")
+              Snackbar.make(bind.root, mapsModel.stage!!.message, Snackbar.LENGTH_INDEFINITE)
+                .show()
+              //Empezar a comprobar el siguiente punto
+              mapsModel.startChecking()
             }
           })
         }
-
-        else -> {
-        }
+        else -> { }
       }
     })
   }
