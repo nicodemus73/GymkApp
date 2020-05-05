@@ -139,7 +139,7 @@ object RemoteAPI {
       "Unexpected error while trying to load the starting point"
     }
     Log.d(classTag, "First Point")
-    Log.d(classTag, "$classTag ${GsonBuilder().setPrettyPrinting().create().toJson(newStage)}")
+    //Log.d(classTag, "$classTag ${GsonBuilder().setPrettyPrinting().create().toJson(newStage)}")
     Log.d(
       classTag,
       "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}"
@@ -171,7 +171,7 @@ object RemoteAPI {
       Log.d(classTag, "${e.message}")
       "Unexpected error while trying obtain next stage"
     }
-    Log.d(classTag, GsonBuilder().setPrettyPrinting().create().toJson(newStage))
+    //Log.d(classTag, GsonBuilder().setPrettyPrinting().create().toJson(newStage))
     Log.d(
       classTag,
       "La llamada ha salido ${if (!response.isSuccessful) "mal y el mensaje de error es $message" else "bien"}"
@@ -233,7 +233,6 @@ object RemoteAPI {
     Log.d(classTag, "url: " + response.raw().request().url())
     var firstPointInfo: FirstPointInfoOfAMap? = null
     val message = try {
-      Log.d(classTag, "llegint message")
       if (!response.isSuccessful) parseError(response.errorBody()!!)
       else {
         firstPointInfo = response.body()!!

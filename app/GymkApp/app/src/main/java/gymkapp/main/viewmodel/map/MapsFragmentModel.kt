@@ -8,10 +8,14 @@ import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.google.android.gms.maps.model.LatLng
+import gymkapp.main.VALIDATION_DISTANCE
 import gymkapp.main.api.RemoteAPI
 import gymkapp.main.model.GeoJSONPoint
+import gymkapp.main.model.MapPreview
 import gymkapp.main.model.Point
 import gymkapp.main.model.Stage
+import kotlinx.coroutines.delay
 
 class MapsFragmentModel : ViewModel() {
 
@@ -45,14 +49,16 @@ class MapsFragmentModel : ViewModel() {
   val locationRequest: LocationRequest by lazy {
     LocationRequest().apply {
       interval = 10_000
-      fastestInterval = 2_000
+      fastestInterval = 5_000
+      smallestDisplacement = (VALIDATION_DISTANCE/10).toFloat() //un tanto absurdo. Cambiar cuando nos hayamos decidido
       priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    } //TODO smallestDisplacement - distancia minima para avisar de cambios
+    }
   }
 
   val locationCallback by lazy {
     object : LocationCallback() {
       override fun onLocationResult(locRes: LocationResult?) {
+        locRes?.let { Log.d(classTag,"size: ${it.locations.size}") }
         currentLoc.value = locRes?.lastLocation
         isFirstTimeLocationRequest = false
       }
@@ -113,6 +119,35 @@ class MapsFragmentModel : ViewModel() {
       pointState.value = PointStatus.POINT_ACHIEVED
     }
     //aux?.error? TODO??
+  }
+
+  /**
+   * Mock function to return the list of near points
+   */
+  suspend fun nearGymkhanas(): List<MapPreview> {
+    delay(1_000)
+    return listOf(
+      MapPreview(
+        author = "Juan Sebastian",
+        description = """
+          Aventurate a ver las zonas mas emblemáticas de la ciudad de Barcelona!
+          ¿Eres residente y aún no has visitado las maravillas de Barcelona? ¿Turista?
+          Sea como se esta Gincana es para ti!!
+        """.trimIndent(),
+        name = "Paseo por la ciudad",
+        startingPoint = LatLng(1.2332,123.23)
+      ),
+      MapPreview(
+        author = "Pedro Jose",
+        description = """
+          Te gusta la historia?
+          Esta Gymkhana te pondrá a prueba tu conocimiento sobre la historia moderna, y no tan moderna de la ciudad.
+          Animate!
+        """.trimIndent(),
+        name = "Fans de la Historia",
+        startingPoint = LatLng(1.323,1.12332)
+      )
+    )
   }
 
   fun startFollowing() {

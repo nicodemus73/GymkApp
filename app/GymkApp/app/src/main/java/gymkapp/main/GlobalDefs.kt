@@ -9,7 +9,8 @@ import com.google.maps.android.ktx.utils.withSphericalOffset
 const val PERMISSION_SETTINGS_REQ_CODE = 444
 const val LOCATION_SETTINGS_REQ_CODE = 445
 const val LOCATION_REQUEST_CODE = 556
-const val DEFAULT_VIEW_RADIUS = 500 //Radio a utilizar para ver los puntos cercanos
+const val VALIDATION_DISTANCE = 100
+const val DEFAULT_VIEW_RADIUS = VALIDATION_DISTANCE*5 //Radio a utilizar para ver los puntos cercanos
 
 //Server
 const val BASE_URL = "https://10.4.41.144:3002"

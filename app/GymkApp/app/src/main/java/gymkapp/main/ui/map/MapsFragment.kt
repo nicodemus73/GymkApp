@@ -41,6 +41,7 @@ import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.utils.component1
 import com.google.maps.android.ktx.utils.component2
+import com.google.maps.android.ktx.utils.geojson.geoJsonLayer
 import gymkapp.main.*
 import gymkapp.main.databinding.MapsBinding
 import gymkapp.main.viewmodel.LoginViewModel
@@ -246,12 +247,12 @@ class MapsFragment : Fragment() {
     }
   }
 
-  private fun initArtificialGame() {
+  /*private fun initArtificialGame() {
 
     mapsModel.createPrivateMapsApiClient(loginModel.user!!.id)
     lifecycleScope.launch { mapsModel.startGame() }
     mapsModel.forceVerification()
-  }
+  }*/
 
   private fun doAfterLocationGranted() {
 
@@ -265,7 +266,7 @@ class MapsFragment : Fragment() {
             Looper.getMainLooper()
           )
           bind.locationButton.imageTintList = enabledColor
-          initArtificialGame()
+          //TODO borrar initArtificialGame()
         }
         FolStat.DISABLED -> {
           fusedLocationClient.removeLocationUpdates(mapsModel.locationCallback)
@@ -285,7 +286,7 @@ class MapsFragment : Fragment() {
           //TODO quitar por layer y puntos cercanos
           drawGeoJsonPoint(it.toLatLng())
         } else {
-          if (mapsModel.pointState.value == PointStat.CHECKING) lifecycleScope.launch { mapsModel.verifyCurrentLocation() }
+          //TODO borrar if (mapsModel.pointState.value == PointStat.CHECKING) lifecycleScope.launch { mapsModel.verifyCurrentLocation() }
           it.zoomCamera()
         }
       }
@@ -302,11 +303,11 @@ class MapsFragment : Fragment() {
       }
     })
 
+    /*
     mapsModel.gameState.observe(viewLifecycleOwner, Observer { gameStatus ->
       when (gameStatus) {
         GameStat.STARTED -> {
           mapsModel.pointState.observe(viewLifecycleOwner, Observer { pointStatus ->
-            //TODO el status podria ser un booleano
             if(pointStatus == PointStat.POINT_ACHIEVED){
               //Mostrar mensaje de la prueba actual
               Log.d(classTag, "HE LLEGADO AL SIGUIENTE PUNTO")
@@ -319,7 +320,7 @@ class MapsFragment : Fragment() {
         }
         else -> { }
       }
-    })
+    })*/
   }
 
   private fun locationLayer(enable: Boolean) {
@@ -378,6 +379,14 @@ class MapsFragment : Fragment() {
         )
       )
       addLayerToMap()
+    }
+  }
+
+  private fun showNearGymkhanas(){
+    lifecycleScope.launch{
+      mapsModel.nearGymkhanas().forEach{
+        TODO("Crear y mantener una layer nueva para los puntos cercanos. Aplicar areas sobre los puntos")
+      }
     }
   }
 
