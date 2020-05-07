@@ -45,9 +45,10 @@ class MapsFragmentModel : ViewModel() {
   val locationRequest: LocationRequest by lazy {
     LocationRequest().apply {
       interval = 10_000
-      fastestInterval = 2_000
+      fastestInterval = 5_000
+      smallestDisplacement = (VALIDATION_DISTANCE/10).toFloat() //un tanto absurdo. Cambiar cuando nos hayamos decidido
       priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    } //TODO smallestDisplacement - distancia minima para avisar de cambios
+    }
   }
 
   val locationCallback by lazy {
