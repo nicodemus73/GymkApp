@@ -326,8 +326,13 @@ class MapsFragment : Fragment() {
               PointStat.POINT_ACHIEVED -> {
                 //Mostrar mensaje de la prueba actual
                 Log.d(classTag, "HE LLEGADO AL SIGUIENTE PUNTO")
-                Snackbar.make(bind.root, mapsModel.stage!!.message, Snackbar.LENGTH_INDEFINITE)
-                  .show()
+                if (mapsModel.stage?.time  != null) {
+                  Snackbar.make(bind.root, mapsModel.stage!!.message + " Tiempo total: " + mapsModel.stage!!.time, Snackbar.LENGTH_INDEFINITE)
+                    .show()
+                }else {
+                  Snackbar.make(bind.root, mapsModel.stage!!.message, Snackbar.LENGTH_INDEFINITE)
+                    .show()
+                }
                 //Empezar a comprobar el siguiente punto
                 mapsModel.startChecking()
               }
