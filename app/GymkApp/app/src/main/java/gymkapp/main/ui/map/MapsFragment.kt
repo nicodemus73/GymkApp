@@ -327,7 +327,11 @@ class MapsFragment : Fragment() {
                 //Mostrar mensaje de la prueba actual
                 Log.d(classTag, "HE LLEGADO AL SIGUIENTE PUNTO")
                 if (mapsModel.stage?.time  != null) {
-                  Snackbar.make(bind.root, mapsModel.stage!!.message + " Tiempo total: " + mapsModel.stage!!.time, Snackbar.LENGTH_INDEFINITE)
+                  Snackbar.make(bind.root, mapsModel.stage!!.message +
+                          "!\n" + "Total time: " +
+                          mapsModel.stage!!.time[0]+mapsModel.stage!!.time[1]+mapsModel.stage!!.time[2]+ " "+
+                          mapsModel.stage!!.time[3]+mapsModel.stage!!.time[4]+mapsModel.stage!!.time[5]+ " "+
+                          mapsModel.stage!!.time[6]+mapsModel.stage!!.time[7]+mapsModel.stage!!.time[8], Snackbar.LENGTH_INDEFINITE)
                     .show()
                 }else {
                   Snackbar.make(bind.root, mapsModel.stage!!.message, Snackbar.LENGTH_INDEFINITE)

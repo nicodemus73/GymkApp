@@ -46,7 +46,7 @@ class MapsFragmentModel : ViewModel() {
     LocationRequest().apply {
       interval = 10_000
       fastestInterval = 5_000
-      smallestDisplacement = (VALIDATION_DISTANCE/10).toFloat() //un tanto absurdo. Cambiar cuando nos hayamos decidido
+      smallestDisplacement = (10).toFloat() //un tanto absurdo. Cambiar cuando nos hayamos decidido
       priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
   }
