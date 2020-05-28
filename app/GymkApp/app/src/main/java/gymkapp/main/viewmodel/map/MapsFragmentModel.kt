@@ -112,6 +112,7 @@ class MapsFragmentModel : ViewModel() {
     aux?.let {
       stage = aux
       pointState.value = PointStatus.POINT_ACHIEVED
+      if (stage?.time  != null) gameState.value = GameStatus.FINISHED
     }
     //aux?.error? TODO??
   }
