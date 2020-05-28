@@ -55,9 +55,9 @@ import gymkapp.main.viewmodel.map.MapsFragmentModel.PointStatus as PointStat
 
 class MapsFragment : Fragment() {
 
-  private val classTag = javaClass.simpleName //TODO: borrar cuando acabemos
+  private val classTag = javaClass.simpleName
 
-  private val mapsModel: MapsFragmentModel by activityViewModels() //TODO era necesario activityScope?
+  private val mapsModel: MapsFragmentModel by activityViewModels()
   private val loginModel: LoginViewModel by activityViewModels()
   private lateinit var map: GoogleMap
 
@@ -79,9 +79,6 @@ class MapsFragment : Fragment() {
     private const val enabledColorHexString = "#FFFFFF"
   }
 
-  //TODO llamada a la fucion para obtener puntos cercanos
-  //TODO Cambiar el loginToken por el singleton del usuario en el loginViewModel
-  //TODO Considerar utilizar un savedinstancestate
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -165,7 +162,7 @@ class MapsFragment : Fragment() {
       Snackbar.LENGTH_INDEFINITE
     )
       .setAction("Settings") {
-        Log.d(classTag, "Moviendose a settings") //TODO
+        Log.d(classTag, "Moviendose a settings")
         try {
           startActivityForResult(
             Intent(
@@ -244,7 +241,7 @@ class MapsFragment : Fragment() {
             ) //Horrible implementacion por parte de Google...
           } catch (e: IntentSender.SendIntentException) {
             Log.d(classTag, "Error inesperado")
-          }//TODO borrar
+          }
         }.show()
     }
   }
@@ -287,7 +284,6 @@ class MapsFragment : Fragment() {
           it.zoomCamera(animate = false)
           drawGeoJsonPoint(it.toLatLng())
         } else {
-          //TODO Sustituir por un if
           when (mapsModel.pointState.value) {
             PointStat.CHECKING -> {
 

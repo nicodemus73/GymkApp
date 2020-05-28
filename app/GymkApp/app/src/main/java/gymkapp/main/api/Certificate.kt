@@ -10,7 +10,6 @@ import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
-//TODO quitar el root_ca de res/raw
 private const val tag = "RemoteAPI Certificate"
 val secureClientBuilder by lazy { createSecureClientBuilder() }
 

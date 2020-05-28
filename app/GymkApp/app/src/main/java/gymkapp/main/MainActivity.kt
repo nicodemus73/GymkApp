@@ -23,9 +23,6 @@ class MainActivity : AppCompatActivity() {
 
   @SuppressLint("SourceLockedOrientationActivity")
   override fun onCreate(savedInstanceState: Bundle?) {
-    //TODO Resposiveness!!!
-    //TODO secure.properties API KEY y otras formas de proteger la API KEY
-    //TODO añadir loader para la conexion al server
 
     super.onCreate(savedInstanceState)
     with(PreferenceManager.getDefaultSharedPreferences(this)) {

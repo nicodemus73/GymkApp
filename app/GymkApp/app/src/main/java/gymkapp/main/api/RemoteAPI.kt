@@ -24,7 +24,6 @@ object RemoteAPI {
   private data class UserInfo(val username: String, val password: String)
 
   //DATOS RECIBIDOS
-  //TODO (mover y) RENOMBRAR + renombrar otras variables relacionadas (map,maps) y todo lo relacionado con mapas que no sea un mapa...
   data class FirstPointInfoOfAMap(
     var metadata: Metadata,
     @SerializedName("_id")
@@ -38,7 +37,6 @@ object RemoteAPI {
   data class GeoJSONPoint(var type: String = "Point", var coordinates: List<Double>)
 
   //Los Log.d pueden filtrarse con ((Login|Welcome|Settings|Register|Maps|Social)(Model|ViewModel|Fragment)|MainActivity|RemoteAPI|MapsCallsClient)
-  //TODO borrar escalares del gradle si no los utilizamos
   private interface AuthenticationCallsClient {
 
     //Usar Response<String> para ver el contexto de respuesta https://github.com/square/retrofit/blob/master/CHANGELOG.md#version-260-2019-06-05

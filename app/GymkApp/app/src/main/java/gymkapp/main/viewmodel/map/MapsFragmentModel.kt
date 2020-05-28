@@ -14,8 +14,6 @@ import gymkapp.main.model.Point
 import gymkapp.main.model.Stage
 
 class MapsFragmentModel : ViewModel() {
-
-  //TODO cambiar nombre cuando sepa si es activityViewModel o solo ViewModel
   enum class LocationSettingsStatus {
     ENABLED,
     CHECKING,
@@ -40,13 +38,13 @@ class MapsFragmentModel : ViewModel() {
   }
 
 
-  private val classTag = javaClass.simpleName //TODO: borrar cuando acabemos
+  private val classTag = javaClass.simpleName
 
   val locationRequest: LocationRequest by lazy {
     LocationRequest().apply {
       interval = 10_000
       fastestInterval = 5_000
-      smallestDisplacement = (10).toFloat() //un tanto absurdo. Cambiar cuando nos hayamos decidido
+      smallestDisplacement = (10).toFloat()
       priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
   }
@@ -114,7 +112,6 @@ class MapsFragmentModel : ViewModel() {
       pointState.value = PointStatus.POINT_ACHIEVED
       if (stage?.time  != null) gameState.value = GameStatus.FINISHED
     }
-    //aux?.error? TODO??
   }
 
   fun startFollowing() {

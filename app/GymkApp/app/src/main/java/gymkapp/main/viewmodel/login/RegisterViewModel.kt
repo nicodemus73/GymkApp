@@ -11,7 +11,6 @@ class RegisterViewModel : ViewModel() {
     REGISTRATION_COMPLETED,
     REGISTRATION_FAILED
   }
-  //TODO: Cifrar usernae+password
 
   /**
    * Al registrationState se le tiene que colocar un observer que cuando este COMPLETED salte a la pantalla principal

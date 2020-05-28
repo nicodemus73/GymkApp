@@ -34,8 +34,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
       title = "Settings"
     }
 
-    //TODO estilos switches
-    //TODO añadir iconos
     val followSystemNightMode = SwitchPreferenceCompat(context).apply {
       key = R.string.NightModeSysKey.toString()
       title = "Apply System Theme"
