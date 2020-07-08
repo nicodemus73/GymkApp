@@ -4,7 +4,15 @@ L'aplicació definitiva per gimcanes
 
 ![Logo](img/logo.png)
 
-[ToC]
+**Taula de continguts**
+
+* [Introducció](#introducció)
+* [Objectius](#objectius)
+* [Métode](#métode)
+  * [Estructura del sistema](#estructura-del-sistema)
+  * [Tecnologies](#tecnologies)
+* [Producte final](#producte-final)
+* [Conclusions](#conclusions)
 
 ## Introducció
 
