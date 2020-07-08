@@ -2,13 +2,13 @@
 
 L'aplicació definitiva per gimcanes
 
-![Logo](https://mwiki.fib.upc.edu/pti/images/8/89/Logo2.png)
+![Logo](img/logo.png)
 
 [ToC]
 
 ## Introducció
 
-La present memòria recull per escrit la informació que fa referència al projecte de tecnologies de la informació que hem dut a terme: GymkApp. Es descriu el procés de planificació disseny i implementació del sistema, una aplicació Android per a construïr i jugar gimcanes pel món. Les gimkanes o mapes són conjunts de punts, que consten a més d’una descripció general que ajuda a definir quin tipus de joc ens trobarem. Els punts consten d’una posició en el mapa i un petit text que ens dona una pista sobre on anar. Per a jugar una gimcana cal passar per totes els punts, el text dels quals es revel·la quan es supera l’anterior. L’aplicació està pensada per a permetre la creació de punts i mapes als usuaris i per a poder jugar qualsevol d’ells. Finalment el desenvolupament ha arribat a poder jugar-ne una sola precarregada al sistema.
+La present memòria recull per escrit la informació que fa referència al projecte de tecnologies de la informació que hem dut a terme: GymkApp. Es descriu el procés de planificació disseny i implementació del sistema, una aplicació Android per a construir i jugar gimcanes pel món. Les gimcanes o mapes són conjunts de punts, que consten a més d’una descripció general que ajuda a definir quin tipus de joc ens trobarem. Els punts consten d’una posició en el mapa i un petit text que ens dona una pista sobre on anar. Per a jugar una gimcana cal passar per totes els punts, el text dels quals es revela quan es supera l’anterior. L’aplicació està pensada per a permetre la creació de punts i mapes als usuaris i per a poder jugar qualsevol d’ells. Finalment el desenvolupament ha arribat a poder jugar-ne una sola precarregada al sistema.
 
 ## Objectius
 
@@ -31,7 +31,7 @@ En aquesta secció trobem necessari una introducció del model el qual es recolz
 
 En la figura podem veure les principals tecnologies que s'han implementat en el projecte i quina és la interacció entre elles
 
-![Estructura](https://mwiki.fib.upc.edu/pti/images/9/90/Pasted_image_0.png)
+![Estructura](img/estructura.png)
 
 ### Tecnologies
 
@@ -58,7 +58,7 @@ Aquestes són totes les tecnologies usades per al desenvolupament de la app.
 
 Aparença final de l'aplicació.
 
-![Login](https://mwiki.fib.upc.edu/pti/images/a/a0/Unnamed.png) ![Gimcana completada](https://mwiki.fib.upc.edu/pti/images/7/71/Unnamed2.png)
+![Login](img/login.png) ![Gimcana completada](img/completado.png)
 
 ## Conclusions
 
