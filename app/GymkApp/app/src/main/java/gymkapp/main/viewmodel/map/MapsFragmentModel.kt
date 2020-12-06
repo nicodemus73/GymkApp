@@ -44,7 +44,7 @@ class MapsFragmentModel : ViewModel() {
     LocationRequest().apply {
       interval = 10_000
       fastestInterval = 5_000
-      smallestDisplacement = (10).toFloat()
+      smallestDisplacement = 10F
       priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
   }
